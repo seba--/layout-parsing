@@ -1,0 +1,7 @@
+Module(
+  "Main",
+  None,
+  Body(
+    [],
+    [Valdef(Var("foo"),Lit(Int("5"))),
+     Valdef(Var("bar"),Lit(Int("7")))]))

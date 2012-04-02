@@ -1,0 +1,47 @@
+module Haskell-Modules
+exports
+  context-free syntax
+    "module" Modid Exports?
+            "where" Body 	-> Module 	{cons("Module")}
+    Body 			-> Module 	{cons("Program")}
+    Decl 		   	-> Topdecl
+
+    Importdecl ";" -> Importdecl
+    Topdecl ";"    -> Topdecl {prefer}
+
+    
+  context-free syntax
+  	"{" NoOffsideBody "}" -> Body {ignore-indent, bracket}
+    OffsideBody           -> Body
+  	
+  	FAILURE* -> Empty %% produces empty list AST
+  	
+  	Empty                 Empty          -> NoOffsideBody {cons("Body")}
+  	Empty                 {Topdecl ";"}+ -> NoOffsideBody {cons("Body")}
+  	{Importdecl ";"}+     Empty          -> NoOffsideBody {cons("Body")}
+    {Importdecl ";"}+ ";" {Topdecl ";"}+ -> NoOffsideBody {cons("Body")}
+
+
+    
+    OffsideImportdeclList OffsideTopdeclList -> OffsideBody {cons("Body"), layout(eq(col(first(1)), col(first(2))))}
+    
+    Importdecl -> OffsideImportdecl {layout(gt(col(left(1)), col(first(1))))}
+    Importdecl ";" OffsideImportdecl -> OffsideImportdecl {flatten,
+           layout(and(gt(col(left(1)), col(first(1))),
+                  and(gt(col(first(2)), col(first(1))),
+                      gt(col(first(3)), col(first(1))))))}
+    
+  %% syntax 
+  %%  <Topdecl-CF> <NewLineLayout-LEX> -> <OffsideTopdecl-CF> {layout(gt(col(left(1)), col(first(1)))), ast("<1>")}
+  
+  Topdecl -> OffsideTopdecl {layout(gt(col(left(1)), col(first(1))))}
+    
+  context-free syntax
+    Topdecl ";" OffsideTopdecl -> OffsideTopdecl {flatten,
+           layout(and(gt(col(left(1)), col(first(1))),
+                  and(gt(col(first(2)), col(first(1))),
+                      gt(col(first(3)), col(first(1))))))}
+    
+    OffsideImportdecl* -> OffsideImportdeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+    OffsideTopdecl*    -> OffsideTopdeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+    

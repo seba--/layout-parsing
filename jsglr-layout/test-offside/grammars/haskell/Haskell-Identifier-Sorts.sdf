@@ -1,0 +1,108 @@
+module Haskell-Identifier-Sorts
+exports
+  lexical syntax
+    VARID       	-> Varid
+    ReservedId  	-> Varid {reject}
+
+    VARID 		-> Tyvar
+    ReservedId 		-> Tyvar {reject}
+    ReservedId2 	-> Tyvar {reject}
+
+  context-free syntax
+    Vars "," Var 	-> Vars 	{cons("Snoc")}
+    Qvar 	 	-> Vars 	{cons("Ins")}
+
+  context-free syntax
+    "(" ")"        	-> Gcon 	{cons("Unit")}
+    "[" "]"        	-> Gcon		{cons("EmptyList")}
+    "(" ","+ ")"   	-> Gcon		{cons("Product")}
+    Qcon           	-> Gcon		
+
+  context-free syntax
+
+    %% variable identifiers
+
+    Varid          	-> Var		{cons("Var")}
+    Qvarid          	-> Qvar
+    Varid  		-> Qvarid
+    QVARID 		-> Qvarid
+
+    %% constructor identifiers
+
+    Conid          	-> Con		{cons("ConId")}
+    Qconid          	-> Qcon
+    Conid  		-> Qconid
+    QCONID 		-> Qconid
+    CONID 		-> Conid
+
+
+  %% in each of these cases the constructor ID in fact is a module ID
+  %% that quantifies a variable, constructor, type or operator
+  context-free restrictions
+  	Qconid -/- [\.] . [a-zA-Z\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+  	Qconid -/- [\.] . [\_] . [A-Za-z0-9\'\_]
+  	Qconid -/- [\.] . [\:] . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+  	
+   	
+  %% The following portion can be put into module Haskell-Infix
+  %% in order to factor out infix operators from the kernel language
+
+  context-free syntax
+
+    %% infix operators
+
+    Varop 		-> Op		{cons("Op")}
+    Conop 		-> Op		{cons("ConOp")}
+
+    %% variable operators
+
+    Varsym        	-> Varop
+    Qvarsym        	-> Qvarop
+    Varsym  		-> Qvarsym
+    Qvarsym1 		-> Qvarsym
+
+    %% constructor operators
+
+    Consym  		-> Qconsym
+    QCONSYM 		-> Qconsym
+    CONSYM 		-> Consym
+    Consym        	-> Conop
+    Qconsym -> Gconsym
+    ":" -> Gconsym  {cons("ConsOp")}
+    Gconsym        	-> Qconop
+
+    Qvarop 		  -> Qop
+    Qconop 		  -> Qop
+
+
+    %% make prefix symbols from infix symbols
+
+    "(" Varsym ")" 	-> Var 		{cons("BinOp")}
+    "(" Qvarsym ")" 	-> Qvar 	{cons("BinOp")}
+    "(" Consym ")" 	-> Con 		{cons("BinCon")}
+    "(" Qconsym ")" 	-> Qcon 	{cons("BinCon")}
+
+    %% make infix symbols from prefix symbols
+
+    "`" Varid "`" 	-> Varop 	{cons("PrefOp")}
+    "`" Qvarid "`" 	-> Qvarop 	{cons("PrefOp")}
+    "`" Conid "`" 	-> Conop 	{cons("PrefCon")}
+    "`" Qconid "`" 	-> Qconop 	{cons("PrefCon")}
+    
+
+  context-free syntax
+    VARSYM 		-> Varsym
+
+    QVARSYM 		-> Qvarsym1
+
+  lexical syntax
+    CONID -> Modid
+
+
+  context-free syntax
+    CONID 		-> Tycon
+    Tycon  		-> Qtycon
+    QCONID 		-> Qtycon
+    Tycon		-> Tycls
+    Qtycon 		-> Qtycls
+   

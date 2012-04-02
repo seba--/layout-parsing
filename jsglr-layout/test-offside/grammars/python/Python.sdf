@@ -1,0 +1,146 @@
+module Python
+
+%% http://docs.python.org/release/2.5.2/ref/grammar.txt
+exports
+  context-free start-symbols
+    FileInput
+    
+  lexical syntax
+  	[\#] ~[\n\r]* [\n\r] -> LAYOUT
+    [\ \n\r\t] -> LAYOUT
+    [a-zA-Z\_][a-zA-Z0-9\_]* -> Identifier
+    
+    "'" ShortStringItem* "'"  -> StringLiteral
+    "\"" ShortStringItem* "\""  -> StringLiteral
+    ~[\n\r\"\'\\] -> ShortStringItem
+    "\\" ~[\n\r] -> ShortStringItem
+    
+    "0" | [1-9][0-9]* -> DecimalInteger
+    "0" [0-7]+ -> OctInteger
+    "0" ("x" | "X") [0-9a-fA-F]+ -> HexInteger
+    
+    DecimalInteger | OctInteger | HexInteger -> IntegerLiteral
+  
+  lexical syntax
+  	"if" | "else" | "while" | "for" | "def" | "return" | "print" -> Identifier {reject}
+  
+  lexical restrictions
+    Identifier -/- [a-zA-Z0-9\_]
+    DecimalInteger -/- [0-9]
+    OctInteger -/- [0-7]
+    HexInteger -/- [0-9a-fA-F]
+
+  context-free restrictions
+    LAYOUT? -/- [\ \n\r\t]  
+
+  %% Stmt
+  context-free syntax
+    Statement -> FileInput
+
+    {SimplStmt ";"}+ -> StmtList {cons("StmtList")}
+    
+    StmtList -> Statement
+    
+    "if" Expression ":" StmtList Else? -> Statement {cons("IfStmt")}
+    "if" Expression ":" OffsideStmtList Else? -> Statement {cons("IfStmt"), 
+       layout(and(gt(line(first(4)), line(first(1))),  %% stmtList in new line
+              and(gt(col(first(4)), col(first(1))),    %% stmtList is indented
+                  lt(col(first(5)), col(first(4))))))} %% else is dedented
+       
+    "while" Expression ":" StmtList Else? -> Statement {cons("WhileStmt")}
+    "while" Expression ":" OffsideStmtList Else? -> Statement {cons("WhileStmt"), 
+       layout(and(gt(line(first(4)), line(first(1))),  %% stmtList in new line
+              and(gt(col(first(4)), col(first(1))),    %% stmtList is indented
+                  lt(col(first(5)), col(first(4))))))} %% else is dedented
+    
+    "for" TargetList "in" ExpressionList ":" StmtList Else? -> Statement {cons("ForStmt")}
+    "for" TargetList "in" ExpressionList ":" OffsideStmtList Else? -> Statement {cons("ForStmt"), 
+       layout(and(gt(line(first(6)), line(first(1))),  %% stmtList in new line
+              and(gt(col(first(6)), col(first(1))),    %% stmtList is indented
+                  lt(col(first(7)), col(first(6))))))} %% else is dedented
+    
+    "def" Identifier "(" ParameterList? ")" ":" StmtList -> Statement {cons("FuncdefStmt")}
+    "def" Identifier "(" ParameterList? ")" ":" OffsideStmtList -> Statement {cons("FuncdefStmt"), 
+       layout(and(gt(line(first(7)), line(first(1))),  %% stmtList in new line
+                  gt(col(first(7)), col(first(1)))))} %% stmtList is indented
+
+    %% TryStmt -> Statement
+    %% WithStmt -> Statement
+    %% Classdef -> Statement
+
+    "else" ":" StmtList -> Else {cons("Else")}
+    "else" ":" OffsideStmtList -> Else {cons("Else"), 
+       layout(and(gt(line(first(3)), line(first(1))),  %% stmtList in new line
+                  gt(col(first(3)), col(first(1)))))} %% stmtList is indented
+  
+  %% SimplStmt
+  context-free syntax
+    ExpressionList -> SimplStmt {cons("ExprListStmt")}
+    TargetList "=" ExpressionList -> SimplStmt {cons("AssignmentStmt")}
+    "print" {Expression ","}+ -> SimplStmt {cons("PrintStmt")}
+  
+  %% Offside statements
+  context-free syntax
+    %% StmtList -> Suite {cons("ExplicitSuite"), avoid}
+    %% OffsideStatements -> Suite {cons("ImplicitSuite"), more-indent}
+    
+    StmtList -> OffsideStmtList {reject}
+    OffsideStatement+ -> OffsideStmtList {cons("OffsideStmtList"),layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+    
+    OffsideStatement -> OffsideStatements {flatten}
+    OffsideStatement OffsideStatements -> OffsideStatements {flatten, same-indent}
+    
+    Statement -> OffsideStatement {offside-block, layout(ge(col(left(1)), col(first(1))))}
+  
+  %% Expression
+  context-free syntax
+    {Expression ","}+ -> ExpressionList {cons("ExprList")}
+    
+    Identifier -> Expression {cons("VarExpr")}
+    StringLiteral -> Expression {cons("StringLiteralExpr")}
+    IntegerLiteral -> Expression {cons("IntegerLiteralExpr")}
+    "return" ExpressionList -> Expression {cons("ReturnExpr")}
+  
+  context-free priorities
+  	{ right:
+      Expression "*" Expression -> Expression {cons("MultExpr"), right}
+      Expression "//" Expression -> Expression {cons("Div2Expr"), right}
+      Expression "/" Expression -> Expression {cons("DivExpr"), right}
+      Expression "%" Expression -> Expression {cons("DivExpr"), right}
+    }
+  	>
+    { right:
+      Expression "+" Expression -> Expression {cons("PlusExpr"), right}
+      Expression "-" Expression -> Expression {cons("MinusExpr"), right}
+    }
+    >
+    { right:
+      Expression "==" Expression -> Expression {cons("EqualExpr"), right}
+      Expression "!=" Expression -> Expression {cons("NEqualExpr"), right}
+      Expression ">" Expression -> Expression {cons("GTExpr"), right}
+      Expression "<" Expression -> Expression {cons("LTExpr"), right}
+    }
+  
+  %%Parameter
+  context-free syntax
+  	{DefParameter ","}+ -> ParameterList {cons("ParameterList")}
+  	
+    Identifier -> Parameter {cons("VarParam")}
+    "(" Sublist ")" -> Parameter {cons("SublistParam")}
+    
+    Parameter -> DefParameter
+    Parameter "=" Expression -> DefParameter {cons("DefaultParam")}
+    
+    {Parameter ","}+ -> Sublist {cons("Sublist")}
+    
+  
+  %% Target
+  context-free syntax
+    Identifier -> Target {cons("VarTarget")}
+    "(" TargetList ")" -> Target {cons("ParenTarget")}
+    "[" TargetList "]" -> Target {cons("BracketTarget")}
+    
+    {Target ","}+ -> TargetList {cons("TargetList")}
+  
+    
+    

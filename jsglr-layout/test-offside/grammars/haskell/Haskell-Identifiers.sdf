@@ -1,0 +1,28 @@
+module Haskell-Identifiers
+exports
+  lexical syntax
+    [a-z][A-Za-z0-9\'\_]*       -> VARID
+    [\_][A-Za-z0-9\'\_]+ -> VARID
+    [A-Z][A-Za-z0-9\'\_]*       -> CONID
+
+    %% Question: underscore in identifiers according to standard???
+    %% Answer: Underscore, Ò_Ó, is treated as a lowercase letter, and can occur wherever a lowercase letter can. However, Ò_Ó all by itself is a reserved identifier, used as wild card in patterns.
+
+    [\!\#\$\%\&\*\+\.\/]
+    \/ [\<\=\>\?\@\\\^\|\-\~] -> Symbol
+    Symbol (Symbol | [\:])*   -> VARSYM
+    [\:] (Symbol | [\:])*     -> CONSYM
+    ReservedOp                -> VARSYM {reject}
+    ReservedOp                -> CONSYM {reject}
+
+  lexical restrictions
+    CONID VARID -/- [A-Za-z0-9\'\_]
+    VARSYM      -/- [\!\#\$\%\&\*\+\.\/] \/ [\<\=\>\?\@\\\^\|\-\~]
+
+   syntax
+  	<Modid-LEX> -> Modid
+    Modid "." <VARID-LEX>           -> <QVARID-CF>  {cons("QVarId")}
+    Modid "." <CONID-LEX>           -> <QCONID-CF>  {cons("QConId")}
+    Modid "." <VARSYM-LEX>          -> <QVARSYM-CF> {cons("QVarSym")}
+    Modid "." <CONSYM-LEX>          -> <QCONSYM-CF> {cons("QConSym")}
+    

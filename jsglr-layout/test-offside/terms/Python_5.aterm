@@ -1,0 +1,24 @@
+IfStmt(
+  IntegerLiteralExpr("9")
+, OffsideStmtList(
+    [ IfStmt(
+        IntegerLiteralExpr("0")
+      , StmtList([ExprListStmt(ExprList([IntegerLiteralExpr("1")]))])
+      , None()
+      )
+    , IfStmt(
+        IntegerLiteralExpr("2")
+      , OffsideStmtList(
+          [ StmtList([ExprListStmt(ExprList([IntegerLiteralExpr("3")]))])
+          , StmtList([ExprListStmt(ExprList([IntegerLiteralExpr("4")]))])
+          ]
+        )
+      , None()
+      )
+    , StmtList(
+        [ExprListStmt(ExprList([ReturnExpr(ExprList([VarExpr("a")]))]))]
+      )
+    ]
+  )
+, None()
+)

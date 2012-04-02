@@ -1,0 +1,37 @@
+module Haskell-Types
+exports
+  context-free syntax
+    ("::" Type)?   	   -> OptSig
+
+  context-free syntax
+    Qtycon 	   	   -> Gtycon
+    "(" "->" ")"           -> Gtycon 	{cons("TArrow")}
+
+  context-free syntax
+    {Type ","}+ 	   -> Types
+    Type "," {Type ","}+   -> Types2 	{cons("Cons")}
+    
+  context-free syntax
+    Gtycon 		   -> AType 	{cons("TCon")}
+    Tyvar 		   -> AType 	{cons("TVar")}
+    "(" Type ")" 	   -> AType 	{bracket}
+    "[" Type "]" 	   -> AType 	{cons("TList")}
+    "(" Types2 ")" 	   -> AType 	{cons("TProd")}
+
+    AType -> Type
+    Type Type 	   	   -> Type 	{cons("TAppBin"),left}
+    Type "->" Type 	   -> Type 	{cons("TFunBin"),right}
+
+
+  context-free priorities
+    Type Type 	   	   -> Type 
+  > Type "->" Type 	   -> Type
+
+  %% The following productions are syntactic sugar for
+  %% [] Type and (,,,) Type ... Type
+
+  context-free syntax
+    "(" ")" 	           -> Gtycon 	{cons("TUnit")}
+    "[" "]"                -> Gtycon 	{cons("TList")}
+    "(" ","+ ")"           -> Gtycon 	{cons("TProduct")}
+

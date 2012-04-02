@@ -1,0 +1,35 @@
+module Haskell-Layout
+exports
+  lexical syntax
+    WhiteChar                     -> LAYOUT
+    Comment                       -> LAYOUT
+    NComment                      -> LAYOUT
+
+    [\ \t\n\r]                      -> WhiteChar
+
+    "--" ~[\n\r]* ([\r\n] | EOF)    -> Comment
+    -> EOF
+
+    "{-" {L-Char* NComment}* "-}" -> NComment
+
+    ~[\-\{]                       -> L-Char
+    Hyphen                        -> L-Char
+    CurlyOpen                     -> L-Char
+    [\-]                          -> Hyphen
+    [\{]	                  -> CurlyOpen
+    
+    [\r\n] -> Newline
+    LAYOUT -> NoNewlineLayout
+    Newline -> NoNewlineLayout {reject}
+    
+    NoNewlineLayout? Newline -> NewLineLayout
+    NoNewlineLayout? Newline LAYOUT -> NewLineLayout
+    
+  lexical restrictions
+    Hyphen    -/- [\}]
+    CurlyOpen -/- [\-]
+    EOF -/- ~[]
+    NewLineLayout -/- [\r\n\t\ ]
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r] | [\-].[\-] | [\{].[\-]

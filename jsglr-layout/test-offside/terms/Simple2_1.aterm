@@ -1,0 +1,3 @@
+DoStm(StmList(
+  StmSeq(Foo(), 
+         Foo())))

@@ -1,0 +1,3 @@
+main = do
+  do { x
+}

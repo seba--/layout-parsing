@@ -1,0 +1,11 @@
+module GHC-GeneralizedNewtypeDeriving
+exports
+  context-free syntax
+    "newtype" Context? Type "=" Newconstr GeneralizedDeriving -> Topdecl {cons("NewTypeDecl")}
+    
+    "deriving" "(" {GDerive ","}+ ")" -> GeneralizedDeriving
+    Qtycls AType+ -> GDerive
+    Qtycls -> GDerive
+    
+    Deriving -> GeneralizedDeriving {reject}
+

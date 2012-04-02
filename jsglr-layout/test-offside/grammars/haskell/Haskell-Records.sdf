@@ -1,0 +1,10 @@
+module Haskell-Records
+exports
+  context-free syntax
+    Context? Con RecordFields -> Constr {cons("RecordConstr")}
+    "{" Fielddecls "}" -> RecordFields {ignore-indent}
+    {Fielddecl ","}+ 			    -> Fielddecls
+    Vars "::" Stype  			    -> Fielddecl
+    Type 				    -> Stype
+    "!" Type 				    -> Stype
+

@@ -1,0 +1,44 @@
+module Haskell-Numbers
+exports
+  lexical syntax
+    [0-9]                -> Digit
+    [0-7]                -> Octit
+    [0-9A-Fa-f]          -> Hexit
+
+    [0]                  -> Zero
+    Zero Digit*          -> Decimal
+    [1-9] Digit*         -> Decimal
+    Octit+               -> Octal
+    Hexit+               -> Hexadecimal    
+
+    Decimal              -> INTEGER
+    [0] [Oo] Octal       -> INTEGER
+    [0] [Xx] Hexadecimal -> INTEGER
+  
+  lexical restrictions
+    Decimal -/- [0-9]
+    Octal -/- [0-7]
+    Hexadecimal -/- [0-9A-Fa-f]
+    Zero -/- [OoXx]
+    
+  lexical syntax
+  	Decimal "." Decimal -> FLOAT
+  	Decimal Exponent -> RATIONAL
+    Decimal "." Decimal Exponent -> RATIONAL
+    [eE] [\-\+]? Decimal -> Exponent
+    
+  lexical restrictions
+    INTEGER -/- [\.] . [0-9]
+    INTEGER -/- [eE] . [0-9] | [eE] . [\+\-] %% . [0-9] multiple lookahead not supported
+    FLOAT -/- [eE]
+
+  lexical syntax
+    [] -> PRIMCHAR
+    [] -> PRIMSTRING
+    [] -> PRIMINTEGER
+    [] -> PRIMFLOAT
+    [] -> PRIMDOUBLE
+    
+    [] -> CLITLIT
+    [] -> UNKNOWN
+

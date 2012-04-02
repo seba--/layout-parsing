@@ -1,0 +1,53 @@
+FuncdefStmt(
+  "gcd"
+, Some(ParameterList([VarParam("a"), VarParam("b")]))
+, OffsideStmtList(
+    [ IfStmt(
+        EqualExpr(VarExpr("a"), IntegerLiteralExpr("0"))
+      , StmtList(
+          [ExprListStmt(ExprList([ReturnExpr(ExprList([VarExpr("b")]))]))]
+        )
+      , None()
+      )
+    , WhileStmt(
+        NEqualExpr(VarExpr("b"), IntegerLiteralExpr("0"))
+      , OffsideStmtList(
+          [ IfStmt(
+              GTExpr(VarExpr("a"), VarExpr("b"))
+            , OffsideStmtList(
+                [ StmtList([PrintStmt([StringLiteralExpr("\"first branch\"")])])
+                , StmtList(
+                    [ AssignmentStmt(
+                        TargetList([VarTarget("a")])
+                      , ExprList([MinusExpr(VarExpr("a"), VarExpr("b"))])
+                      )
+                    ]
+                  )
+                ]
+              )
+            , Some(
+                Else(
+                  OffsideStmtList(
+                    [ StmtList([PrintStmt([StringLiteralExpr("\"second branch\"")])])
+                    , StmtList(
+                        [ AssignmentStmt(
+                            TargetList([VarTarget("b")])
+                          , ExprList([MinusExpr(VarExpr("b"), VarExpr("a"))])
+                          )
+                        ]
+                      )
+                    ]
+                  )
+                )
+              )
+            )
+          ]
+        )
+      , None()
+      )
+    , StmtList(
+        [ExprListStmt(ExprList([ReturnExpr(ExprList([VarExpr("a")]))]))]
+      )
+    ]
+  )
+)

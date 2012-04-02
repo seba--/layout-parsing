@@ -1,0 +1,10 @@
+module Simple1
+exports
+  syntax
+  	"a" -> A {cons("A")}
+  	A "+" A -> A {cons("Plus")}
+   
+    A -> S
+ 
+ start-symbols
+   S

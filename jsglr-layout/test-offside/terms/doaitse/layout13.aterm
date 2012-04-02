@@ -1,0 +1,8 @@
+Module("Test",None,
+  Body([],[
+    Valdef(
+      Var("f"),
+      OpApp(
+        Constr("Just"),
+        ".",
+        Let(DeclList([Valdef(Var("x"),Var("id"))]),Var("x"))))]))

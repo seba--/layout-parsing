@@ -1,0 +1,97 @@
+module Haskell-Expressions
+exports   
+  context-free syntax
+    Exp 				 -> AnyExp
+
+    Qvar 				 -> Exp 	{cons("Var")}
+    Gcon 				 -> Exp 	{cons("Constr")}
+    Literal 				 -> Exp 	{cons("Lit")}
+    "(" Exps2 ")" 			 -> Exp 	{cons("Product")}
+%%    "(#" Exps "#)" 			 -> Exp 	{cons("Unboxed?")}
+    "(" Exp ")" 			 -> Exp 	{bracket}
+
+    {Exp ","}+ 				 -> Exps
+    Exp "," {Exp ","}+ 			 -> Exps2 	{cons("Cons")}
+    APat+				 -> Fargs
+
+
+  context-free syntax
+    "infix"  	   	  -> Infix 	{cons("Infix")}
+    "infixl" 	   	  -> Infix 	{cons("InfixL")}
+    "infixr" 	   	  -> Infix 	{cons("InfixR")}
+    INTEGER? 	   	  -> Prec
+    {Op ","}+ 	   	  -> Ops
+    Infix Prec Ops 	  -> Fixdecl 	{cons("FixDecl")}
+    Fixdecl 	   	  -> Decl 
+
+    "(" Exp Qop ")"  -> Exp 	{cons("LSection")}
+    "(" QopNoNeg Exp ")" -> Exp 	{cons("RSection")}
+
+    Qop -> QopNoNeg    
+    "-" -> QopNoNeg {reject}
+
+  context-free priorities
+    Qvar "@" Exp 			  -> Exp  	{cons("Named")}
+  > Exp "{" {Fbind ","}* "}" 			  -> Exp  	{cons("Labeled")}
+  > Exp				  	  -> Aexp
+  > Exp Exp				  -> Exp 	{cons("AppBin"),left}
+  > Exp "::" Type 			  -> Exp 	{cons("Typed")}
+  > "-" Exp               -> Exp  {cons("Negation")}
+  > Exp Qop Exp -> Exp {cons("OpApp"), right}
+
+  context-free priorities
+   Exp Qop Exp -> Exp {cons("OpApp"), right}
+     <0> >
+   "do" StmtList -> Exp {cons("Do")}
+
+  context-free priorities
+  	Exp Exp				  -> Exp 	{cons("AppBin"),left}
+  	> {
+        "\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
+       "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
+       "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+       "case" AnyExp "of" AltList          -> Exp  	{cons("Case")}
+      }
+  	
+
+
+  context-free priorities
+    Exp Qop Exp -> Exp {cons("OpApp"), right}
+  <0>
+  > {"\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
+     "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
+     "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+     "case" AnyExp "of" AltList          -> Exp  	{cons("Case")}
+    }
+ 
+  context-free syntax
+  	NoOffsideAltList -> NOAltList {cons("AltList")}
+    NoOffsideStmtList -> NOStmtList {cons("StmtList")}
+  	"case" AnyExp "of" NOAltList          -> CaseExp  	{cons("Case")}
+  	"do" NOStmtList -> DoExp {cons("Do")}
+  	
+  context-free priorities
+  	"-" Exp               -> Exp  {cons("Negation")}
+    >
+  	{right:
+  	  Exp Qop Exp -> Exp {cons("OpApp"), right}
+  	  CaseExp Qop Exp -> Exp {cons("OpApp")}
+  	  DoExp Qop Exp -> Exp {cons("OpApp")}
+  	}
+
+  %% context-free priorities
+  %% 	Exp Qop Exp -> Exp {cons("OpApp"), right}
+  %% 	> {
+  %%    "case" AnyExp "of" AltList          -> CaseExp  	{cons("Case")}
+  %%    CaseExp Qop Exp -> Exp {cons("OpApp"), right, avoid}
+  %%   }
+  
+  
+  
+%% Notes:
+%% AnyExp is used to prevent priorities from forbidding expressions
+%% where the do not cause ambiguities.
+%% Fargs is used instead of Aexp+ because of a bug in the SDF2 
+%% normalizer; regular expression expansion does not take into
+%% account symbols used only in priority rules.
+

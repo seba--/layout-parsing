@@ -1,0 +1,58 @@
+module Haskell-Value-Definitions
+exports
+  context-free syntax
+    Valdef 		   -> Decl
+    FunLHS "=" Exp       -> Valdef 	{cons("Valdef")}
+    FunLHS "=" Exp Where -> Valdef 	{cons("ValdefW")}
+
+    FunLHS Gdrh+ Where?  -> Valdef 	{cons("GdValdef")}
+    "|" Exp "=" Exp 	   -> Gdrh   	{cons("Guarded")}   
+
+    
+    Pat -> FunLHS
+    Var APat+ -> FunLHS {cons("VarFunLHS")}
+    Pat Varop Pat -> FunLHS {cons("OpFunLHS")}
+    "(" FunLHS ")" APat+ -> FunLHS {cons("NestedFunLHS")}
+
+    Decl ";" -> Decl
+    
+
+  context-free syntax
+    "where" DeclList       -> Where     {cons("Where")}
+    
+            -> MaybeWhere {ast("Where(DeclList([]))")}
+    Where   -> MaybeWhere
+    
+    DeclList 		   -> Declbinds
+
+  context-free syntax
+  	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
+  	OffsideDeclList   -> DeclList {cons("DeclList")}
+  	
+    "{" NoOffsideDeclList | EMPTY "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
+    
+    OffsideDecl* -> OffsideDeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+
+  context-free priorities
+    Decl -> NoOffsideDeclList {flatten}
+  >
+    NoOffsideDeclList ";" -> NoOffsideDeclList {flatten}
+  >
+    ";" NoOffsideDeclList -> NoOffsideDeclList {flatten}
+  > 
+    Decl ";" NoOffsideDeclList -> NoOffsideDeclList {flatten}
+
+  context-free priorities
+    Decl -> OffsideDecl {layout(gt(col(left(1)), col(first(1))))}
+  >
+    OffsideDecl ";" -> OffsideDecl {flatten, layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideDecl -> OffsideDecl {flatten, layout(gt(col(first(2)), col(first(1))))}
+  >
+    Decl ";" OffsideDecl -> OffsideDecl
+          {flatten,
+           layout(and(gt(col(left(1)), col(first(1))),
+                  and(gt(col(first(2)), col(first(1))),
+                      gt(col(first(3)), col(first(1))))))}
+  
+

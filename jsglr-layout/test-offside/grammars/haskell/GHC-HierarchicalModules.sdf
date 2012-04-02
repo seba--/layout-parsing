@@ -1,0 +1,10 @@
+module GHC-HierarchicalModules
+imports 
+	Haskell-Identifiers 
+	Haskell-Identifier-Sorts
+exports
+  syntax
+  	<CONID-LEX> "." <Modid-LEX> -> QModid {cons("QModId"), prefer}
+    <CONID-LEX> "." QModid -> QModid {cons("QModId"), prefer}
+    QModid -> Modid
+    QModid -> <Modid-CF>

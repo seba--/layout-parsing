@@ -1,0 +1,102 @@
+<project>
+
+	<condition property="bindir" value="../../tools/" else="/Users/seba/.nix-profile/bin/">
+		<os family="windows" />
+	</condition>
+	
+	<property name="strategoxt" value="../../tools/strategoxt.jar" />
+	
+	<target name="compile">
+		<compile-grammar module="Python" />
+		<copy file="Python.tbl" tofile="../../../test/org/spoofax/jsglr/tests/python/Python.tbl" />
+	</target>
+	
+	<target name="gen-signature">
+		<compile-signature module="Python"/>
+	</target>
+
+	<macrodef name="compile-grammar">
+		<attribute name="module" />
+		<sequential>
+			<pack-sdf source="@{module}.sdf" output="@{module}.def" />
+			<sdf2table source="@{module}.def" output="@{module}.tbl" module="@{module}" />
+		</sequential>
+	</macrodef>
+
+	
+	<macrodef name="pack-sdf">
+		<attribute name="source" />
+		<attribute name="output" />
+		<attribute name="failonerror" default="true" />
+		<sequential>
+			<java classpath="${strategoxt}" classname="start" failonerror="@{failonerror}">
+				<arg value="org.strategoxt.tools.main-pack-sdf" />
+				<arg value="-i" />
+				<arg path="@{source}" />
+				<arg value="-o" />
+				<arg path="@{output}" />
+			</java>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="sdf2table">
+		<attribute name="source" />
+		<attribute name="output" />
+		<attribute name="module" />
+		<attribute name="failonerror" default="true" />
+		<sequential>
+			<exec executable="${bindir}sdf2table" failonerror="@{failonerror}">
+				<arg value="-i" />
+				<arg value="@{source}" />
+				<arg value="-o" />
+				<arg value="@{output}" />
+				<arg value="-m" />
+				<arg value="@{module}" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="compile-signature">
+		<attribute name="module" />
+		<sequential>
+			<pack-sdf source="@{module}.sdf" output="@{module}.def" />
+			<sdf2rtg source="@{module}.def" output="@{module}.rtg" module="@{module}" />
+			<rtg2sig source="@{module}.rtg" output="@{module}.str" module="@{module}" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="sdf2rtg">
+		<attribute name="source" />
+		<attribute name="output" />
+		<attribute name="module" />
+		<attribute name="failonerror" default="true" />
+		<sequential>
+			<exec executable="${bindir}sdf2rtg" failonerror="@{failonerror}">
+				<arg value="-i" />
+				<arg value="@{source}"/>
+				<arg value="-o" />
+				<arg value="@{output}"/>
+				<arg value="-m" />
+				<arg value="@{module}"/>
+				<arg value="--ignore-missing-cons" />
+			</exec>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="rtg2sig">
+			<attribute name="source" />
+			<attribute name="output" />
+			<attribute name="module" />
+			<attribute name="failonerror" default="true" />
+			<sequential>
+				<exec executable="${bindir}rtg2sig" failonerror="@{failonerror}">
+					<arg value="-i" />
+					<arg value="@{source}"/>
+					<arg value="-o" />
+					<arg value="@{output}"/>
+					<arg value="--module" />
+					<arg value="@{module}"/>
+				</exec>
+			</sequential>
+		</macrodef>
+</project>

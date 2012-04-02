@@ -1,0 +1,41 @@
+module Haskell-Statements
+exports
+  context-free syntax
+    "do" StmtList 	    -> Exp 	{cons("Do")}
+    Pat "<-" Exp 	-> Stmt 	{cons("BindStmt")}
+    Exp               	-> Stmt 	{cons("ExpStmt")}
+    "let" Declbinds   	-> Stmt 	{cons("LetStmt")}
+    Qvar "=" Exp 	-> Fbind	{cons("FBind")}
+
+  context-free syntax
+  	NoOffsideStmtBlock -> StmtList {cons("StmtList")}
+  	OffsideStmtList   -> StmtList {cons("StmtList")}
+  	
+    "{" NoOffsideStmtList "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
+    
+    OffsideStmt+ -> OffsideStmtList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+
+  context-free priorities
+    Stmt -> NoOffsideStmtList {flatten}
+  >
+    NoOffsideStmtList ";" -> NoOffsideStmtList {flatten}
+  >
+    ";" NoOffsideStmtList -> NoOffsideStmtList {flatten}
+  > 
+    Stmt ";" NoOffsideStmtList -> NoOffsideStmtList {flatten}
+
+
+  context-free priorities
+    Stmt -> OffsideStmt {layout(gt(col(left(1)), col(first(1))))}
+  >
+    OffsideStmt ";" -> OffsideStmt {flatten, layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideStmt -> OffsideStmt {flatten, layout(gt(col(first(2)), col(first(1))))}
+  >
+    Stmt ";" OffsideStmt -> OffsideStmt
+          {flatten,
+           layout(and(gt(col(left(1)), col(first(1))),
+                  and(gt(col(first(2)), col(first(1))),
+                      gt(col(first(3)), col(first(1))))))}
+    
+

@@ -1,0 +1,31 @@
+module Simple2
+exports
+  context-free start-symbols
+    St
+    
+  context-free syntax
+  	LAYOUT? -> St {cons("Start")}
+	
+  lexical syntax
+    WhiteChar                     -> LAYOUT
+    Comment                       -> LAYOUT
+    NComment                      -> LAYOUT
+
+    [\ \t\n\r]                      -> WhiteChar
+
+    "--" ~[\n\r]* ([\r\n] | EOF)    -> Comment
+    -> EOF
+
+    "{-" {L-Char* NComment}* "-}" -> NComment
+
+    ~[\-\{]                       -> L-Char
+    Hyphen                        -> L-Char
+    CurlyOpen                     -> L-Char
+    [\-]                          -> Hyphen
+    [\{]	                  -> CurlyOpen
+  lexical restrictions
+    Hyphen    -/- [\}]
+    CurlyOpen -/- [\-]
+    EOF -/- ~[]
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r] | [\-].[\-] | [\{].[\-]

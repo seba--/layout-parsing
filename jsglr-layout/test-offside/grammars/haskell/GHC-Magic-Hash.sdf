@@ -1,0 +1,11 @@
+module GHC-Magic-Hash
+imports Haskell-Identifiers
+exports
+  lexical syntax
+  	[a-z][A-Za-z0-9\'\_]*[\#]+ -> VARID
+    [\_][A-Za-z0-9\'\_]+[\#]+  -> VARID
+    [A-Z][A-Za-z0-9\'\_]*[\#]+ -> CONID
+  
+  lexical restrictions
+  	VARID -/- [\#]
+  	CONID -/- [\#]

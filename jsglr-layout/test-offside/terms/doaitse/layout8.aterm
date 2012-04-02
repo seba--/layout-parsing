@@ -1,0 +1,6 @@
+Program(Body([],[
+  Valdef(
+    VarFunLHS(Var("f"),[Var("x")]),
+    Let(
+      DeclList([]),
+      Var("x")))]))

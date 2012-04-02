@@ -1,0 +1,22 @@
+module Haskell-Type-Classes
+exports
+  context-free syntax
+    "class" SContext? Tycls Tyvar MaybeWhere 		-> Topdecl {cons("Class")}
+    "instance" SContext? Qtycls Inst* MaybeWhere 		-> Topdecl {cons("Instance")}
+    "default"  "(" {Type ","}* ")" 	-> Topdecl {cons("Default")}
+
+    Gtycon -> Inst {cons("InstCons")}
+    "(" Gtycon Tyvar* ")" -> Inst {cons("InstApp")}
+    "(" Tyvar "," {Tyvar ","}+ ")" -> Inst {cons("InstTuple")}
+    "[" Tyvar "]" -> Inst {cons("InstList")}
+    "(" Tyvar "->" Tyvar ")" -> Inst {cons("InstArrow")}
+    
+    Class "=>"              -> Context {cons("Context")}
+    "(" {Class ","}* ")" "=>"     -> Context {cons("Context")}
+    SimpleClass "=>"              -> SContext {cons("SContext")}
+    "(" {SimpleClass ","}* ")" "=>"     -> SContext {cons("SContext")}
+
+    
+    Qtycls Tyvar -> SimpleClass {cons("SimpleClass")}
+    SimpleClass -> Class
+    Qtycls "(" Tyvar AType+ ")" -> Class {cons("Class")}

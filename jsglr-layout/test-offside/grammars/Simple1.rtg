@@ -1,0 +1,10 @@
+regular tree grammar
+  start Stm
+  productions
+    OffsideStmList -> StmSeq(Stm,OffsideStmList)
+    OffsideStmList -> Stm
+    StmList        -> StmList(OffsideStmList)
+    StmList        -> StmList(Stm)
+    Stm            -> StmSeq(Stm,Stm)
+    Stm            -> DoStm(StmList)
+    Stm            -> ReturnZeroStm()

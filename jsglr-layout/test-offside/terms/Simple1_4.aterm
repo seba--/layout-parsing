@@ -1,0 +1,4 @@
+DoStm(StmList(
+  StmSeq(ReturnZeroStm,
+         StmSeq(DoStm(StmList(ReturnZeroStm)),
+                ReturnZeroStm))))

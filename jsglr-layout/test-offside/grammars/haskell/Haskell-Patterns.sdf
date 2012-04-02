@@ -1,0 +1,23 @@
+module Haskell-Patterns
+exports
+  context-free syntax
+    LPat -> Pat
+    LPat Qconop Pat -> Pat {cons("BinOpApp")}
+    
+    APat -> LPat
+    "-" Literal -> LPat {cons("Negation")}
+    Gcon APat+ -> LPat {cons("ConstrApp")}
+    
+    Var -> APat
+    Var "@" APat -> APat {cons("Named")}
+    Gcon -> APat {cons("Constr")}
+    Qcon "{" {FPat ","}* "}" -> APat {cons("Labeled")}
+    Literal -> APat
+    "_" -> APat {cons("Wildcard")}
+    "(" Pat ")" -> APat {bracket}
+    "(" Pat "," {Pat ","}+ ")" -> APat {cons("Tuple")}
+    "[" {Pat ","}+ "]" -> APat {cons("List")}
+    "~" APat -> APat {cons("Irrefutable")}
+    
+    Qvar "=" Pat -> FPat {cons("PatBind")}
+    

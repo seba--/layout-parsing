@@ -1,0 +1,7 @@
+if 9:
+  if 0:
+    1
+  if 2:
+    3
+    4
+  return a

@@ -1,0 +1,26 @@
+module Haskell-Type-Declarations
+exports
+  context-free syntax
+    "type" Tycon Tyvar* "=" Type	  -> Topdecl {cons("TypeDecl")}
+    "data" Context? Type "=" Constrs Deriving 	  -> Topdecl {cons("Data")}
+    "newtype" Context? Type "=" Newconstr Deriving -> Topdecl {cons("NewTypeDecl")}
+
+  context-free syntax
+    "deriving" Qtycls 		     	-> Deriving {cons("Derive")}
+    "deriving" "(" ")" 		     	-> Deriving {cons("NoDeriving")}
+    "deriving" "(" {Qtycls ","}+ ")" 	-> Deriving {cons("Derive")}
+    				     	-> Deriving {cons("NoDeriving")}
+  context-free syntax
+    {Constr "|"}+                        -> Constrs
+
+    Conid Satype*       -> Constr {cons("ConstrDecl")}
+    Sbtype Conop Sbtype -> Constr {cons("InfixConstr")}
+
+    Conid Type 			 	 -> Newconstr
+    Conid "{" Var "::" Type "}" 	 -> Newconstr
+   
+    AType 				 -> Satype
+    "!" AType 				 -> Satype
+    Type     				 -> Sbtype
+    "!" Type 				 -> Sbtype
+ 

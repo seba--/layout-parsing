@@ -1,0 +1,15 @@
+regular tree grammar
+  start St
+  productions
+    ListStarOfL-Char0           -> <string>
+    ListPlusOfL-Char0           -> <string>
+    ListStarOfListStarOfL-Char0 -> <string>
+    ListPlusOfListStarOfL-Char0 -> <string>
+    St                          -> Start()
+    CurlyOpen                   -> <string>
+    Hyphen                      -> <string>
+    L-Char                      -> <string>
+    NComment                    -> <string>
+    EOF                         -> <string>
+    Comment                     -> <string>
+    WhiteChar                   -> <string>
