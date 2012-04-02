@@ -1,0 +1,8 @@
+*.class
+*.tbl
+*.def
+*.labs
+*.prios
+
+bin/
+.cache/
