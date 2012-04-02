@@ -1,0 +1,44 @@
+<project>
+    <property name="lib.dir" value="lib" />
+    <property name="build.dir" value="build" />
+    <property name="src.dir" value="src" />
+
+    <property file="build/version.properties" />
+
+    <path id="lib.path.id">
+        <fileset dir="${lib.dir}" />
+	</path>
+    <path id="run.path.id">
+        <path refid="lib.path.id" />
+        <path location="${build.dir}" />
+    </path>
+    
+    <target name="resolve" description="--> retreive dependencies with ivy">
+    </target>    
+    
+    <target name="report" depends="resolve" description="--> generates a report of dependencies">
+    </target>
+
+    <target name="compile" depends="resolve" description="--> compile the project">
+        <mkdir dir="${build.dir}/classes" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="lib.path.id">
+           <exclude name="foo/**" />
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${build.dir}/${jarname}-${version}.jar" basedir="${build.dir}/classes" />
+    </target>
+
+    <target name="clean" depends="clean-lib,clean-build" description="--> clean the project">
+    </target>
+
+	<target name="clean-lib" description="--> clean the project libraries directory (dependencies)">
+		<delete includeemptydirs="true" dir="${lib.dir}"/>
+	</target>
+	
+	<target name="clean-build" description="--> clean the project built files">
+		<delete includeemptydirs="true" dir="${build.dir}/classes"/>
+	</target>
+
+</project>

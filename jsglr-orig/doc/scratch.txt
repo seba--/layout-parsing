@@ -1,0 +1,33 @@
+- usage tutorial
+ - simple parsing
+   - obtaining a parse table
+   - loading the parse table
+   - parsing a file
+   - the anatomy of the parse tree
+   - dealing with syntax
+   -
+
+ - custom tree factory
+  - the factory interface
+  - dealing with syntax
+  
+ - disambiguation filters
+  - what the various filters mean
+  
+- design document
+ - architecture drawing
+ - parse table format
+  - table-info tool
+  
+- explanation of the SGLR algorithm
+
+- faq
+ - how do I build parse tables
+ - how do I deal with syntax errors
+ - how do I improve performance
+ - how do I use my own tree factory
+ - how do I deal with threading
+ - what do I need to run this thing?
+ - why isn't everything 100% Java? 
+ - how do I generate my own tables?
+ - how does the table-info tool work?
