@@ -1,0 +1,354 @@
+module org/spoofax/jsglr/tests/haskell/normalize/NormalizeAST
+imports libstratego-lib
+
+rules
+  main = io-wrap(normalize)
+  
+  normalize = bottomup(try(norm))
+
+// normalize programs without module declaration
+rules
+  norm : Program(body) -> Module("Main",Some(Exportlist(["main"])), body)
+
+// normalize numbers
+rules
+  norm : Int(hex) -> Int(<int-to-string> int)
+   where <is-string> hex;
+         <explode-string> hex => ['0', second | rest];
+         <?'x' + ?'X'> second;
+         <hex-chars-to-int> rest => int
+
+  norm : Int(oct) -> Int(<int-to-string> int)
+   where <is-string> oct;
+         <explode-string> oct => ['0', second | rest];
+         <?'o' + ?'O'> second;
+         <oct-chars-to-int> rest => int
+  
+  norm : Float(f) -> Float(f')
+    where <is-string> f;
+          <split-at-dot> f => (i, frac);
+          <explode-string> frac => frac-list;
+          <not(?[])> frac-list;
+          <drop-tailings(|'0')> frac-list => frac-list';
+          <try(?[]; !['0']); implode-string> frac-list' => frac';
+          <conc-strings> (i, ".", frac') => f'
+  
+  norm : Float(f) -> Float(f')
+   where <is-string> f;
+         <split-at-dot> f => (f, _);
+         <explode-string; insert-dot-zero; implode-string> f => f'
+  
+  
+  drop-tailings(|c) : l -> <drop-tailings(|c)> but_last
+   where <split-init-last> l => (but_last, c)
+  drop-tailings(|c) : l -> l
+  
+  insert-dot-zero : s -> s'
+   where <split-fetch(?'e')> s => (l, r);
+         <conc> (l, <explode-string> ".0e", r) => s'
+  insert-dot-zero : s -> s'
+   where <split-fetch(?'E')> s => (l, r);
+         <conc> (l, <explode-string> ".0E", r) => s'
+  insert-dot-zero : s -> s'
+   where <conc> (s, <explode-string> ".0") => s'
+
+
+// normalize operator declarations
+rules
+  norm : OpFunLHS(l,PrefOp(op),r) -> VarFunLHS(Var(op), [l, r])
+  norm : VarFunLHS(BinOp(op), [l, r]) -> OpFunLHS(l,op,r)
+  norm : VarFunLHS(BinOp(op), [l, r | rest]) -> NestedFunLHS(OpFunLHS(l,op,r), rest)
+    where <not(?[])> rest
+
+// normalize contexts
+rules
+  norm : Context(c) -> Context([c]) where <not(is-list); not(?[])> c
+  norm : SContext(c) -> SContext([c]) where <not(is-list); not(?[])> c
+
+
+// normalize string escapes
+rules
+  norm : HexadecimalEsc(hex) -> <try(norm)> DecimalEsc(<hex-string-to-int; int-to-string> hex)
+  norm : OctalEsc(hex) -> <try(norm)> DecimalEsc(<oct-string-to-int; int-to-string> hex)
+  norm : DecimalEsc(int) -> c
+   where <string-to-int; is-ascii> int => int';
+         <implode-string> [int'] => c
+  
+  norm : DecimalEsc("7")  -> CharEsc("a")
+  norm : DecimalEsc("8")  -> CharEsc("b")
+  norm : DecimalEsc("12") -> CharEsc("f")
+  norm : DecimalEsc("10") -> CharEsc("n")
+  norm : DecimalEsc("13") -> CharEsc("r")
+  norm : DecimalEsc("9")  -> CharEsc("t")
+  norm : DecimalEsc("11") -> CharEsc("v")
+
+  norm : Escape(CharEsc("'")) -> "'"
+  
+  norm : String(chars) -> String(chars')
+   where <filter(not(?Escape(CharEsc("&"))))> chars => chars';
+         <not(equal)> (chars, chars')
+
+// normalize derivings
+rules
+  norm : Derive([d]) -> Derive(d)
+
+
+signature
+  constructors
+                     : Type -> Type0
+    None             : OptExports0
+    Conc             : ListStarOfCharClass0 * ListPlusOfCharClass0 -> ListPlusOfCharClass0
+    Conc             : ListPlusOfCharClass0 * ListStarOfCharClass0 -> ListPlusOfCharClass0
+    Conc             : ListPlusOfCharClass0 * ListPlusOfCharClass0 -> ListPlusOfCharClass0
+    Cons             : Int * ListStarOfCharClass0 -> ListPlusOfCharClass0
+                     : Exp -> Aexp
+    FlexibleContext  : List(FlexibleClass) -> FlexibleContext
+    FlexibleContext  : FlexibleClass -> FlexibleContext
+    SimpleClass      : Qtycls * Tyvar -> FlexibleClass
+    Class            : Qtycls * Gtycon -> FlexibleClass
+    Class            : Qtycls * Type -> FlexibleClass
+    QModId           : String * QModid -> QModid
+    QModId           : String * String -> QModid
+                     : StmtSeq -> OffsideStmtList
+                     : Stmt -> StmtSeq
+                     : InternalStmtList -> NoOffsideStmtList
+                     : List(Stmt) -> InternalStmtList
+    StmtList         : OffsideStmtList -> StmtList
+    StmtList         : NoOffsideStmtList -> StmtList
+    FBind            : Qvar * Exp -> Fbind
+    LetStmt          : Declbinds -> Stmt
+    ExpStmt          : Exp -> Stmt
+    BindStmt         : Pat * Exp -> Stmt
+                     : Exp -> List
+    QualLet          : Declbinds -> Qual
+                     : Exp -> Qual
+    QualBind         : Pat * Exp -> Qual
+                     : List(Qual) -> Quals
+    PatBind          : Qvar * Pat -> FPat
+    Irrefutable      : APat -> APat
+    List             : List(Pat) -> APat
+    Tuple            : Pat * List(Pat) -> APat
+                     : Pat -> APat
+    Wildcard         : APat
+                     : Literal -> APat
+    Labeled          : Qcon * List(FPat) -> APat
+    Constr           : Gcon -> APat
+    Named            : Var * APat -> APat
+                     : Var -> APat
+    ConstrApp        : Gcon * List(APat) -> LPat
+    Negation         : Literal -> LPat
+                     : APat -> LPat
+    BinOpApp         : LPat * Qconop * Pat -> Pat
+                     : LPat -> Pat
+                     : Decl -> IDecl
+                     : InternalDeclList -> NoOffsideDeclList
+                     : List(IDecl) -> InternalDeclList
+    DeclList         : NoOffsideDeclList -> DeclList
+                     : DeclList -> Declbinds
+                     : Where -> MaybeWhere
+    Where            : DeclList -> Where
+    NestedFunLHS     : FunLHS * List(APat) -> FunLHS
+    OpFunLHS         : Pat * Varop * Pat -> FunLHS
+    VarFunLHS        : Var * List(APat) -> FunLHS
+                     : Pat -> FunLHS
+    Guarded          : Quals * Exp -> Gdrh
+    GdValdef         : FunLHS * List(Gdrh) * Option(Where) -> Valdef
+    ValdefW          : FunLHS * Exp * Where -> Valdef
+    Valdef           : FunLHS * Exp -> Valdef
+                     : AltSeq -> OffsideAltList
+                     : AltSem -> AltSeq
+                     : Alt -> AltSem
+                     : InternalAltList -> NoOffsideAltList
+                     : List(AltSem) -> InternalAltList
+    AltList          : OffsideAltList -> AltList
+    AltList          : NoOffsideAltList -> AltList
+    GdPat            : Quals * Exp -> Gdpat
+    GdAlt            : Pat * List(Gdpat) * MaybeWhere -> Alt
+    Alt              : Pat * Exp * MaybeWhere -> Alt
+                     : Qop -> QopNoNeg
+    FixDecl          : Infix * Prec * Ops -> Fixdecl
+                     : List(Op) -> Ops
+                     : Option(INTEGER) -> Prec
+    InfixR           : Infix
+    InfixL           : Infix
+    Infix            : Infix
+                     : List(Aexp) -> Fargs
+    Cons             : Exp * List(Exp) -> Exps2
+    Case             : AnyExp * AltList -> Exp
+    If               : AnyExp * AnyExp * Exp -> Exp
+    Let              : Declbinds * Exp -> Exp
+    Abs              : Fargs * OptSig * Exp -> Exp
+    Negation         : Exp -> Exp
+    Typed            : Exp * Type -> Exp
+    AppBin           : Exp * Exp -> Exp
+    Labeled          : Exp * List(Fbind) -> Exp
+    Named            : Qvar * Exp -> Exp
+    OpApp            : Exp * Qop * Exp -> Exp
+    Do               : StmtList -> Exp
+    List             : List -> Exp
+    RSection         : QopNoNeg * Exp -> Exp
+    LSection         : Exp * Qop -> Exp
+    Product          : Exps2 -> Exp
+    Lit              : Literal -> Exp
+    Constr           : Gcon -> Exp
+    Var              : Qvar -> Exp
+                     : Exp -> AnyExp
+    SignDecl         : Vars * Option(Context) * Type -> Signdecl
+                     : Valdef -> Decl
+                     : Fixdecl -> Decl
+                     : Signdecl -> Decl
+    Class            : Qtycls * Tyvar * List(AType) -> Class
+                     : SimpleClass -> Class
+    SimpleClass      : Qtycls * Tyvar -> SimpleClass
+                     : FlexibleContext -> SContext
+    SContext         : List(SimpleClass) -> SContext
+    SContext         : SimpleClass -> SContext
+                     : FlexibleContext -> Context
+    Context          : List(Class) -> Context
+    Context          : Class -> Context
+    InstArrow        : Tyvar * Tyvar -> Inst
+    InstList         : Tyvar -> Inst
+    InstTuple        : Tyvar * List(Tyvar) -> Inst
+    InstApp          : Gtycon * List(Tyvar) -> Inst
+    InstCons         : Gtycon -> Inst
+                     : Type -> Sbtype
+                     : Type -> Satype
+    InfixConstr      : Sbtype * Conop * Sbtype -> Constr
+    ConstrDecl       : Conid * List(Satype) -> Constr
+                     : List(Constr) -> Constrs
+    Derive           : List(Qtycls) -> Deriving
+    NoDeriving       : Deriving
+    Derive           : Qtycls -> Deriving
+    TFunBin          : Type * Type -> Type
+    TAppBin          : Type * Type -> Type
+                     : AType -> Type
+    TProd            : Types2 -> AType
+    TList            : Type -> AType
+                     : Type -> AType
+    TVar             : Tyvar -> AType
+    TCon             : Gtycon -> AType
+    Cons             : Type * List(Type) -> Types2
+    TList            : Gtycon
+    TUnit            : Gtycon
+    TArrow           : Gtycon
+                     : Qtycon -> Gtycon
+                     : Option(Type0) -> OptSig
+    Hiding           : Exportlist -> Impspec
+    As               : Modid -> As
+    Qualified        : Qualified
+    SOURCE           : Src
+    Import           : Option(Src) * Option(Qualified) * Modid * Option(As) * Option(Impspec) -> Importdecl
+                     : Gtycon -> Export
+                     : Qvar -> Export
+    Exportlist       : List(Export) -> Exportlist
+    Body             : NoOffsideImportdeclList * NoOffsideTopdeclList -> NoOffsideBody
+                     : List(Topdecl) -> NoOffsideTopdeclList
+                     : List(Importdecl) -> NoOffsideImportdeclList
+                     : NoOffsideBody -> Body
+    FlexibleInstance : Option(SContext) * Qtycls * List(AType) * MaybeWhere -> Topdecl
+    Default          : List(Type) -> Topdecl
+    Instance         : Option(SContext) * Qtycls * List(Inst) * MaybeWhere -> Topdecl
+    Class            : Option(SContext) * Tycls * Tyvar * MaybeWhere -> Topdecl
+    Data             : Option(Context) * Type * Constrs * Deriving -> Topdecl
+    TypeDecl         : Tycon * List(Tyvar) * Type -> Topdecl
+                     : Decl -> Topdecl
+    Program          : Body -> Module
+    Module           : Modid * OptExports0 * Body -> Module
+    CLitLit          : CLITLIT -> Literal
+    PrimDouble       : PRIMDOUBLE -> Literal
+    PrimFloat        : PRIMFLOAT -> Literal
+    PrimString       : PRIMSTRING -> Literal
+    PrimChar         : PRIMCHAR -> Literal
+    PrimInt          : PRIMINTEGER -> Literal
+                     : String -> Literal
+    Float            : RATIONAL -> Literal
+    Float            : FLOAT -> Literal
+                     : Char -> Literal
+    Int              : INTEGER -> Literal
+    HexadecimalEsc   : String -> Escape
+    OctalEsc         : String -> Escape
+    DecimalEsc       : String -> Escape
+    ASCIIEsc         : String -> Escape
+    CharEsc          : String -> Escape
+    Gap              : ListPlusOfCharClass0 -> StringChar
+    Escape           : Escape -> StringChar
+                     : String -> StringChar
+    Escape           : Escape -> CharChar
+                     : String -> CharChar
+    String           : List(StringChar) -> String
+    Char             : CharChar -> Char
+                     : String -> CLITLIT
+                     : String -> PRIMDOUBLE
+                     : String -> PRIMFLOAT
+                     : String -> PRIMINTEGER
+                     : String -> PRIMSTRING
+                     : String -> PRIMCHAR
+                     : String -> RATIONAL
+                     : String -> FLOAT
+                     : Qtycon -> Qtycls
+                     : Tycon -> Tycls
+                     : QCONID -> Qtycon
+                     : Tycon -> Qtycon
+                     : CONID -> Tycon
+                     : QVARSYM -> Qvarsym1
+                     : VARSYM -> Varsym
+                     : Qconop -> Qop
+                     : Qvarop -> Qop
+    PrefCon          : Qconid -> Qconop
+                     : Gconsym -> Qconop
+    ConsOp           : Gconsym
+                     : Qconsym -> Gconsym
+    PrefCon          : Conid -> Conop
+                     : Consym -> Conop
+                     : CONSYM -> Consym
+                     : QCONSYM -> Qconsym
+                     : Consym -> Qconsym
+                     : Qvarsym1 -> Qvarsym
+                     : Varsym -> Qvarsym
+    PrefOp           : Qvarid -> Qvarop
+                     : Qvarsym -> Qvarop
+    PrefOp           : Varid -> Varop
+                     : Varsym -> Varop
+    ConOp            : Conop -> Op
+    Op               : Varop -> Op
+                     : String -> INTEGER
+                     : CONID -> Conid
+                     : QCONID -> Qconid
+                     : Conid -> Qconid
+    BinCon           : Qconsym -> Qcon
+                     : Qconid -> Qcon
+                     : QVARID -> Qvarid
+                     : Varid -> Qvarid
+    BinOp            : Qvarsym -> Qvar
+                     : Qvarid -> Qvar
+    BinOp            : Varsym -> Var
+    Var              : Varid -> Var
+                     : Qcon -> Gcon
+    EmptyList        : Gcon
+    Unit             : Gcon
+    Ins              : Qvar -> Vars
+    Snoc             : Vars * Var -> Vars
+                     : String -> Tyvar
+                     : String -> Varid
+    QConSym          : Modid * String -> QCONSYM
+    QVarSym          : Modid * String -> QVARSYM
+    QConId           : Modid * String -> QCONID
+    QVarId           : Modid * String -> QVARID
+                     : QModid -> Modid
+                     : String -> Modid
+                     : String -> CONSYM
+                     : String -> VARSYM
+                     : String -> CONID
+
+
+signature
+  constructors
+    Some : a -> Option(a)
+    None : Option(a)
+
+
+signature
+  constructors
+    Cons : a * List(a) -> List(a)
+    Nil  : List(a)
+    Conc : List(a) * List(a) -> List(a)

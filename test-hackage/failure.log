@@ -1,0 +1,810 @@
+
+
+
+
+Test all packages at Fri Jul 01 16:10:42 CEST 2011
+
+
+
+
+Test all packages at Fri Jul 01 16:12:37 CEST 2011
+
+
+
+
+Test all packages at Fri Jul 01 16:14:00 CEST 2011
+
+
+
+
+Test all packages at Fri Jul 01 16:15:51 CEST 2011
+
+
+
+
+Test all packages at Fri Jul 01 16:16:35 CEST 2011
+AERN-Net: failure
+  17 ok, 0 no parse, 3 parse comparison failures
+AERN-Real: failure
+  31 ok, 0 no parse, 5 parse comparison failures
+AERN-Real-Double: failure
+  16 ok, 0 no parse, 5 parse comparison failures
+AERN-Real-Interval: failure
+  21 ok, 0 no parse, 2 parse comparison failures
+AERN-RnToRm: failure
+  23 ok, 0 no parse, 21 parse comparison failures
+AGI: failure
+  2 ok, 1 no parse, 1 parse comparison failures
+ASN1: failure
+  8 ok, 0 no parse, 3 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  167 ok, 15 no parse, 10 parse comparison failures
+Animas: failure
+  14 ok, 0 no parse, 2 parse comparison failures
+Annotations: failure
+  17 ok, 0 no parse, 2 parse comparison failures
+ApplePush: failure
+  5 ok, 0 no parse, 1 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+AutoForms: failure
+  42 ok, 8 no parse, 9 parse comparison failures
+AERN-Net: failure
+  17 ok, 0 no parse, 3 parse comparison failures
+AERN-Net: failure
+  17 ok, 0 no parse, 3 parse comparison failures
+
+
+
+
+Test all packages at Fri Jul 01 16:46:04 CEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  2 ok, 1 no parse, 1 parse comparison failures
+ASN1: failure
+  9 ok, 0 no parse, 2 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  168 ok, 15 no parse, 9 parse comparison failures
+Animas: failure
+  14 ok, 0 no parse, 2 parse comparison failures
+ApplePush: failure
+  5 ok, 0 no parse, 1 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+AutoForms: failure
+  47 ok, 9 no parse, 3 parse comparison failures
+BASIC: failure
+  7 ok, 1 no parse, 2 parse comparison failures
+BNFC: failure
+  32 ok, 28 no parse, 30 parse comparison failures
+BNFC-meta: failure
+  14 ok, 3 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 06 09:40:00 WEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  2 ok, 1 no parse, 1 parse comparison failures
+ASN1: failure
+  9 ok, 0 no parse, 2 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  168 ok, 15 no parse, 9 parse comparison failures
+Animas: failure
+  14 ok, 0 no parse, 2 parse comparison failures
+ApplePush: failure
+  5 ok, 0 no parse, 1 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+AutoForms: failure
+  48 ok, 8 no parse, 3 parse comparison failures
+BASIC: failure
+  7 ok, 1 no parse, 2 parse comparison failures
+Advgame: failure
+  1 ok, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 06 11:11:30 WEST 2011
+
+
+
+
+Test all packages at Wed Jul 06 11:12:03 WEST 2011
+
+
+
+
+Test all packages at Wed Jul 06 11:12:28 WEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  2 ok, 0 no parse, 2 parse comparison failures
+ASN1: failure
+  9 ok, 0 no parse, 2 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  175 ok, 6 no parse, 11 parse comparison failures
+Animas: failure
+  14 ok, 0 no parse, 2 parse comparison failures
+ApplePush: failure
+  5 ok, 0 no parse, 1 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+AutoForms: failure
+  54 ok, 3 no parse, 2 parse comparison failures
+BASIC: failure
+  7 ok, 0 no parse, 3 parse comparison failures
+BNFC: failure
+  48 ok, 3 no parse, 39 parse comparison failures
+BNFC-meta: failure
+  14 ok, 2 no parse, 3 parse comparison failures
+BNFC: failure
+  73 ok, 0 no parse, 17 parse comparison failures
+BNFC: failure
+  3 ok, 0 no parse, 87 parse comparison failures
+
+
+
+
+Test all packages at Sat Jul 09 10:41:40 WEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  10 ok, 0 no parse, 1 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  185 ok, 1 no parse, 6 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  58 ok, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  73 ok, 0 no parse, 17 parse comparison failures
+AvlTree: failure
+  25 ok, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:09:13 WEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  10 ok, 0 no parse, 1 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  185 ok, 1 no parse, 6 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  58 ok, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:14:16 WEST 2011
+AERN-Real-Double: failure
+  19 ok, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  10 ok, 0 no parse, 1 parse comparison failures
+Agata: failure
+  6 ok, 0 no parse, 2 parse comparison failures
+Agda: failure
+  185 ok, 1 no parse, 6 parse comparison failures
+ArrayRef: failure
+  34 ok, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  58 ok, 0 no parse, 1 parse comparison failures
+AvlTree: failure
+  25 ok, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  73 ok, 0 no parse, 17 parse comparison failures
+Befunge93: failure
+  2 ok, 0 no parse, 1 parse comparison failures
+Biobase: failure
+  40 ok, 1 no parse, 2 parse comparison failures
+BiobaseTurner: failure
+  3 ok, 0 no parse, 1 parse comparison failures
+Blueprint: failure
+  14 ok, 0 no parse, 3 parse comparison failures
+Bookshelf: failure
+  3 ok, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:22:58 WEST 2011
+AvlTree: failure
+  6 ok, 19 okFail, 0 no parse, 1 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 1 no parse, 5 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:24:43 WEST 2011
+AERN-Real-Double: failure
+  4 ok, 79 okFail, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 130 okFail, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:27:48 WEST 2011
+AERN-Real-Double: failure
+  4 ok, 79 okFail, 0 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 11 00:29:17 WEST 2011
+AERN-Real-Double: failure
+  4 ok, 15 okFail, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  8 ok, 2 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  62 ok, 123 okFail, 1 no parse, 6 parse comparison failures
+ArrayRef: failure
+  16 ok, 18 okFail, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 no parse, 1 parse comparison failures
+AvlTree: failure
+  6 ok, 19 okFail, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  70 ok, 3 okFail, 0 no parse, 17 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 1 no parse, 5 parse comparison failures
+Befunge93: failure
+  2 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+Biobase: failure
+  21 ok, 19 okFail, 1 no parse, 2 parse comparison failures
+BiobaseTurner: failure
+  2 ok, 1 okFail, 0 no parse, 1 parse comparison failures
+Blueprint: failure
+  12 ok, 2 okFail, 0 no parse, 3 parse comparison failures
+Bookshelf: failure
+  3 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 13 14:14:05 CEST 2011
+AERN-Real-Double: failure
+  4 ok, 15 okFail, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  8 ok, 2 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  62 ok, 123 okFail, 1 no parse, 6 parse comparison failures
+ArrayRef: failure
+  16 ok, 18 okFail, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 no parse, 1 parse comparison failures
+AvlTree: failure
+  6 ok, 19 okFail, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  70 ok, 3 okFail, 0 no parse, 17 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 1 no parse, 5 parse comparison failures
+Befunge93: failure
+  2 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+Biobase: failure
+  21 ok, 19 okFail, 1 no parse, 2 parse comparison failures
+BiobaseTurner: failure
+  2 ok, 1 okFail, 0 no parse, 1 parse comparison failures
+Blueprint: failure
+  12 ok, 2 okFail, 0 no parse, 3 parse comparison failures
+Bookshelf: failure
+  3 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+CLASE: failure
+  4 ok, 6 okFail, 0 no parse, 1 parse comparison failures
+COrdering: failure
+  0 ok, 1 okFail, 0 no parse, 1 parse comparison failures
+CPL: failure
+  11 ok, 1 okFail, 0 no parse, 5 parse comparison failures
+CSPM-CoreLanguage: failure
+  2 ok, 3 okFail, 0 no parse, 1 parse comparison failures
+CSPM-FiringRules: failure
+  2 ok, 11 okFail, 0 no parse, 1 parse comparison failures
+CSPM-Frontend: failure
+  8 ok, 2 okFail, 0 no parse, 4 parse comparison failures
+CSPM-Interpreter: failure
+  7 ok, 10 okFail, 0 no parse, 1 parse comparison failures
+CSPM-ToProlog: failure
+  1 ok, 1 okFail, 0 no parse, 2 parse comparison failures
+CSPM-cspm: failure
+  5 ok, 3 okFail, 0 no parse, 1 parse comparison failures
+CV: failure
+  20 ok, 5 okFail, 1 no parse, 1 parse comparison failures
+Cabal: failure
+  31 ok, 7 okFail, 2 no parse, 22 parse comparison failures
+Cardinality: failure
+  8 ok, 2 okFail, 0 no parse, 1 parse comparison failures
+Chart: failure
+  21 ok, 17 okFail, 0 no parse, 7 parse comparison failures
+Chitra: failure
+  10 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+Coadjute: failure
+  10 ok, 3 okFail, 0 no parse, 1 parse comparison failures
+Codec-Compression-LZF: failure
+  0 ok, 1 okFail, 0 no parse, 2 parse comparison failures
+Combinatorrent: failure
+  22 ok, 5 okFail, 0 no parse, 4 parse comparison failures
+ConfigFile: failure
+  5 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Consumer: failure
+  0 ok, 1 okFail, 0 no parse, 1 parse comparison failures
+ContArrow: failure
+  2 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+CoreErlang: failure
+  2 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+Craft3e: failure
+  60 ok, 0 okFail, 3 no parse, 7 parse comparison failures
+Crypto: failure
+  21 ok, 1 okFail, 1 no parse, 9 parse comparison failures
+
+
+
+
+Test all packages at Thu Jul 14 15:56:09 CEST 2011
+AERN-Real-Double: failure
+  4 ok, 15 okFail, 0 no parse, 2 parse comparison failures
+AGI: failure
+  3 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+ASN1: failure
+  8 ok, 2 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  97 ok, 45 okFail, 1 no parse, 48 parse comparison failures
+Agda: failure
+  110 ok, 41 okFail, 2 no parse, 38 parse comparison failures
+Agda: failure
+  110 ok, 46 okFail, 2 no parse, 33 parse comparison failures
+AERN-Real-Double: failure
+  4 ok, 15 okFail, 0 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 18 10:08:30 CEST 2011
+
+
+
+
+Test all packages at Mon Jul 18 10:10:17 CEST 2011
+AC-Boolean: failure
+  1 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AC-Vector: failure
+  14 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AERN-Basics: failure
+  26 ok, 17 okFail, 0 no parse, 1 parse comparison failures
+AERN-Net: failure
+  3 ok, 16 okFail, 0 no parse, 1 parse comparison failures
+Advgame: failure
+  1 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  103 ok, 46 okFail, 2 no parse, 40 parse comparison failures
+Animas: failure
+  8 ok, 5 okFail, 0 no parse, 3 parse comparison failures
+ArrayRef: failure
+  18 ok, 16 okFail, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  3 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 no parse, 1 parse comparison failures
+AC-Boolean: failure
+  1 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 18 10:19:37 CEST 2011
+AERN-Net: failure
+  3 ok, 16 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  111 ok, 46 okFail, 2 no parse, 32 parse comparison failures
+ArrayRef: failure
+  18 ok, 16 okFail, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  70 ok, 1 okFail, 2 no parse, 17 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 1 no parse, 5 parse comparison failures
+Biobase: failure
+  22 ok, 19 okFail, 1 no parse, 1 parse comparison failures
+Blueprint: failure
+  12 ok, 2 okFail, 0 no parse, 3 parse comparison failures
+AERN-Net: failure
+  3 ok, 16 okFail, 0 no parse, 1 parse comparison failures
+AERN-Net: failure
+  3 ok, 16 okFail, 0 no parse, 1 parse comparison failures
+AERN-Net: failure
+  3 ok, 16 okFail, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 18 11:05:56 CEST 2011
+AERN-Basics: failure
+  26 ok, 17 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  107 ok, 46 okFail, 2 no parse, 36 parse comparison failures
+ArrayRef: failure
+  18 ok, 16 okFail, 0 no parse, 2 parse comparison failures
+Attrac: failure
+  4 ok, 0 okFail, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  73 ok, 1 okFail, 2 no parse, 14 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 1 no parse, 5 parse comparison failures
+AERN-Basics: failure
+  26 ok, 17 okFail, 0 no parse, 1 parse comparison failures
+Agata: failure
+  4 ok, 2 okFail, 0 no parse, 2 parse comparison failures
+Agda: failure
+  111 ok, 46 okFail, 2 no parse, 32 parse comparison failures
+Agda: failure
+  112 ok, 46 okFail, 2 no parse, 31 parse comparison failures
+Agda: failure
+  112 ok, 46 okFail, 19 ambInfix, 2 no parse, 12 parse comparison failures
+Agda: failure
+  112 ok, 46 okFail, 20 ambInfix, 2 no parse, 11 parse comparison failures
+
+
+
+
+Test all packages at Mon Jul 18 18:03:41 CEST 2011
+AERN-Basics: failure
+  25 ok, 17 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+AERN-Real: failure
+  9 ok, 26 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AERN-Real-Double: failure
+  5 ok, 15 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AERN-RnToRm-Plot: failure
+  2 ok, 2 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AGI: failure
+  2 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+ALUT: failure
+  11 ok, 2 okFail, 0 ambInfix, 0 no parse, 4 parse comparison failures
+Agata: failure
+  2 ok, 2 okFail, 2 ambInfix, 0 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Tue Jul 19 09:12:12 CEST 2011
+Agda: failure
+  111 ok, 46 okFail, 19 ambInfix, 2 no parse, 13 parse comparison failures
+Agda: failure
+  112 ok, 46 okFail, 19 ambInfix, 2 no parse, 12 parse comparison failures
+
+
+
+
+Test all packages at Tue Jul 19 17:49:01 CEST 2011
+Agda: failure
+  113 ok, 46 okFail, 20 ambInfix, 1 no parse, 11 parse comparison failures
+ArrayRef: failure
+  19 ok, 16 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  73 ok, 1 okFail, 0 ambInfix, 2 no parse, 14 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 0 ambInfix, 1 no parse, 5 parse comparison failures
+Blueprint: failure
+  12 ok, 2 okFail, 2 ambInfix, 0 no parse, 1 parse comparison failures
+CCA: failure
+  3 ok, 2 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CCA: failure
+  3 ok, 2 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CCA: failure
+  3 ok, 2 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CCA: failure
+  3 ok, 2 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 09:54:49 CEST 2011
+
+
+
+
+Test all packages at Wed Jul 20 10:10:03 CEST 2011
+CPL: failure
+  13 ok, 1 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+CSPM-Frontend: failure
+  8 ok, 3 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+CSPM-Interpreter: failure
+  6 ok, 11 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Cabal: failure
+  37 ok, 1 okFail, 0 ambInfix, 2 no parse, 22 parse comparison failures
+Chart: failure
+  22 ok, 17 okFail, 0 ambInfix, 0 no parse, 6 parse comparison failures
+ChasingBottoms: failure
+  9 ok, 11 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+ChristmasTree: failure
+  1 ok, 12 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Coadjute: failure
+  11 ok, 0 okFail, 1 ambInfix, 0 no parse, 2 parse comparison failures
+Codec-Compression-LZF: failure
+  1 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Combinatorrent: failure
+  23 ok, 4 okFail, 3 ambInfix, 0 no parse, 1 parse comparison failures
+ConfigFile: failure
+  5 ok, 3 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Control-Engine: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CoreErlang: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+CouchDB: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+Craft3e: failure
+  61 ok, 1 okFail, 1 ambInfix, 3 no parse, 4 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 10:21:05 CEST 2011
+CPL: failure
+  13 ok, 1 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+CSPM-Frontend: failure
+  8 ok, 3 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+CSPM-Interpreter: failure
+  6 ok, 11 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Cabal: failure
+  37 ok, 1 okFail, 0 ambInfix, 2 no parse, 22 parse comparison failures
+Chart: failure
+  22 ok, 4 okFail, 0 ambInfix, 0 no parse, 19 parse comparison failures
+ChasingBottoms: failure
+  9 ok, 11 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+ChristmasTree: failure
+  1 ok, 12 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Coadjute: failure
+  11 ok, 0 okFail, 1 ambInfix, 0 no parse, 2 parse comparison failures
+Codec-Compression-LZF: failure
+  1 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Combinatorrent: failure
+  23 ok, 4 okFail, 3 ambInfix, 0 no parse, 1 parse comparison failures
+ConfigFile: failure
+  5 ok, 3 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Control-Engine: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CoreErlang: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+CouchDB: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+Craft3e: failure
+  61 ok, 1 okFail, 1 ambInfix, 3 no parse, 4 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 10:37:16 CEST 2011
+Crypto: failure
+  21 ok, 2 okFail, 1 ambInfix, 0 no parse, 7 parse comparison failures
+DBlimited: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 10:47:31 CEST 2011
+Crypto: failure
+  21 ok, 2 okFail, 1 ambInfix, 0 no parse, 7 parse comparison failures
+DBlimited: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 10:48:16 CEST 2011
+Crypto: failure
+  21 ok, 2 okFail, 1 ambInfix, 0 no parse, 7 parse comparison failures
+DBlimited: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 11:01:52 CEST 2011
+Crypto: failure
+  21 ok, 2 okFail, 1 ambInfix, 0 no parse, 7 parse comparison failures
+DBlimited: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+DPM: failure
+  8 ok, 12 okFail, 0 ambInfix, 2 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 13:50:25 CEST 2011
+DSTM: failure
+  11 ok, 5 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+DefendTheKing: failure
+  7 ok, 6 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Diff: failure
+  0 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+DimensionalHash: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+DrIFT-cabalized: failure
+  25 ok, 3 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+EdisonCore: failure
+  15 ok, 7 okFail, 0 ambInfix, 1 no parse, 4 parse comparison failures
+Emping: failure
+  6 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Encode: failure
+  17 ok, 8 okFail, 0 ambInfix, 1 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 14:11:10 CEST 2011
+Eq: failure
+  25 ok, 10 okFail, 4 ambInfix, 4 no parse, 3 parse comparison failures
+Eternal10Seconds: failure
+  8 ok, 1 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+EuroIT: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Extra: failure
+  17 ok, 4 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Wed Jul 20 14:37:39 CEST 2011
+FM-SBLEX: failure
+  69 ok, 8 okFail, 0 ambInfix, 3 no parse, 1 parse comparison failures
+CCA: failure
+  2 ok, 2 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+
+
+
+
+Test all packages at Mon Aug 01 16:50:12 CEST 2011
+FieldTrip: failure
+  2 ok, 10 okFail, 0 ambInfix, 0 no parse, 6 parse comparison failures
+
+
+
+
+Test all packages at Mon Aug 01 16:50:49 CEST 2011
+4Blocks: failure
+  31 ok, 0 okFail, 0 ambInfix, 0 no parse, 5 parse comparison failures
+AC-Angle: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AC-Boolean: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Tue Aug 02 10:28:16 CEST 2011
+4Blocks: failure
+  35 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+
+
+
+
+Test all packages at Tue Aug 02 10:42:34 CEST 2011
+Agda: failure
+  114 ok, 46 okFail, 20 ambInfix, 1 no parse, 10 parse comparison failures
+ArrayRef: failure
+  19 ok, 16 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+AutoForms: failure
+  24 ok, 34 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+BASIC: failure
+  8 ok, 0 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+BNFC: failure
+  80 ok, 1 okFail, 0 ambInfix, 2 no parse, 7 parse comparison failures
+BNFC-meta: failure
+  2 ok, 10 okFail, 0 ambInfix, 0 no parse, 6 parse comparison failures
+Blueprint: failure
+  12 ok, 2 okFail, 2 ambInfix, 0 no parse, 1 parse comparison failures
+CPL: failure
+  13 ok, 1 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+CSPM-Frontend: failure
+  9 ok, 3 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+Cabal: failure
+  37 ok, 1 okFail, 0 ambInfix, 2 no parse, 22 parse comparison failures
+Chart: failure
+  23 ok, 4 okFail, 0 ambInfix, 0 no parse, 18 parse comparison failures
+Codec-Compression-LZF: failure
+  1 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Combinatorrent: failure
+  23 ok, 4 okFail, 3 ambInfix, 0 no parse, 1 parse comparison failures
+ConfigFile: failure
+  5 ok, 3 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+CoreErlang: failure
+  3 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Craft3e: failure
+  62 ok, 1 okFail, 1 ambInfix, 3 no parse, 3 parse comparison failures
+Crypto: failure
+  21 ok, 2 okFail, 1 ambInfix, 0 no parse, 7 parse comparison failures
+DBlimited: failure
+  2 ok, 0 okFail, 0 ambInfix, 0 no parse, 3 parse comparison failures
+DPM: failure
+  8 ok, 12 okFail, 0 ambInfix, 2 no parse, 1 parse comparison failures
+DSTM: failure
+  11 ok, 5 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Diff: failure
+  0 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+DimensionalHash: failure
+  1 ok, 0 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+DrIFT-cabalized: failure
+  25 ok, 3 okFail, 0 ambInfix, 0 no parse, 2 parse comparison failures
+EdisonCore: failure
+  15 ok, 7 okFail, 0 ambInfix, 1 no parse, 4 parse comparison failures
+Emping: failure
+  6 ok, 1 okFail, 0 ambInfix, 0 no parse, 1 parse comparison failures
+Encode: failure
+  17 ok, 8 okFail, 0 ambInfix, 1 no parse, 2 parse comparison failures
+AC-Vector: failure
+  0 ok, 0 okFail, 0 ambInfix, 0 no parse, 15 parse comparison failures
+AC-Vector: failure
+  0 ok, 0 okFail, 0 ambInfix, 0 no parse, 15 parse comparison failures

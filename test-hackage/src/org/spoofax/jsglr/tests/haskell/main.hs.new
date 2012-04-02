@@ -1,0 +1,1 @@
+Program(Body([],[Valdef(Var("a"),Lit(Int("1"))),Valdef(Var("a"),Lit(Int("1")))]))
