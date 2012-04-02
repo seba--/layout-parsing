@@ -1,0 +1,11 @@
+Layout-sensitive grammars appear in a number of programming languages such as
+Haskell, Python, or Markdown. Layout-sensitive grammars are technically
+challenging because they belong to the class of context-sensitive grammars,
+which cannot be parsed efficiently in general. Therefore, parsers for
+layout-sensitive languages are typically implemented as a two-fold process:
+First, a lexer annotates the input text with layout-specific markers and rejects
+layout-invalid programs. Second, a regular context-free parser processes the
+enhanced input text to produce a parse tree.
+
+The goal of this project is to provide support for parsing layout-sensitive
+languages with a single parsing technology.
