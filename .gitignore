@@ -3,6 +3,8 @@
 *.def
 *.labs
 *.prios
+*~
 
 bin/
 .cache/
+/.metadata
