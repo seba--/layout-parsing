@@ -14,34 +14,82 @@ exports
   	"{" NoOffsideBody "}" -> Body {ignore-indent, bracket}
     OffsideBody           -> Body
   	
-  	FAILURE* -> Empty %% produces empty list AST
+  	"" -> Empty {cons("Empty")}
   	
-  	Empty                 Empty          -> NoOffsideBody {cons("Body")}
-  	Empty                 {Topdecl ";"}+ -> NoOffsideBody {cons("Body")}
-  	{Importdecl ";"}+     Empty          -> NoOffsideBody {cons("Body")}
-    {Importdecl ";"}+ ";" {Topdecl ";"}+ -> NoOffsideBody {cons("Body")}
+  	Empty                       Empty                -> NoOffsideBody {cons("Body")}
+  	Empty                       NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
+  	NoOffsideImportdeclList     Empty                -> NoOffsideBody {cons("Body")}
+    NoOffsideImportdeclList ";" NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
 
+    Empty                 Empty              -> OffsideBody {cons("Body")}
+    Empty                 OffsideTopdeclList -> OffsideBody {cons("Body")}
+    OffsideImportdeclList Empty              -> OffsideBody {cons("Body")}
+    OffsideImportdeclListNEWLINE OffsideTopdeclList -> OffsideBody {cons("Body"), layout(eq(col(first(1)), col(first(2))))}
 
     
-    OffsideImportdeclList OffsideTopdeclList -> OffsideBody {cons("Body"), layout(eq(col(first(1)), col(first(2))))}
-    
-    Importdecl -> OffsideImportdecl {layout(gt(col(left(1)), col(first(1))))}
-    Importdecl ";" OffsideImportdecl -> OffsideImportdecl {flatten,
-           layout(and(gt(col(left(1)), col(first(1))),
-                  and(gt(col(first(2)), col(first(1))),
-                      gt(col(first(3)), col(first(1))))))}
-    
-  %% syntax 
-  %%  <Topdecl-CF> <NewLineLayout-LEX> -> <OffsideTopdecl-CF> {layout(gt(col(left(1)), col(first(1)))), ast("<1>")}
-  
-  Topdecl -> OffsideTopdecl {layout(gt(col(left(1)), col(first(1))))}
-    
+%% No offside import declarations    
+  context-free priorities
+    Importdecl -> NoOffsideImportdecl
+  >
+    NoOffsideImportdecl ";" -> NoOffsideImportdecl
+  >
+    ";" NoOffsideImportdecl -> NoOffsideImportdecl
+
   context-free syntax
-    Topdecl ";" OffsideTopdecl -> OffsideTopdecl {flatten,
+    NoOffsideImportdecl -> NoOffsideImportdeclList
+    NoOffsideImportdecl ";" NoOffsideImportdeclList -> NoOffsideImportdeclList {cons("ImportdeclSeq")}
+
+%% No offside top declarations
+  context-free priorities
+    Topdecl -> NoOffsideTopdecl
+  >
+    NoOffsideTopdecl ";" -> NoOffsideTopdecl
+  >
+    ";" NoOffsideTopdecl -> NoOffsideTopdecl
+
+  context-free syntax
+    NoOffsideTopdecl -> NoOffsideTopdeclList
+    NoOffsideTopdecl ";" NoOffsideTopdecl -> NoOffsideTopdeclList {cons("TopdeclSeq")}
+
+
+%% Offside import declarations
+  context-free priorities
+    Importdecl -> OffsideImportdecl {layout(gt(col(left(1)), col(first(1))))}
+  >
+    OffsideImportdecl ";" -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideImportdecl -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    Importdecl ";" OffsideImportdecl -> OffsideImportdecl
+          {cons("ImportdeclSeq"),
            layout(and(gt(col(left(1)), col(first(1))),
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
-    
-    OffsideImportdecl* -> OffsideImportdeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
-    OffsideTopdecl*    -> OffsideTopdeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
-    
+
+  context-free syntax
+    OffsideImportdecl -> OffsideImportdeclList
+    OffsideImportdeclNEWLINE OffsideImportdeclList -> OffsideImportdeclList {cons("ImportdeclSeq"), layout(eq(col(first(1)), col(first(2))))}
+
+    OffsideImportdecl NEWLINE -> OffsideImportdeclNEWLINE {ast("<1>")}
+    OffsideImportdeclList NEWLINE -> OffsideImportdeclListNEWLINE {ast("<1>")}
+
+%% Offside top declarations
+  context-free priorities
+    Topdecl -> OffsideTopdecl {layout(gt(col(left(1)), col(first(1))))}
+  >
+    OffsideTopdecl ";" -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideTopdecl -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    Topdecl ";" OffsideTopdecl -> OffsideTopdecl
+          {cons("TopdeclSeq"),
+           layout(and(gt(col(left(1)), col(first(1))),
+                  and(gt(col(first(2)), col(first(1))),
+                      gt(col(first(3)), col(first(1))))))}
+
+  context-free syntax
+    OffsideTopdecl -> OffsideTopdeclList
+    OffsideTopdeclNEWLINE OffsideTopdeclList -> OffsideTopdeclList {cons("TopdeclSeq"), layout(eq(col(first(1)), col(first(2))))}
+
+    "" -> NEWLINE
+    OffsideTopdecl NEWLINE -> OffsideTopdeclNEWLINE {ast("<1>")}

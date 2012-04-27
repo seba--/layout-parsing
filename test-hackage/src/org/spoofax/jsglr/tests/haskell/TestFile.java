@@ -38,7 +38,8 @@ public class TestFile extends ChainedTestCase {
   
   
   public void testFile_main() throws IOException {
-    testFile(new File("src/org/spoofax/jsglr/tests/haskell/main.hs"), "main");
+    // src/org/spoofax/jsglr/tests/haskell/main.hs
+    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/AC-Vector1173316439442320567/AC-Vector-2.3.2/Data/BoundingBox/"), "main");
     printShortLog();
     raiseFailures();
   }

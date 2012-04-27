@@ -55,4 +55,3 @@ exports
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
   
-

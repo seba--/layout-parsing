@@ -6,6 +6,6 @@ Module(
     [Valdef(
        Var("main"),
        Do(StmtList(
-         [ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
-          ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"])))),
-          ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"]))))])))]))
+         StmtSeq(ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
+         StmtSeq(ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"])))),
+                 ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"])))))))))]))

@@ -61,6 +61,12 @@ public class Frame implements Serializable {
     public State peek() {
         return state;
     }
+    
+    public Link peekLink() {
+      if (stepsCount == 0)
+        return null;
+      return steps[0];
+  }
 
     public void findAllPaths(PooledPathList pool, int arity) {
     	doComputePathsToRoot(pool, null, arity, 0, 0);

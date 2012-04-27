@@ -2,6 +2,6 @@ Module(
   "Main",
   None,
   Body(
-    [Import(None,None,"Abc",None,None)],
-    [Valdef(Var("foo"),Lit(Int("5"))),
-     Valdef(Var("bar"),Lit(Int("7")))]))
+    Import(None,None,"Abc",None,None),
+    TopdeclSeq(Valdef(Var("foo"),Lit(Int("5"))),
+               Valdef(Var("bar"),Lit(Int("7"))))))

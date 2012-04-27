@@ -14,13 +14,15 @@ exports
     "{" NoOffsideStmtList "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
 
   context-free priorities
-    Stmt -> NoOffsideStmtList
+    Stmt -> NoOffsideStmt
   >
-    NoOffsideStmtList ";" -> NoOffsideStmtList
+    NoOffsideStmt ";" -> NoOffsideStmt
   >
-    ";" NoOffsideStmtList -> NoOffsideStmtList
-  > 
-    Stmt ";" NoOffsideStmtList -> NoOffsideStmtList {cons("StmtSeq")}
+    ";" NoOffsideStmt -> NoOffsideStmt
+
+  context-free syntax
+    NoOffsideStmt -> NoOffsideStmtList
+    NoOffsideStmt ";" NoOffsideStmtList -> NoOffsideStmtList {cons("StmtSeq")}
 
 
   context-free priorities
@@ -35,11 +37,9 @@ exports
            layout(and(gt(col(left(1)), col(first(1))),
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
-  > {
+  
+  context-free syntax
     OffsideStmt -> OffsideStmtList
     OffsideStmtNEWLINE OffsideStmtList -> OffsideStmtList {cons("StmtSeq"), layout(eq(col(first(1)), col(first(2))))}
-    }
 
-  context-free syntax
-    "" -> NEWLINE
     OffsideStmt NEWLINE -> OffsideStmtNEWLINE {ast("<1>")}

@@ -9,6 +9,7 @@ package org.spoofax.jsglr.client;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -24,6 +25,8 @@ import org.spoofax.jsglr.shared.Tools;
 
 public class SGLR {
 
+  private static final boolean ENFORCE_NEWLINE_FITER = true;
+  
     private RecoveryPerformance performanceMeasuring;
 
 	private final Set<BadTokenException> collectedErrors = new LinkedHashSet<BadTokenException>();
@@ -656,6 +659,26 @@ public class SGLR {
 //			final boolean illegalLayout = !layoutFilter.hasValidLayout(prod.label, kids);
 //			if (illegalLayout)
 //			  continue;
+			
+			if (SGLR.ENFORCE_NEWLINE_FITER) {
+  			boolean enforceNewline = prod.label == 846;
+  			if (enforceNewline && st0.peekLink().label.isLayout()) {
+  			  LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+  			  nodes.add(st0.peekLink().label);
+  			  
+  			  boolean hasNewline = false;
+  			  while (!hasNewline && !nodes.isEmpty()) {
+  			    AbstractParseNode node = nodes.poll();
+  			    if (node.isParseProductionNode() && node.getLabel() == 10 || node.getLabel() == 13)
+  			      hasNewline = true;
+  			    for (AbstractParseNode kid : node.getChildren())
+  			      nodes.add(kid);
+  			  }
+  			  
+  			  if (!hasNewline)
+  			    continue;
+  			}
+			}
 			
 			if(!prod.isRecoverProduction())
 				reducer(st0, next, prod, kids, path);
