@@ -80,4 +80,8 @@ public class TestHaskell extends ParseTestCase {
   public void testHaskell_15() throws FileNotFoundException, IOException {
     doParseTest("Haskell_15");
   }
+
+  public void testHaskell_16() throws FileNotFoundException, IOException {
+    doParseTest("Haskell_16");
+  }
 }
