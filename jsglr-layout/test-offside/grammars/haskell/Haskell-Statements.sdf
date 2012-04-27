@@ -12,30 +12,34 @@ exports
   	OffsideStmtList   -> StmtList {cons("StmtList")}
   	
     "{" NoOffsideStmtList "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
-    
-    OffsideStmt+ -> OffsideStmtList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
 
   context-free priorities
-    Stmt -> NoOffsideStmtList {flatten}
+    Stmt -> NoOffsideStmtList
   >
-    NoOffsideStmtList ";" -> NoOffsideStmtList {flatten}
+    NoOffsideStmtList ";" -> NoOffsideStmtList
   >
-    ";" NoOffsideStmtList -> NoOffsideStmtList {flatten}
+    ";" NoOffsideStmtList -> NoOffsideStmtList
   > 
-    Stmt ";" NoOffsideStmtList -> NoOffsideStmtList {flatten}
+    Stmt ";" NoOffsideStmtList -> NoOffsideStmtList {cons("StmtSeq")}
 
 
   context-free priorities
     Stmt -> OffsideStmt {layout(gt(col(left(1)), col(first(1))))}
   >
-    OffsideStmt ";" -> OffsideStmt {flatten, layout(gt(col(first(2)), col(first(1))))}
+    OffsideStmt ";" -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
   >
-    ";" OffsideStmt -> OffsideStmt {flatten, layout(gt(col(first(2)), col(first(1))))}
+    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
   >
     Stmt ";" OffsideStmt -> OffsideStmt
-          {flatten,
+          {cons("StmtSeq"),
            layout(and(gt(col(left(1)), col(first(1))),
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
-    
+  > {
+    OffsideStmt -> OffsideStmtList
+    OffsideStmtNEWLINE OffsideStmtList -> OffsideStmtList {cons("StmtSeq"), layout(eq(col(first(1)), col(first(2))))}
+    }
 
+  context-free syntax
+    "" -> NEWLINE
+    OffsideStmt NEWLINE -> OffsideStmtNEWLINE {ast("<1>")}
