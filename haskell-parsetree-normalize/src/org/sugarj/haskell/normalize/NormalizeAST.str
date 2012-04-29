@@ -22,3 +22,5 @@ rules
   is-seq = ?"ImportdeclSeq"
   is-seq = ?"TopdeclSeq"
   is-seq = ?"StmtSeq"
+  is-seq = ?"DeclSeq"
+  is-seq = ?"AltSeq"
