@@ -33,6 +33,3 @@ exports
 
   context-free restrictions
     LAYOUT? -/- [\ \t\n\r] | [\-].[\-] | [\{].[\-]
-
-  context-free syntax
-    "" -> NEWLINE

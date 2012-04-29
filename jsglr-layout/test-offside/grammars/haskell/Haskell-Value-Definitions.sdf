@@ -20,38 +20,44 @@ exports
   context-free syntax
     "where" DeclList       -> Where     {cons("Where")}
     
-            -> MaybeWhere {ast("Where(DeclList([]))")}
+            -> MaybeWhere {ast("Where(DeclList(Empty))")}
     Where   -> MaybeWhere
     
     DeclList 		   -> Declbinds
 
   context-free syntax
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
-  	OffsideDeclList   -> DeclList {cons("DeclList")}
+  	OffsideDeclList | Empty   -> DeclList {cons("DeclList")}
   	
-    "{" NoOffsideDeclList | EMPTY "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
+    "{" NoOffsideDeclList | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
     
-    OffsideDecl* -> OffsideDeclList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
-
   context-free priorities
-    Decl -> NoOffsideDeclList {flatten}
+    Decl -> NoOffsideDecl
   >
-    NoOffsideDeclList ";" -> NoOffsideDeclList {flatten}
-  >
-    ";" NoOffsideDeclList -> NoOffsideDeclList {flatten}
-  > 
-    Decl ";" NoOffsideDeclList -> NoOffsideDeclList {flatten}
+    NoOffsideDecl ";" -> NoOffsideDecl {prefer}
+%%  >
+%%    ";" NoOffsideStmt -> NoOffsideStmt
+
+  context-free syntax
+    NoOffsideDecl -> NoOffsideDeclList
+    NoOffsideDecl ";" NoOffsideDeclList -> NoOffsideDeclList {cons("DeclSeq")}
+
 
   context-free priorities
     Decl -> OffsideDecl {layout(gt(col(left(1)), col(first(1))))}
   >
-    OffsideDecl ";" -> OffsideDecl {flatten, layout(gt(col(first(2)), col(first(1))))}
-  >
-    ";" OffsideDecl -> OffsideDecl {flatten, layout(gt(col(first(2)), col(first(1))))}
+    OffsideDecl ";" -> OffsideDecl {prefer, layout(gt(col(first(2)), col(first(1))))}
+%%  >
+%%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
   >
     Decl ";" OffsideDecl -> OffsideDecl
-          {flatten,
+          {cons("DeclSeq"),
            layout(and(gt(col(left(1)), col(first(1))),
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
   
+  context-free syntax
+    OffsideDecl -> OffsideDeclList
+    OffsideDeclNEWLINE OffsideDeclList -> OffsideDeclList {cons("DeclSeq"), layout(eq(col(first(1)), col(first(2))))}
+
+    OffsideDecl LAYOUT? -> OffsideDeclNEWLINE {enforce-newline}

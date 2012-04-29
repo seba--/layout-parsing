@@ -5,20 +5,40 @@ exports
 
     Pat Gdpat+ MaybeWhere	 	-> Alt   {cons("GdAlt")}
     "|" Exp "->" Exp                  -> Gdpat {cons("GdPat")}
-    
-    Alt ";" -> Alt
 
   context-free syntax
-  	NoOffsideAltList -> AltList {cons("AltList")}
+  	NoOffsideAltBlock -> AltList {cons("AltList")}
   	OffsideAltList   -> AltList {cons("AltList")}
   	
-    {Alt ";"}+               -> InternalAltList
-    "{" InternalAltList "}"  -> NoOffsideAltList {bracket, ignore-block}
+    "{" NoOffsideAltList "}"  -> NoOffsideAltBlock {bracket, ignore-block}
     
-    Alt    -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}
-    Alt ";" OffsideAlt -> OffsideAlt {flatten,
+  context-free priorities
+    Alt -> NoOffsideAlt
+  >
+    NoOffsideAlt ";" -> NoOffsideAlt {prefer}
+%%  >
+%%    ";" NoOffsideStmt -> NoOffsideStmt
+
+  context-free syntax
+    NoOffsideAlt -> NoOffsideAltList
+    NoOffsideAlt ";" NoOffsideAltList -> NoOffsideAltList {cons("AltSeq")}
+
+
+  context-free priorities
+    Alt -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}
+  >
+    OffsideAlt ";" -> OffsideAlt {prefer,layout(gt(col(first(2)), col(first(1))))}
+%%  >
+%%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
+  >
+    Alt ";" OffsideAlt -> OffsideAlt
+          {cons("AltSeq"),
            layout(and(gt(col(left(1)), col(first(1))),
                   and(gt(col(first(2)), col(first(1))),
                       gt(col(first(3)), col(first(1))))))}
-    
-    OffsideAlt* -> OffsideAltList {layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+  
+  context-free syntax
+    OffsideAlt -> OffsideAltList
+    OffsideAltNEWLINE OffsideAltList -> OffsideAltList {cons("AltSeq"), layout(eq(col(first(1)), col(first(2))))}
+
+    OffsideAlt LAYOUT? -> OffsideAltNEWLINE {enforce-newline}

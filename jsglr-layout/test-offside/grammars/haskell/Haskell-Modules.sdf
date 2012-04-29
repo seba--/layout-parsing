@@ -70,8 +70,8 @@ exports
     OffsideImportdecl -> OffsideImportdeclList
     OffsideImportdeclNEWLINE OffsideImportdeclList -> OffsideImportdeclList {cons("ImportdeclSeq"), layout(eq(col(first(1)), col(first(2))))}
 
-    OffsideImportdecl NEWLINE -> OffsideImportdeclNEWLINE {ast("<1>")}
-    OffsideImportdeclList NEWLINE -> OffsideImportdeclListNEWLINE {ast("<1>")}
+    OffsideImportdecl LAYOUT? -> OffsideImportdeclNEWLINE {enforce-newline}
+    OffsideImportdeclList LAYOUT? -> OffsideImportdeclListNEWLINE {enforce-newline}
 
 %% Offside top declarations
   context-free priorities
@@ -91,5 +91,4 @@ exports
     OffsideTopdecl -> OffsideTopdeclList
     OffsideTopdeclNEWLINE OffsideTopdeclList -> OffsideTopdeclList {cons("TopdeclSeq"), layout(eq(col(first(1)), col(first(2))))}
 
-    "" -> NEWLINE
-    OffsideTopdecl NEWLINE -> OffsideTopdeclNEWLINE {ast("<1>")}
+    OffsideTopdecl LAYOUT? -> OffsideTopdeclNEWLINE {enforce-newline}

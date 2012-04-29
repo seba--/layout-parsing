@@ -16,7 +16,7 @@ exports
   context-free priorities
     Stmt -> NoOffsideStmt
   >
-    NoOffsideStmt ";" -> NoOffsideStmt
+    NoOffsideStmt ";" -> NoOffsideStmt {prefer}
 %%  >
 %%    ";" NoOffsideStmt -> NoOffsideStmt
 
@@ -28,7 +28,7 @@ exports
   context-free priorities
     Stmt -> OffsideStmt {layout(gt(col(left(1)), col(first(1))))}
   >
-    OffsideStmt ";" -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
+    OffsideStmt ";" -> OffsideStmt {prefer,layout(gt(col(first(2)), col(first(1))))}
 %%  >
 %%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
   >
@@ -42,4 +42,4 @@ exports
     OffsideStmt -> OffsideStmtList
     OffsideStmtNEWLINE OffsideStmtList -> OffsideStmtList {cons("StmtSeq"), layout(eq(col(first(1)), col(first(2))))}
 
-    OffsideStmt NEWLINE -> OffsideStmtNEWLINE {ast("<1>")}
+    OffsideStmt LAYOUT? -> OffsideStmtNEWLINE {enforce-newline}
