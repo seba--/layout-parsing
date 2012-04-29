@@ -38,6 +38,9 @@ import org.spoofax.terms.Term;
 import org.spoofax.terms.TermFactory;
 import org.spoofax.terms.attachments.ParentTermFactory;
 import org.spoofax.terms.io.binary.TermReader;
+import org.strategoxt.lang.Context;
+import org.sugarj.haskell.normalize.normalize;
+import org.sugarj.haskell.normalize.normalize_0_0;
 
 public abstract class ParseTestCase extends TestCase {
 
@@ -54,6 +57,8 @@ public abstract class ParseTestCase extends TestCase {
 
   // shared by all tests
   static final TermFactory pf = new TermFactory();
+  
+  static final Context o = normalize.init();
 
   // RemoteParseTableServiceAsync parseTableService =
   // GWT.create(RemoteParseTableService.class);
@@ -179,8 +184,10 @@ public abstract class ParseTestCase extends TestCase {
       if (sglr.getDisambiguator().getAmbiguityCount() > 0)
         System.err.println("ambiguous parse: " + sglr.getDisambiguator().getAmbiguityCount() + " ambiguities");
       
+      IStrategoTerm normalized = parsed == null ? null : normalize_0_0.instance.invoke(o, parsed);
+      
       try {
-        doCompare(filePattern, parsed);
+        doCompare(filePattern, normalized);
       } catch (AssertionFailedError err2) {
         if (err == null)
           err = err2;
