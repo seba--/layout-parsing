@@ -8,6 +8,7 @@
 package org.spoofax.jsglr.client;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Stack;
 
 public abstract class AbstractParseNode {
@@ -138,5 +139,61 @@ public abstract class AbstractParseNode {
     if (l == null)
       return false;
     return l.getAttributes().isIgnoreIndent();
+  }
+
+  public final static int NEWLINE_LAYOUT = 2;
+  public final static int NONEWLINE_LAYOUT = 1;
+  public final static int OTHER_LAYOUT = 0;
+  
+  /**
+   * @return NEWLINE_LAYOUT if node ends with layout that contains a newline
+   * @return NONEWLINE_LAYOUT if node only contains layout character data (also true if node is empty)
+   * @return OTHER_LAYOUT if node contains non-layout character data and does not end with layout that
+   *           contains a newline 
+   */
+  public int getLayoutStatus() {
+    if (isLayout() && hasNewline())
+        return NEWLINE_LAYOUT;
+    if (isLayout())
+      return NONEWLINE_LAYOUT;
+    
+    /*
+     * Elements of `nodes` are never descendant of a `isLayout()` node. 
+     */
+    LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+    nodes.addFirst(this);
+    
+    while (!nodes.isEmpty()) {
+      AbstractParseNode node = nodes.pollFirst();
+      
+      if (node.isLayout()) {
+        if (node.hasNewline())
+          return NEWLINE_LAYOUT;
+      }
+      else if (node.isParseProductionNode())
+        return OTHER_LAYOUT;
+      else 
+        for (int i = node.getChildren().length - 1; i >= 0; i--)
+          nodes.addFirst(node.getChildren()[i]);
+    }
+    
+    // this is not layout but also does not contain parse production nodes => treat like layout
+    return NONEWLINE_LAYOUT;
+  }
+  
+  private boolean hasNewline() {
+    LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+    nodes.add(this);
+    
+    while (!nodes.isEmpty()) {
+      AbstractParseNode node = nodes.poll();
+      if (node.isParseProductionNode() && node.getLabel() == 10 || node.getLabel() == 13)
+        return true;
+
+      for (AbstractParseNode kid : node.getChildren())
+        nodes.add(kid);
+    }
+    
+    return false;
   }
 }

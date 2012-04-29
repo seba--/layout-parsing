@@ -22,6 +22,7 @@ public class Label implements Serializable {
     private final ProductionAttributes productionAttributes;
     private final boolean injection;
     private Boolean isLayout;
+    //private final boolean isNewlineEnforcer;
 
     public Label(int labelNumber, IStrategoAppl prod, ProductionAttributes productionAttributes, boolean injection) {
         this.labelNumber = labelNumber;

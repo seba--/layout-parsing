@@ -270,6 +270,7 @@ public class ParseTable implements Serializable {
             boolean isMoreIndent = false;
             boolean isIgnoreIndent = false;
             IStrategoTerm layoutConstraint = null;
+            boolean isNewlineEnforced = false;
             IStrategoTerm term = null;
 
             for (IStrategoList ls = (IStrategoList) attr.getSubterm(0); !ls.isEmpty(); ls = ls.tail()) {
@@ -326,6 +327,9 @@ public class ParseTable implements Serializable {
                         else if (child.getSubtermCount() == 1 && child.getName().equals("layout")) {
                           layoutConstraint = child.getSubterm(0);
                         }
+                        else if (child.getSubtermCount() == 0 && child.getName().equals("enforce-newline")) {
+                          isNewlineEnforced = true;
+                        }
                     	}
                     	// TODO Support other terms that are not a constructor (custom annotations)
                     } else if (ctor.equals("id")) {
@@ -336,9 +340,9 @@ public class ParseTable implements Serializable {
                     }
                 }
             }
-            return new ProductionAttributes(term, type, isRecover, isOffsideBlock, isSameIndent, isMoreIndent, isIgnoreIndent, layoutConstraint);
+            return new ProductionAttributes(term, type, isRecover, isOffsideBlock, isSameIndent, isMoreIndent, isIgnoreIndent, layoutConstraint, isNewlineEnforced);
         } else if (attr.getName().equals("no-attrs")) {
-            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, false, false, false, null);
+            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, false, false, false, null, false);
         }
         throw new InvalidParseTableException("Unknown attribute type: " + attr);
     }

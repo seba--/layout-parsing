@@ -26,10 +26,11 @@ public class ProductionAttributes implements Serializable {
     private final boolean isMoreIndent;
     private final boolean isIgnoreIndent;
     private final IStrategoTerm layoutConstraint;
+    private final boolean isNewlineEnforced;
 
     private final transient IStrategoTerm abstractCtor;
 
-    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isOffsideBlock, boolean isSameIndent, boolean isMoreIndent, boolean isIgnoreIndent, IStrategoTerm layoutConstraint) {
+    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isOffsideBlock, boolean isSameIndent, boolean isMoreIndent, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced) {
         this.type = type;
         this.abstractCtor = ctor;
         this.isRecover = isRecover;
@@ -38,6 +39,7 @@ public class ProductionAttributes implements Serializable {
         this.isMoreIndent = isMoreIndent;
         this.isIgnoreIndent = isIgnoreIndent;
         this.layoutConstraint = layoutConstraint;
+        this.isNewlineEnforced = isNewlineEnforced;
     }
 
     public final int getType() {
@@ -70,6 +72,10 @@ public class ProductionAttributes implements Serializable {
     
     public IStrategoTerm getLayoutConstraint() {
       return layoutConstraint;
+    }
+    
+    public boolean isNewlineEnforced() {
+      return isNewlineEnforced;
     }
 
     public boolean isMoreEager(ProductionAttributes other) {
