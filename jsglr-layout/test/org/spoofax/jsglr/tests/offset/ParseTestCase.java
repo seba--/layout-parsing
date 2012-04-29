@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.jsglr.client.Asfix2TreeBuilder;
 import org.spoofax.jsglr.client.FilterException;
 import org.spoofax.jsglr.client.InvalidParseTableException;
 import org.spoofax.jsglr.client.Label;
@@ -45,7 +44,6 @@ public abstract class ParseTestCase extends TestCase {
   private static final ParseTableManager parseTables = new ParseTableManager();
 
   protected SGLR sglr;
-  protected SGLR sglrPT;
 
   protected String directory;
   protected String suffix;
@@ -83,7 +81,6 @@ public abstract class ParseTestCase extends TestCase {
 
     sglr = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(
         table.getFactory())), true), table);
-    sglrPT = new SGLR(new Asfix2TreeBuilder(table.getFactory()), table);
 
     BufferedWriter write = null;
     BufferedWriter writePrios = null;
@@ -153,7 +150,6 @@ public abstract class ParseTestCase extends TestCase {
     System.out.println("Testing " + filePattern + " ****************");
     
     IStrategoTerm parsed = null;
-    IStrategoTerm parsedPT = null;
 
     final Map<String, String> results = loadAsStrings(filePattern);
     assertFalse("Data file is missing: " + filePattern, results.isEmpty());
@@ -166,7 +162,6 @@ public abstract class ParseTestCase extends TestCase {
       String content = entry.getValue();
       
       parsed = null;
-      parsedPT = null;
 
       long parseTime = System.nanoTime();
       try {
@@ -178,13 +173,6 @@ public abstract class ParseTestCase extends TestCase {
       }
       parseTime = System.nanoTime() - parseTime;
 
-      try {
-        parsedPT = (IStrategoTerm) sglrPT.parse(content, null, null);
-      } catch (SGLRException e) {
-        if (parsed != null)
-          System.err.println(e.getMessage());
-      }
-
       System.out.println("Parsing " + file + " took " + parseTime / 1000 / 1000
           + " millis.");
 
@@ -192,7 +180,7 @@ public abstract class ParseTestCase extends TestCase {
         System.err.println("ambiguous parse: " + sglr.getDisambiguator().getAmbiguityCount() + " ambiguities");
       
       try {
-        doCompare(filePattern, parsed, parsedPT);
+        doCompare(filePattern, parsed);
       } catch (AssertionFailedError err2) {
         if (err == null)
           err = err2;
@@ -219,7 +207,7 @@ public abstract class ParseTestCase extends TestCase {
     return map;
   }
 
-  private void doCompare(String s, final IStrategoTerm parsed, final IStrategoTerm parsedPT) {
+  private void doCompare(String s, final IStrategoTerm parsed) {
     System.err.flush();
     System.out.flush();
 
@@ -252,7 +240,6 @@ public abstract class ParseTestCase extends TestCase {
 
     boolean expectFail = Term.isTermAppl(wanted) && Term.hasConstructor((IStrategoAppl) wanted, "Fail") && wanted.getSubtermCount() == 0;
     
-    // System.out.println(parsedPT == null ? "parsing failed" : toCompactString(parsedPT));
     System.out.println(parsed == null ? "parsing failed" : toCompactString(parsed));
     System.out.println(expectFail ? "expecting fail" : toCompactString(wanted));
     
