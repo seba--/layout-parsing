@@ -27,7 +27,9 @@ public class SGLR {
 
   private static final boolean ENFORCE_NEWLINE_FITER = true;
   
-    private RecoveryPerformance performanceMeasuring;
+  private int enforcedNewlineSkip = 0;
+  
+  private RecoveryPerformance performanceMeasuring;
 
 	private final Set<BadTokenException> collectedErrors = new LinkedHashSet<BadTokenException>();
 
@@ -120,6 +122,10 @@ public class SGLR {
 
 	public Set<BadTokenException> getCollectedErrors() {
 		return collectedErrors;
+	}
+	
+	public int getEnforcedNewlineSkip() {
+	  return enforcedNewlineSkip;
 	}
     
     /**
@@ -385,6 +391,7 @@ public class SGLR {
 		PathListPool.resetPerformanceCounters();
 		ambiguityManager = new AmbiguityManager(input.length());
 		parseTree = null;
+		enforcedNewlineSkip = 0;
 		if (getTreeBuilder().getTokenizer() != null) {
 			// Make sure we use the same starting offsets as the tokenizer, if any
 			// (crucial for parsing fragments at a time)
@@ -675,8 +682,10 @@ public class SGLR {
   			      nodes.add(kid);
   			  }
   			  
-  			  if (!hasNewline)
+  			  if (!hasNewline) {
+  			    enforcedNewlineSkip++;
   			    continue;
+  			  }
   			}
 			}
 			

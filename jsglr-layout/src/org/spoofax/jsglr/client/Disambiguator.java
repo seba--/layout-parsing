@@ -271,6 +271,7 @@ public class Disambiguator {
     } finally {
       System.out.println("layout filter calls: " + layoutFilter.filterCallCount);
       System.out.println("illegal layout count: " + layoutFiltering);
+      System.out.println("enforced newline skips: " + parser.getEnforcedNewlineSkip());
       initializeFromParser(null);
     }
   }
