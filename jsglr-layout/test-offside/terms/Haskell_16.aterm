@@ -1,8 +1,8 @@
 Program(
   Body(
-    [],
-    [Valdef(
-       Var("f"),
-       Do(
-         StmtList([
-           ExpStmt(AppBin(Var("x"),Var("y")))])))]))
+    Empty,
+    Valdef(
+      Var("f"),
+      Do(
+        StmtList(
+          ExpStmt(AppBin(Var("x"),Var("y"))))))))
