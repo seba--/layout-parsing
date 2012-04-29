@@ -1,17 +1,17 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(
     VarFunLHS(Var("f"),[Var("x")]),
     Let(
-      DeclList([
+      DeclList(
         Valdef(
           VarFunLHS(Var("f"),[Var("x")]),
           Let(
-            DeclList([
+            DeclList(
               Valdef(
                 VarFunLHS(Var("f"),[Var("x")]),
                 Let(
-                  DeclList([
-                    Valdef(VarFunLHS(Var("f"),[Var("x")]),Lit(Int("2")))]),
-                  Lit(Int("3"))))]),
-            Lit(Int("4"))))]),
-      Lit(Int("5"))))]))
+                  DeclList(
+                    Valdef(VarFunLHS(Var("f"),[Var("x")]),Lit(Int("2")))),
+                  Lit(Int("3"))))),
+            Lit(Int("4"))))),
+      Lit(Int("5"))))))

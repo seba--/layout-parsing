@@ -1,6 +1,6 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(
     VarFunLHS(Var("f"),[Var("x")]),
-    Do(StmtList([
-      ExpStmt(Var("x")),
-      ExpStmt(If(Var("x"),Var("x"),Var("x")))])))]))
+    Do(StmtList(
+      StmtSeq(ExpStmt(Var("x")),
+              ExpStmt(If(Var("x"),Var("x"),Var("x")))))))))

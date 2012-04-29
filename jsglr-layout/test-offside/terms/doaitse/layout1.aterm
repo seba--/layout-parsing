@@ -1,8 +1,8 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(
     Var("test"),
     Let(
-      DeclList([
-        Valdef(Var("x"),Lit(Int("1"))),
-        Valdef(Var("y"),Var("x"))]),
-      Var("y")))]))
+      DeclList(
+        DeclSeq(Valdef(Var("x"),Lit(Int("1"))),
+                Valdef(Var("y"),Var("x")))),
+      Var("y")))))

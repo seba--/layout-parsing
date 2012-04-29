@@ -1,9 +1,9 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(Var("test"),
   Let(
-    DeclList([
-      Valdef(Var("x"),Lit(Int("1"))),
-      Valdef(Var("y"),Var("x")),
-      Valdef(Var("z"),AppBin(AppBin(Var("f"),Var("x")),Var("y"))),
-      Valdef(VarFunLHS(Var("f"),[Var("x"),Var("y")]),Var("z"))]),
-    Var("y")))]))
+    DeclList(
+      DeclSeq(Valdef(Var("x"),Lit(Int("1"))),
+      DeclSeq(Valdef(Var("y"),Var("x")),
+      DeclSeq(Valdef(Var("z"),AppBin(AppBin(Var("f"),Var("x")),Var("y"))),
+              Valdef(VarFunLHS(Var("f"),[Var("x"),Var("y")]),Var("z")))))),
+    Var("y")))))

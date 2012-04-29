@@ -1,6 +1,6 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(
     VarFunLHS(Var("f"),[Var("x")]),
     Let(
-      DeclList([]),
-      Var("x")))]))
+      DeclList(Empty),
+      Var("x")))))

@@ -1,7 +1,7 @@
-Program(Body([],[
+Program(Body(Empty,
   Valdef(
     VarFunLHS(Var("f"),[Var("x")]),
-    Do(StmtList([
-      ExpStmt(Var("x")),
-      ExpStmt(Var("x")),
-      ExpStmt(Var("x"))])))]))
+    Do(StmtList(
+      StmtSeq(ExpStmt(Var("x")),
+      StmtSeq(ExpStmt(Var("x")),
+              ExpStmt(Var("x")))))))))
