@@ -1,0 +1,24 @@
+module org/sugarj/haskell/normalize/NormalizeAST
+imports libstratego-lib
+
+rules
+  main = io-wrap(normalize)
+  
+  normalize = bottomup(try(norm))
+
+rules
+  norm = flatten-seqs
+  
+  flatten-seqs : 
+    s#([a, b]) ->
+    <append-seqs(|s)> (a, b)
+  where <is-seq> s
+  
+  append-seqs(|s) :
+    (s#([a, b]), c) -> s#([a, <append-seqs(|s)> (b, c)])
+  append-seqs(|s) :
+    (a, b) -> s#([a, b])  
+    
+  is-seq = ?"ImportdeclSeq"
+  is-seq = ?"TopdeclSeq"
+  is-seq = ?"StmtSeq"
