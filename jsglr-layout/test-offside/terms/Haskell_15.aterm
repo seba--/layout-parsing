@@ -1,7 +1,7 @@
 Program(
   Body(
-    [],
-    [Valdef(Var("main"),
-       Do(StmtList(
-         [ExpStmt(Do(StmtList(
-            [ExpStmt(Var("x"))])))])))]))
+    Empty,
+    Valdef(Var("main"),
+      Do(StmtList(
+        ExpStmt(Do(StmtList(
+          ExpStmt(Var("x"))))))))))

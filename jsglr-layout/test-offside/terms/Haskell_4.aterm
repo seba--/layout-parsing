@@ -2,14 +2,16 @@ Module(
   "Main",
   None,
   Body(
-    [],
-    [Valdef(Var("a"),Do(StmtList(ExpStmt(Lit(Int("5")))))),
-     Valdef(Var("main"),
-            Do(StmtList(
-              StmtSeq(
-                ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
-                ExpStmt(Do(StmtList(
-                  StmtSeq(
-                    ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"])))),
-			              ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"])))))))))))),
-     Valdef(Var("b"),Do(StmtList(ExpStmt(Var("z")))))]))
+    Empty,
+    TopdeclSeq(
+      Valdef(Var("a"),Do(StmtList(ExpStmt(Lit(Int("5")))))),
+    TopdeclSeq(
+      Valdef(Var("main"),
+             Do(StmtList(
+               StmtSeq(
+                 ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
+                 ExpStmt(Do(StmtList(
+                   StmtSeq(
+                     ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"])))),
+			               ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"])))))))))))),
+      Valdef(Var("b"),Do(StmtList(ExpStmt(Var("z")))))))))

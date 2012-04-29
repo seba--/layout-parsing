@@ -1,5 +1,5 @@
 Program(
-Body([],
-[Valdef(Var("main"),
+Body(Empty,
+Valdef(Var("main"),
    OpApp(Lit(Int("1")),QVarSym("Prelude","+"),OpApp(Lit(Int("2")),QVarSym("Prelude","*"),Lit(Int("3")))))
-]))
+))

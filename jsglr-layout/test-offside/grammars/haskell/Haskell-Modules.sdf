@@ -49,7 +49,7 @@ exports
 
   context-free syntax
     NoOffsideTopdecl -> NoOffsideTopdeclList
-    NoOffsideTopdecl ";" NoOffsideTopdecl -> NoOffsideTopdeclList {cons("TopdeclSeq")}
+    NoOffsideTopdecl ";" NoOffsideTopdeclList -> NoOffsideTopdeclList {cons("TopdeclSeq")}
 
 
 %% Offside import declarations

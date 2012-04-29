@@ -1,11 +1,10 @@
 Program(
-Body([],
-[Valdef(Var("main"),
-   OpApp(Lit(Int("1")),"+",OpApp(Constr(QConId("Foo","Bar")),"+",Lit(Int("2"))))),
- Valdef(Var("main"),
-   OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2")))))),
- Valdef(Var("main"),
-   OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2")))))),
- Valdef(Var("main"),
-   OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2"))))))
-]))
+Body(Empty,
+TopdeclSeq(Valdef(Var("main"),
+             OpApp(Lit(Int("1")),"+",OpApp(Constr(QConId("Foo","Bar")),"+",Lit(Int("2"))))),
+TopdeclSeq(Valdef(Var("main"),
+             OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2")))))),
+TopdeclSeq(Valdef(Var("main"),
+             OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2")))))),
+           Valdef(Var("main"),
+             OpApp(Lit(Int("1")),"+",OpApp(Constr("Foo"),".",OpApp(Constr("Bar"),"+",Lit(Int("2")))))))))))
