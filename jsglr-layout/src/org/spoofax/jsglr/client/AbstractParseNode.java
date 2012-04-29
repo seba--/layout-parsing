@@ -173,7 +173,7 @@ public abstract class AbstractParseNode {
       else if (node.isParseProductionNode())
         return OTHER_LAYOUT;
       else 
-        for (int i = node.getChildren().length - 1; i >= 0; i--)
+        for (int i = 0; i < node.getChildren().length; i++)
           nodes.addFirst(node.getChildren()[i]);
     }
     

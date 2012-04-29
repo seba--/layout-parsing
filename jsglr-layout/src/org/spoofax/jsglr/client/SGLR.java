@@ -662,54 +662,13 @@ public class SGLR {
 			final State next = parseTable.go(st0.state, prod.label);
 			logReductionPath(prod, path, st0, next);
 			
-//			final boolean illegalLayout = !layoutFilter.hasValidLayout(prod.label, kids);
-//			if (illegalLayout)
-//			  continue;
-			
 			if (SGLR.ENFORCE_NEWLINE_FITER && 
 			    parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced() &&
 			    st0.getLayoutStatus() != AbstractParseNode.NEWLINE_LAYOUT) {
         enforcedNewlineSkip++;
         continue;
       }
-//			  boolean skipReduction = false;
-//			  
-//			  LinkedList<Frame> frames = new LinkedList<Frame>();
-//			  frames.add(st0);
-//			  do {
-//			    boolean noLinkHasNewline = true;
-//			    boolean characterFound = false;
-//			    
-//			    for (Link link : st.peekLinks()) {
-//    			  LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
-//    			  nodes.add(link.label);
-//    			  
-//    			  boolean hasNewline = false;
-//    			  while (!nodes.isEmpty()) {
-//    			    AbstractParseNode node = nodes.poll();
-//    			    if (node.isParseProductionNode() && node.getLabel() == 10 || node.getLabel() == 13) {
-//    			      hasNewline = true;
-//    			      break;
-//    			    }
-//    			    if (node.isParseProductionNode() && !node.isLayout())
-//    			    
-//    			    for (AbstractParseNode kid : node.getChildren())
-//    			      nodes.add(kid);
-//    			  }
-//    			  
-//    			  if (hasNewline) {
-//    			    noLinkHasNewline = false;
-//    			    break;
-//    			  }
-//			    }
-//			    
-//			    if (noLinkHasNewline && characterFound) {
-//			      skipReduction = true;
-//			      break;
-//			    }
-//			      
-//			  } while ((st = st.peekLink().parent) != null);
-			    
+
 			if(!prod.isRecoverProduction())
 				reducer(st0, next, prod, kids, path);
 			else
