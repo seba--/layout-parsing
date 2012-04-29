@@ -663,11 +663,26 @@ public class SGLR {
 			logReductionPath(prod, path, st0, next);
 			
 			if (SGLR.ENFORCE_NEWLINE_FITER && 
-			    parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced() &&
-			    st0.getLayoutStatus() != AbstractParseNode.NEWLINE_LAYOUT) {
-        enforcedNewlineSkip++;
-        continue;
-      }
+			    parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
+			  boolean hasNewline = false;
+			  for (int j = kids.length - 1; j >= 0; j--) {
+			    int status = kids[j].getLayoutStatus();
+			    
+			    if (status == AbstractParseNode.NEWLINE_LAYOUT) {
+			      hasNewline = true;
+  			    break;
+			    }
+  			  if (status == AbstractParseNode.OTHER_LAYOUT) {
+  			    hasNewline = false;
+  			    break;
+  			  }
+			  }
+  			
+			  if (!hasNewline) {
+          enforcedNewlineSkip++;
+          continue;
+			  }
+			}
 
 			if(!prod.isRecoverProduction())
 				reducer(st0, next, prod, kids, path);
