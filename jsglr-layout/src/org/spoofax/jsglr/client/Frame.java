@@ -31,11 +31,6 @@ public class Frame implements Serializable {
     private Link[] steps;
     private int stepsCount;
     
-    /**
-     * @see org.spoofax.jsglr.client.AbstractParseNode.NEWLINE_LAYOUT etc.
-     */
-    private int layoutStatus;
-
     // FIXME: All frames except the root must have a step with a label
     // that goes to the parent frame. Should we enforce this in this
     // constructor?
@@ -44,7 +39,6 @@ public class Frame implements Serializable {
         steps = new Link[20];
         stepsCount = 0;
         framesCreated +=1; //MJ: for testing 
-        layoutStatus = AbstractParseNode.OTHER_LAYOUT;
     }
 
     public boolean allLinksRejected() {
@@ -146,8 +140,6 @@ public class Frame implements Serializable {
             resizeSteps();
         }
         
-        updateLayoutStatus(n, st0);
-        
 //        counter[stepsCount]++;
         return steps[stepsCount++] = new Link(st0, n, length, line, column); 
     }
@@ -160,32 +152,8 @@ public class Frame implements Serializable {
             resizeSteps();
         }
         
-        updateLayoutStatus(ln.label, ln.parent);
-        
 //        counter[stepsCount]++;
         return steps[stepsCount++] = ln; 
-    }
-    
-    private void updateLayoutStatus(AbstractParseNode n, Frame parent) {
-      int status = n.getLayoutStatus();
-      
-      if (status == AbstractParseNode.NONEWLINE_LAYOUT &&
-          parent.layoutStatus == AbstractParseNode.NEWLINE_LAYOUT)
-        status = AbstractParseNode.NEWLINE_LAYOUT;
-
-      if (stepsCount == 0) {
-        layoutStatus = status;
-        return;
-      }
-
-      if (layoutStatus == AbstractParseNode.OTHER_LAYOUT ||
-          status == AbstractParseNode.OTHER_LAYOUT)
-        layoutStatus = AbstractParseNode.OTHER_LAYOUT;
-      else if (layoutStatus == AbstractParseNode.NEWLINE_LAYOUT &&
-               status == AbstractParseNode.NEWLINE_LAYOUT)
-        layoutStatus = AbstractParseNode.NEWLINE_LAYOUT;
-      else 
-        layoutStatus = AbstractParseNode.NONEWLINE_LAYOUT;
     }
     
     private void resizeSteps() {
@@ -336,7 +304,6 @@ public class Frame implements Serializable {
             }
             this.steps = null;
             this.stepsCount = 0;
-            this.layoutStatus = AbstractParseNode.OTHER_LAYOUT;
         }
     }
     
@@ -383,8 +350,4 @@ public class Frame implements Serializable {
         List<String> stackStrings=this.getStackPaths("", avoidFree);
         return stackStrings.toArray(new String[stackStrings.size()]);
     }
-
-    public int getLayoutStatus() {
-      return layoutStatus;
-    }      
 }
