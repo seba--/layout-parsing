@@ -8,3 +8,6 @@
 bin/
 .cache/
 /.metadata
+
+haskell-parsetree-normalize/src/org/sugarj/haskell/normalize/*.java
+haskell-parsetree-normalize/src/org/sugarj/haskell/normalize/*.java.dep
