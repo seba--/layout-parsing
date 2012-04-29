@@ -6,10 +6,6 @@ exports
     Body 			-> Module 	{cons("Program")}
     Decl 		   	-> Topdecl
 
-    Importdecl ";" -> Importdecl
-    Topdecl ";"    -> Topdecl {prefer}
-
-    
   context-free syntax
   	"{" NoOffsideBody "}" -> Body {ignore-indent, bracket}
     OffsideBody           -> Body
@@ -32,8 +28,8 @@ exports
     Importdecl -> NoOffsideImportdecl
   >
     NoOffsideImportdecl ";" -> NoOffsideImportdecl
-  >
-    ";" NoOffsideImportdecl -> NoOffsideImportdecl
+%%  >
+%%    ";" NoOffsideImportdecl -> NoOffsideImportdecl
 
   context-free syntax
     NoOffsideImportdecl -> NoOffsideImportdeclList
@@ -43,11 +39,15 @@ exports
   context-free priorities
     Topdecl -> NoOffsideTopdecl
   >
-    NoOffsideTopdecl ";" -> NoOffsideTopdecl
-  >
-    ";" NoOffsideTopdecl -> NoOffsideTopdecl
+    NoOffsideTopdecl ";" -> NoOffsideTopdecl {prefer}
+%%  >
+%%    ";" NoOffsideTopdecl -> NoOffsideTopdecl
+
 
   context-free syntax
+%%    NoOffsideTopdecl -> NoOffsideTopdeclSeqs
+%%    ";" NoOffsideTopdeclSeqs -> NoOffsideTopdeclSeqs
+    
     NoOffsideTopdecl -> NoOffsideTopdeclList
     NoOffsideTopdecl ";" NoOffsideTopdeclList -> NoOffsideTopdeclList {cons("TopdeclSeq")}
 
@@ -57,8 +57,8 @@ exports
     Importdecl -> OffsideImportdecl {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideImportdecl ";" -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
-  >
-    ";" OffsideImportdecl -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
+%%  >
+%%    ";" OffsideImportdecl -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
   >
     Importdecl ";" OffsideImportdecl -> OffsideImportdecl
           {cons("ImportdeclSeq"),
@@ -77,9 +77,9 @@ exports
   context-free priorities
     Topdecl -> OffsideTopdecl {layout(gt(col(left(1)), col(first(1))))}
   >
-    OffsideTopdecl ";" -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
-  >
-    ";" OffsideTopdecl -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
+    OffsideTopdecl ";" -> OffsideTopdecl {prefer,layout(gt(col(first(2)), col(first(1))))}
+%%  >
+%%    ";" OffsideTopdecl -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
   >
     Topdecl ";" OffsideTopdecl -> OffsideTopdecl
           {cons("TopdeclSeq"),
