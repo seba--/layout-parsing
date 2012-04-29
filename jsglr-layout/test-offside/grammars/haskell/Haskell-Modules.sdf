@@ -57,8 +57,8 @@ exports
     Importdecl -> OffsideImportdecl {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideImportdecl ";" -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
-%%  >
-%%    ";" OffsideImportdecl -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideImportdecl -> OffsideImportdecl {layout(gt(col(first(2)), col(first(1))))}
   >
     Importdecl ";" OffsideImportdecl -> OffsideImportdecl
           {cons("ImportdeclSeq"),
@@ -78,8 +78,8 @@ exports
     Topdecl -> OffsideTopdecl {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideTopdecl ";" -> OffsideTopdecl {prefer,layout(gt(col(first(2)), col(first(1))))}
-%%  >
-%%    ";" OffsideTopdecl -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideTopdecl -> OffsideTopdecl {layout(gt(col(first(2)), col(first(1))))}
   >
     Topdecl ";" OffsideTopdecl -> OffsideTopdecl
           {cons("TopdeclSeq"),

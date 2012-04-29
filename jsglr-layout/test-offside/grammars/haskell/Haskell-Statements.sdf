@@ -29,8 +29,8 @@ exports
     Stmt -> OffsideStmt {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideStmt ";" -> OffsideStmt {prefer,layout(gt(col(first(2)), col(first(1))))}
-%%  >
-%%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
   >
     Stmt ";" OffsideStmt -> OffsideStmt
           {cons("StmtSeq"),

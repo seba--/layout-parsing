@@ -47,8 +47,8 @@ exports
     Decl -> OffsideDecl {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideDecl ";" -> OffsideDecl {prefer, layout(gt(col(first(2)), col(first(1))))}
-%%  >
-%%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideDecl -> OffsideDecl {layout(gt(col(first(2)), col(first(1))))}
   >
     Decl ";" OffsideDecl -> OffsideDecl
           {cons("DeclSeq"),

@@ -28,8 +28,8 @@ exports
     Alt -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}
   >
     OffsideAlt ";" -> OffsideAlt {prefer,layout(gt(col(first(2)), col(first(1))))}
-%%  >
-%%    ";" OffsideStmt -> OffsideStmt {layout(gt(col(first(2)), col(first(1))))}
+  >
+    ";" OffsideAlt -> OffsideAlt {layout(gt(col(first(2)), col(first(1))))}
   >
     Alt ";" OffsideAlt -> OffsideAlt
           {cons("AltSeq"),
