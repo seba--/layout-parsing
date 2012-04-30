@@ -58,7 +58,7 @@ public abstract class ParseTestCase extends TestCase {
   // shared by all tests
   static final TermFactory pf = new TermFactory();
   
-  static final Context o = normalize.init();
+  static final Context normalizeContext = normalize.init();
 
   // RemoteParseTableServiceAsync parseTableService =
   // GWT.create(RemoteParseTableService.class);
@@ -184,7 +184,7 @@ public abstract class ParseTestCase extends TestCase {
       if (sglr.getDisambiguator().getAmbiguityCount() > 0)
         System.err.println("ambiguous parse: " + sglr.getDisambiguator().getAmbiguityCount() + " ambiguities");
       
-      IStrategoTerm normalized = parsed == null ? null : normalize_0_0.instance.invoke(o, parsed);
+      IStrategoTerm normalized = parsed == null ? null : normalize_0_0.instance.invoke(normalizeContext, parsed);
       
       try {
         doCompare(filePattern, normalized);

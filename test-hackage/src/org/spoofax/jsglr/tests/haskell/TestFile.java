@@ -18,6 +18,8 @@ import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
 import org.spoofax.terms.io.InlinePrinter;
 import org.strategoxt.lang.Context;
+import org.sugarj.haskell.normalize.normalize;
+import org.sugarj.haskell.normalize.normalize_0_0;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
@@ -36,6 +38,8 @@ public class TestFile extends ChainedTestCase {
   private IStrategoTerm oldResult;
   private org.spoofax.jsglr_orig.shared.SGLRException oldException;
   private String[][] mkExplicitMessages;
+  
+  static final Context normalizeContext = normalize.init();
   
   
   public void testFile_main() throws IOException {
@@ -65,16 +69,18 @@ public class TestFile extends ChainedTestCase {
       System.out.println("[" + pkg + "] preprocessing failed");
     
     newParse(fpp, pkg);
-//    IStrategoTerm normalizedNewResult = normalize(newResult, pkg);
-//    assert newResult == null || normalizedNewResult != null;
 
     File explicitLayoutInput = makeExplicitLayout(fpp, pkg);
     oldParse(explicitLayoutInput, pkg);
 
     writeToFile(newResult, f.getAbsolutePath() + ".new");
-//    writeToFile(normalizedNewResult, f.getAbsolutePath() + ".norm");
     writeToFile(oldResult, f.getAbsolutePath() + ".old");
-
+    
+    IStrategoTerm newResultNorm = normalize(newResult);
+    IStrategoTerm oldResultNorm = normalize(oldResult);
+    writeToFile(newResultNorm, f.getAbsolutePath() + ".new.norm");
+    writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
+    
     boolean ambiguities = false;
     
     if (newParser.parseTree != null && newParser.ambiguities > 0) {
@@ -93,7 +99,7 @@ public class TestFile extends ChainedTestCase {
       System.out.println(mkExplicitMessages[1][0]);
     }
     
-    IStrategoList diff = compare(newResult, oldResult);
+    IStrategoList diff = compare(newResultNorm, oldResultNorm);
     
     if (diff == null || !diff.isEmpty()) {
       if (newException != null) {
@@ -113,7 +119,7 @@ public class TestFile extends ChainedTestCase {
           System.out.println("[" + pkg + "] " + "ambInfix");
       }
       else {
-        ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), oldResult, newResult);
+        ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), oldResultNorm, newResultNorm);
       
         if (LOGGING) {
           System.out.println("*error*" + "[" + pkg + "] " + failure.getMessage());
@@ -327,5 +333,9 @@ public class TestFile extends ChainedTestCase {
       return null;
     }
     return res;
+  }
+  
+  private IStrategoTerm normalize(IStrategoTerm term) {
+    return term == null ? null : normalize_0_0.instance.invoke(normalizeContext, term);
   }
 }
