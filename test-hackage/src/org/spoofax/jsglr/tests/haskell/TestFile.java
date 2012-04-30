@@ -40,7 +40,7 @@ public class TestFile extends ChainedTestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks556702948651775835/4Blocks-0.2/Core/Colour.hs"), "main");
+    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks6218105210166694846/4Blocks-0.2/Interface/CommandKeys.hs"), "main");
     printShortLog();
     raiseFailures();
   }
@@ -79,13 +79,13 @@ public class TestFile extends ChainedTestCase {
     
     if (newParser.parseTree != null && newParser.ambiguities > 0) {
       ambiguities = true;
-      writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
+      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
       System.out.println("*error*" + "[" + pkg + ", new] " + "tree contains " + newParser.ambiguities + " ambiguities");
     }
 
     if (oldParser.parseTree != null && oldParser.ambiguities > 0) {
       ambiguities = true;
-      writeToFile(oldParser.parseTree.toString(), f.getAbsolutePath() + ".old.pt");
+      //writeToFile(oldParser.parseTree.toString(), f.getAbsolutePath() + ".old.pt");
       System.out.println("*error*" + "[" + pkg + ", old] " + "tree contains " + oldParser.ambiguities + " ambiguities");
     }
     
@@ -117,8 +117,11 @@ public class TestFile extends ChainedTestCase {
       
         if (LOGGING) {
           System.out.println("*error*" + "[" + pkg + "] " + failure.getMessage());
-          if (diff != null)
-            System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diff.toString());
+          if (diff != null) {
+            String diffString = diff.toString();
+            writeToFile(diffString, f.getAbsolutePath() + ".diff");
+            System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diffString);
+          }
         }
       }
     }
