@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -39,7 +40,7 @@ public class TestFile extends ChainedTestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/AC-Vector1173316439442320567/AC-Vector-2.3.2/Data/BoundingBox/"), "main");
+    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks556702948651775835/4Blocks-0.2/Core/Colour.hs"), "main");
     printShortLog();
     raiseFailures();
   }
@@ -170,10 +171,19 @@ public class TestFile extends ChainedTestCase {
       newResult = (IStrategoTerm) newParser.parse(input, f.getAbsolutePath());
     } catch (org.spoofax.jsglr.shared.SGLRException e) {
       newException = e;
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      throw new RuntimeException(e);
     }
     
     if (LOGGING) {
-      System.out.println("[" + pkg + ", new] " + "parsing took " + newParser.timeParse + "ms, " + (newResult != null ? "success" : "failure"));
+      String time;
+      if (newParser.timeParse >= 0)
+        time = newParser.timeParse + "ms";
+      else
+        time = "TIMEOUT";
+      System.out.println("[" + pkg + ", new] " + "parsing took " + time + ", " + (newResult != null ? "success" : "failure"));
     }
     
     return newResult;
@@ -250,6 +260,10 @@ public class TestFile extends ChainedTestCase {
       oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
     } catch (org.spoofax.jsglr_orig.shared.SGLRException e) {
       oldException = e;
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      throw new RuntimeException(e);
     }
     
     if (LOGGING) {
