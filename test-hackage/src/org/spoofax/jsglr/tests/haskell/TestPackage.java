@@ -37,6 +37,7 @@ public class TestPackage extends ChainedTestCase {
     addOkFails(fileTester.getOkFailCount());
     addNoParses(fileTester.getNoParseCount());
     addAmbInfix(fileTester.getAmbInfixCount());
+    addTimeout(fileTester.getTimeout());
     fileTester.reset();
   }
   

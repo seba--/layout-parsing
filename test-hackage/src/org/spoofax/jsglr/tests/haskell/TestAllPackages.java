@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -60,6 +58,7 @@ public class TestAllPackages extends ChainedTestCase {
         addOkFails(packageTester.getOkFailCount());
         addNoParses(packageTester.getNoParseCount());
         addAmbInfix(packageTester.getAmbInfixCount());
+        addTimeout(packageTester.getTimeout());
         packageTester.reset();
         
         printShortLog();

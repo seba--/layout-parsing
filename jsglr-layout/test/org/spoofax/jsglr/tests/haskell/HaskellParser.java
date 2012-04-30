@@ -19,9 +19,6 @@ import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.terms.attachments.ParentTermFactory;
-import org.strategoxt.stratego_sglr.parsetree_2_0;
-
-import com.sun.corba.se.impl.orb.ParserTable;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
@@ -62,12 +59,11 @@ public class HaskellParser {
     parseTree = null;
   }
   
-  public Object parse(String input, String filename) throws BadTokenException,
-      TokenExpectedException, ParseException, SGLRException, InterruptedException, ExecutionException {
+  public Object parse(String input, String filename) throws InterruptedException, ExecutionException {
     return parse(input, filename, "Module");
   }
   
-  public Object parse(final String input, final String filename, final String startSymbol) throws BadTokenException, TokenExpectedException, ParseException, SGLRException, InterruptedException, ExecutionException {
+  public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
     reset();
     
     long startAll = System.nanoTime();

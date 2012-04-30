@@ -19,6 +19,7 @@ public abstract class ChainedTestCase extends TestCase {
   private int okFailCount = 0;
   private int noParseCount = 0;
   private int ambInfixCount = 0;
+  private int timeout = 0;
   
   
   protected ParseComparisonFailure logComparisonFailure(String file, IStrategoTerm expected, IStrategoTerm actual) {
@@ -39,6 +40,10 @@ public abstract class ChainedTestCase extends TestCase {
     this.ambInfixCount += ambInfixCount;
   }
   
+  protected void addTimeout(int timeout) {
+    this.timeout += timeout;
+  }
+  
   protected void addOkFails(int okFailCount) {
     this.okFailCount += okFailCount;
   }
@@ -50,7 +55,11 @@ public abstract class ChainedTestCase extends TestCase {
   protected void logAmbInfix() {
     ambInfixCount++;
   }
-  
+
+  protected void logTimeOut() {
+    timeout++;
+  }
+
   protected void logOkFail() {
     okFailCount++;
   }
@@ -64,7 +73,7 @@ public abstract class ChainedTestCase extends TestCase {
   }
   
   protected String getShortLog() {
-    return okCount + " ok, " + okFailCount + " okFail, " + ambInfixCount + " ambInfix, " + noParseCount + " no parse, " + failures.size() + " parse comparison failures";
+    return okCount + " ok, " + okFailCount + " okFail, " + timeout + " timeout, " + ambInfixCount + " ambInfix, " + noParseCount + " no parse, " + failures.size() + " parse comparison failures";
   }
   
   protected void printShortLog() {
@@ -79,6 +88,10 @@ public abstract class ChainedTestCase extends TestCase {
     return ambInfixCount;
   }
   
+  protected int getTimeout() {
+    return timeout;
+  }
+
   protected int getOkFailCount() {
     return okFailCount;
   }
@@ -97,6 +110,7 @@ public abstract class ChainedTestCase extends TestCase {
     okFailCount = 0;
     noParseCount = 0;
     ambInfixCount = 0;
+    timeout = 0;
   }
   
   protected void raiseFailures() throws AssertionError {

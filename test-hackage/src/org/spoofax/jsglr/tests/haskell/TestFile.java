@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
@@ -44,7 +45,7 @@ public class TestFile extends ChainedTestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks6218105210166694846/4Blocks-0.2/Interface/CommandKeys.hs"), "main");
+    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks5721207689685949433/4Blocks-0.2/Core/Brick.hs"), "main");
     printShortLog();
     raiseFailures();
   }
@@ -118,6 +119,9 @@ public class TestFile extends ChainedTestCase {
         if (LOGGING)
           System.out.println("[" + pkg + "] " + "ambInfix");
       }
+      else if (newParser.timeParse < 0 || oldParser.timeParse < 0) {
+        logTimeOut();
+      }
       else {
         ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), oldResultNorm, newResultNorm);
       
@@ -178,12 +182,13 @@ public class TestFile extends ChainedTestCase {
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
     try {
       newResult = (IStrategoTerm) newParser.parse(input, f.getAbsolutePath());
-    } catch (org.spoofax.jsglr.shared.SGLRException e) {
-      newException = e;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
-      throw new RuntimeException(e);
+      if (e.getCause() instanceof SGLRException)
+        newException = (SGLRException) e.getCause();
+      else
+        throw new RuntimeException(e);
     }
     
     if (LOGGING) {
@@ -267,12 +272,13 @@ public class TestFile extends ChainedTestCase {
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
     try {
       oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
-    } catch (org.spoofax.jsglr_orig.shared.SGLRException e) {
-      oldException = e;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
-      throw new RuntimeException(e);
+      if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException)
+        oldException = (org.spoofax.jsglr_orig.shared.SGLRException) e.getCause();
+      else
+        throw new RuntimeException(e);
     }
     
     if (LOGGING) {

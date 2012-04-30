@@ -60,13 +60,11 @@ public class HaskellOrigParser {
    parseTree = null;
   }
   
-  public Object parse(String input, String filename) throws BadTokenException,
-      TokenExpectedException, ParseException, SGLRException, InterruptedException, ExecutionException {
+  public Object parse(String input, String filename) throws InterruptedException, ExecutionException {
     return parse(input, filename, "Module");
   }
   
-  public Object parse(final String input, final String filename, final String startSymbol) throws BadTokenException, TokenExpectedException, ParseException,
-  SGLRException, InterruptedException, ExecutionException {
+  public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
     reset();
     long startAll = System.nanoTime();
     final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
