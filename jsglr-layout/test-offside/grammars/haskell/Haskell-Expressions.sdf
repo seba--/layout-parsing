@@ -64,19 +64,19 @@ exports
      "case" AnyExp "of" AltList          -> Exp  	{cons("Case")}
     }
  
-  context-free syntax
-  	NoOffsideAltList -> NOAltList {cons("AltList")}
-    NoOffsideStmtList -> NOStmtList {cons("StmtList")}
-  	"case" AnyExp "of" NOAltList          -> CaseExp  	{cons("Case")}
-  	"do" NOStmtList -> DoExp {cons("Do")}
+%%   context-free syntax
+%%   	NoOffsideAltList -> NOAltList {cons("AltList")}
+%%     NoOffsideStmtList -> NOStmtList {cons("StmtList")}
+%%   	"case" AnyExp "of" NOAltList          -> CaseExp  	{cons("Case")}
+%%   	"do" NOStmtList -> DoExp {cons("Do")}
   	
   context-free priorities
   	"-" Exp               -> Exp  {cons("Negation")}
     >
   	{right:
   	  Exp Qop Exp -> Exp {cons("OpApp"), right}
-  	  CaseExp Qop Exp -> Exp {cons("OpApp")}
-  	  DoExp Qop Exp -> Exp {cons("OpApp")}
+%%   	  CaseExp Qop Exp -> Exp {cons("OpApp")}
+%%   	  DoExp Qop Exp -> Exp {cons("OpApp")}
   	}
 
   %% context-free priorities
