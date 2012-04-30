@@ -12,4 +12,4 @@ bin/
 /haskell-parsetree-normalize/src/org/sugarj/haskell/normalize/*.java
 /haskell-parsetree-normalize/src/org/sugarj/haskell/normalize/*.java.dep
 
-test-hackage/*.log
+/test-hackage/*.log
