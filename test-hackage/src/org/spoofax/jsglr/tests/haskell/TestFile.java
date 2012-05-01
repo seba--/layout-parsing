@@ -120,7 +120,10 @@ public class TestFile extends ChainedTestCase {
           System.out.println("[" + pkg + "] " + "ambInfix");
       }
       else if (newParser.timeParse < 0 || oldParser.timeParse < 0) {
-        logTimeOut();
+        if (newParser.timeParse < 0)
+          logTimeout(f.getAbsolutePath() + ".new");
+        if (oldParser.timeParse < 0)
+          logTimeout(f.getAbsolutePath() + ".old");
       }
       else {
         ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), oldResultNorm, newResultNorm);

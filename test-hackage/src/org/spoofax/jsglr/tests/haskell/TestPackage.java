@@ -21,7 +21,7 @@ public class TestPackage extends ChainedTestCase {
   private TestFile fileTester = new TestFile();
   
   public void testPackage() throws IOException {
-    testPackage("AC-Vector");
+    testPackage("4Blocks");
     printShortLog();
     raiseFailures();
   }
@@ -38,6 +38,7 @@ public class TestPackage extends ChainedTestCase {
     addNoParses(fileTester.getNoParseCount());
     addAmbInfix(fileTester.getAmbInfixCount());
     addTimeout(fileTester.getTimeout());
+    addComparisonFailures(fileTester.getComparisonFailures());
     fileTester.reset();
   }
   

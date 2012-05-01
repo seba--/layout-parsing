@@ -2,8 +2,10 @@ package org.spoofax.jsglr.tests.haskell;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -14,12 +16,13 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 public abstract class ChainedTestCase extends TestCase {
   
   
-  private List<ParseComparisonFailure> failures = new ArrayList<ParseComparisonFailure>();
+  private List<AssertionFailedError> failures = new ArrayList<AssertionFailedError>();
   private int okCount = 0;
   private int okFailCount = 0;
   private int noParseCount = 0;
   private int ambInfixCount = 0;
   private int timeout = 0;
+  private int comparisonFailures = 0;
   
   
   protected ParseComparisonFailure logComparisonFailure(String file, IStrategoTerm expected, IStrategoTerm actual) {
@@ -28,7 +31,7 @@ public abstract class ChainedTestCase extends TestCase {
     return f;
   }
   
-  protected void addAllFailures(Collection<? extends ParseComparisonFailure> failures) {
+  protected void addAllFailures(Collection<? extends AssertionFailedError> failures) {
     this.failures.addAll(failures);
   }
   
@@ -43,7 +46,11 @@ public abstract class ChainedTestCase extends TestCase {
   protected void addTimeout(int timeout) {
     this.timeout += timeout;
   }
-  
+
+  protected void addComparisonFailures(int comparisonFailures) {
+    this.comparisonFailures += comparisonFailures;
+  }
+
   protected void addOkFails(int okFailCount) {
     this.okFailCount += okFailCount;
   }
@@ -56,8 +63,9 @@ public abstract class ChainedTestCase extends TestCase {
     ambInfixCount++;
   }
 
-  protected void logTimeOut() {
+  protected void logTimeout(String f) {
     timeout++;
+    failures.add(new TimeoutFailure(f));
   }
 
   protected void logOkFail() {
@@ -73,7 +81,7 @@ public abstract class ChainedTestCase extends TestCase {
   }
   
   protected String getShortLog() {
-    return okCount + " ok, " + okFailCount + " okFail, " + timeout + " timeout, " + ambInfixCount + " ambInfix, " + noParseCount + " no parse, " + failures.size() + " parse comparison failures";
+    return okCount + " ok, " + okFailCount + " okFail, " + timeout + " timeout, " + ambInfixCount + " ambInfix, " + noParseCount + " no parse, " + comparisonFailures + " parse comparison failures";
   }
   
   protected void printShortLog() {
@@ -90,6 +98,10 @@ public abstract class ChainedTestCase extends TestCase {
   
   protected int getTimeout() {
     return timeout;
+  }
+
+  protected int getComparisonFailures() {
+    return comparisonFailures;
   }
 
   protected int getOkFailCount() {
@@ -111,14 +123,23 @@ public abstract class ChainedTestCase extends TestCase {
     noParseCount = 0;
     ambInfixCount = 0;
     timeout = 0;
+    comparisonFailures = 0;
   }
   
   protected void raiseFailures() throws AssertionError {
-    if (!failures.isEmpty())
-      throw failures.get(0);
+    if (!failures.isEmpty()) {
+      StringBuilder builder = new StringBuilder();
+      for (Iterator<AssertionFailedError> it = failures.iterator(); it.hasNext(); ) {
+        builder.append(it.next().getMessage()).append("\n");
+        if (it.hasNext())
+          builder.append('\n');
+      }
+      
+      throw new AssertionFailedError(builder.toString());
+    }
   }
   
-  protected List<ParseComparisonFailure> getFailures() {
+  protected List<AssertionFailedError> getFailures() {
     return failures;
   }
   

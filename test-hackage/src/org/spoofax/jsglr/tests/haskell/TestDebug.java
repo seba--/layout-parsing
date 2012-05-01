@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
@@ -17,7 +18,7 @@ public class TestDebug extends TestCase {
   public void test() throws IOException {
     List<String> files = new ArrayList<String>();
     
-    files.add("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/AC-Vector7228716350751816011/AC-Vector-2.3.2/Data/BoundingBox/B1.hs");
+    files.add("/Users/seba/tmp/scale.hs");
     
     for (String f : files)
       fileTester.testFile(new File(f), "test");
@@ -26,7 +27,7 @@ public class TestDebug extends TestCase {
     
     fileTester.printShortLog();
     
-    for (ParseComparisonFailure fail : fileTester.getFailures())
+    for (AssertionFailedError fail : fileTester.getFailures())
       System.out.println("*error*" + fail.getMessage());
     
     fileTester.raiseFailures();
