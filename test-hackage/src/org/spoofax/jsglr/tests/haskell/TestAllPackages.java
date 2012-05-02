@@ -59,6 +59,7 @@ public class TestAllPackages extends ChainedTestCase {
         addNoParses(packageTester.getNoParseCount());
         addAmbInfix(packageTester.getAmbInfixCount());
         addTimeout(packageTester.getTimeout());
+        addComparisonFailures(packageTester.getComparisonFailures());
         packageTester.reset();
         
         printShortLog();
