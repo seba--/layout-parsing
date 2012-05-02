@@ -1,1 +1,1 @@
-Module("Main",Some(Exportlist(["main"])),Body([],[Valdef(Var("a"),Lit(Int("1"))),Valdef(Var("a"),Lit(Int("1")))]))
+Module("Main",Some(Exportlist(["main"])),Body(Empty,TopdeclSeq(Valdef(Var("a"),Lit(Int("1"))),Valdef(Var("a"),Lit(Int("1"))))))

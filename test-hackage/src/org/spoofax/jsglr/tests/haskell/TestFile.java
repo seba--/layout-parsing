@@ -44,8 +44,8 @@ public class TestFile extends ChainedTestCase {
   
   
   public void testFile_main() throws IOException {
-    // src/org/spoofax/jsglr/tests/haskell/main.hs
-    testFile(new File("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/4Blocks5721207689685949433/4Blocks-0.2/Core/Brick.hs"), "main");
+    
+    testFile(new File("src/org/spoofax/jsglr/tests/haskell/main.hs"), "main");
     printShortLog();
     raiseFailures();
   }
