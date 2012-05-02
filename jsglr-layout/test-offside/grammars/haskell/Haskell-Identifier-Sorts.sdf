@@ -40,8 +40,8 @@ exports
   %% that quantifies a variable, constructor, type or operator
   context-free restrictions
   	Qconid -/- [\.] . [a-zA-Z\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
-  	Qconid -/- [\.] . [\_] . [A-Za-z0-9\'\_]
-  	Qconid -/- [\.] . [\:] . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+  	Qconid -/- [\.] . [\_] %% . [A-Za-z0-9\'\_]
+  	Qconid -/- [\.] . [\:] %% . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
   	
    	
   %% The following portion can be put into module Haskell-Infix
