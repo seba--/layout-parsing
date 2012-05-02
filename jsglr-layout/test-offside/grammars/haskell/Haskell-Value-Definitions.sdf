@@ -14,9 +14,6 @@ exports
     Pat Varop Pat -> FunLHS {cons("OpFunLHS")}
     "(" FunLHS ")" APat+ -> FunLHS {cons("NestedFunLHS")}
 
-    Decl ";" -> Decl
-    
-
   context-free syntax
     "where" DeclList       -> Where     {cons("Where")}
     

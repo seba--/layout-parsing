@@ -12,6 +12,7 @@ exports
     \/ [\<\=\>\?\@\\\^\|\-\~] -> Symbol
     Symbol (Symbol | [\:])*   -> VARSYM
     [\:] (Symbol | [\:])*     -> CONSYM
+    "="                -> VARSYM {reject}
     ReservedOp                -> VARSYM {reject}
     ReservedOp                -> CONSYM {reject}
 
