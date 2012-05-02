@@ -1,9 +1,9 @@
 <project>
 
-	<condition property="bindir" value="../../tools/" else="/Users/seba/.nix-profile/bin/">
+	<condition property="binary.sdf2table" value="D:\\layout-parsing\\jsglr-layout\\test-offside\\tools\\sdf2table.exe" else="/Users/seba/.nix-profile/bin/sdf2table">
 		<os family="windows" />
 	</condition>
-	
+
 	<property name="strategoxt" value="../../tools/strategoxt.jar" />
 	
 	<target name="compile">
@@ -46,7 +46,7 @@
 		<attribute name="module" />
 		<attribute name="failonerror" default="true" />
 		<sequential>
-			<exec executable="${bindir}sdf2table" failonerror="@{failonerror}">
+			<exec executable="${binary.sdf2table}" failonerror="@{failonerror}">
 				<arg value="-i" />
 				<arg value="@{source}" />
 				<arg value="-o" />
