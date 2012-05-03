@@ -383,9 +383,11 @@ public class ParseNode extends AbstractParseNode {
       if (!kid.isLayout() && !kid.isEmpty() && !kid.ignoreIndent(parseTable)) {
         if (kid.getLine() > getLine() && (left == null || kid.getColumn() < left.getColumn()))
           left = kid;
-        if (kid.getLeft(parseTable) != null && kid.getLeft(parseTable).getLine() > getLine() &&
-            (left == null || kid.getLeft(parseTable).getColumn() < left.getColumn()))
-          left = kid.getLeft(parseTable);
+        AbstractParseNode kidLeft = kid.getLeft(parseTable);
+        if (kidLeft != null && 
+            kidLeft.getLine() > getLine() &&
+            (left == null || kidLeft.getColumn() < left.getColumn()))
+          left = kidLeft;
       }
   }
 
