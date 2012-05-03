@@ -507,10 +507,8 @@ public class Disambiguator {
           ambiguityManager.decreaseAmbiguityCount(layoutFilter.getDisambiguationCount());
         }
         
-        if (rejected) {
-          output.push(null);
-          continue;
-        }
+        if (rejected)
+          return null;
         
         output.push(t);
       }
@@ -555,7 +553,7 @@ public class Disambiguator {
           }
           
           if (rejected)
-            output.push(null);
+            return null;
           else {
             output.push(t);
             if (t.getChildren().length > 0 && !t.isParseProductionChain()) {
@@ -566,7 +564,7 @@ public class Disambiguator {
           }
           break;
         case PARSE_PRODUCTION_NODE:
-          // leaf node -- do thing (cannot be any ambiguities here)
+          // leaf node -- do nothing (cannot be any ambiguities here)
           output.push(t);
           break;
         case CYCLE:
