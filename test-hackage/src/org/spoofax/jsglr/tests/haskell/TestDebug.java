@@ -18,10 +18,14 @@ public class TestDebug extends TestCase {
   public void test() throws IOException {
     List<String> files = new ArrayList<String>();
     
-    files.add("/Users/seba/tmp/scale.hs");
+    files.add("c:/Users/seba.INFORMATIK.000/AppData/Local/Temp/4Blocks7755594627937130244/4Blocks-0.2/Core/Brick.hs");
     
-    for (String f : files)
+    for (String f : files) {
       fileTester.testFile(new File(f), "test");
+      String path = new File(f).getAbsolutePath() + ".new.pt";
+      Utilities.writeToFile(fileTester.newParser.parseTree.toString(), path);
+      System.out.println("wrote parse tree to " + path);
+    }
     
     System.out.flush();
     

@@ -1,7 +1,6 @@
 package org.spoofax.jsglr.tests.haskell;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +16,6 @@ import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.haskell_orig.HaskellOrigParser;
 import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
-import org.spoofax.terms.io.InlinePrinter;
 import org.strategoxt.lang.Context;
 import org.sugarj.haskell.normalize.normalize;
 import org.sugarj.haskell.normalize.normalize_0_0;
@@ -31,8 +29,8 @@ public class TestFile extends ChainedTestCase {
   
 //  private Context normalizeContext = NormalizeAST.init();
   private Context compareContext = CompareAST.init();
-  private HaskellParser newParser = new HaskellParser();
-  private HaskellOrigParser oldParser = new HaskellOrigParser();
+  public HaskellParser newParser = new HaskellParser();
+  public HaskellOrigParser oldParser = new HaskellOrigParser();
   
   private IStrategoTerm newResult;
   private org.spoofax.jsglr.shared.SGLRException newException;
@@ -45,7 +43,8 @@ public class TestFile extends ChainedTestCase {
   
   public void testFile_main() throws IOException {
     
-    testFile(new File("src/org/spoofax/jsglr/tests/haskell/main.hs"), "main");
+    // src/org/spoofax/jsglr/tests/haskell/main.hs
+    testFile(new File("c:/Users/seba.INFORMATIK.000/AppData/Local/Temp/4Blocks7755594627937130244/4Blocks-0.2/Core/Brick.hs"), "main");
     printShortLog();
     raiseFailures();
   }
@@ -74,13 +73,13 @@ public class TestFile extends ChainedTestCase {
     File explicitLayoutInput = makeExplicitLayout(fpp, pkg);
     oldParse(explicitLayoutInput, pkg);
 
-    writeToFile(newResult, f.getAbsolutePath() + ".new");
-    writeToFile(oldResult, f.getAbsolutePath() + ".old");
+    Utilities.writeToFile(newResult, f.getAbsolutePath() + ".new");
+    Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
     
     IStrategoTerm newResultNorm = normalize(newResult);
     IStrategoTerm oldResultNorm = normalize(oldResult);
-    writeToFile(newResultNorm, f.getAbsolutePath() + ".new.norm");
-    writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
+    Utilities.writeToFile(newResultNorm, f.getAbsolutePath() + ".new.norm");
+    Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
     
     boolean ambiguities = false;
     
@@ -132,7 +131,7 @@ public class TestFile extends ChainedTestCase {
           System.out.println("*error*" + "[" + pkg + "] " + failure.getMessage());
           if (diff != null) {
             String diffString = diff.toString();
-            writeToFile(diffString, f.getAbsolutePath() + ".diff");
+            Utilities.writeToFile(diffString, f.getAbsolutePath() + ".diff");
             System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diffString);
           }
         }
@@ -289,35 +288,6 @@ public class TestFile extends ChainedTestCase {
     }
     
     return oldResult;
-  }
-  
-  private void writeToFile(IStrategoTerm t, String f) {
-    String content;
-    if (t == null)
-      content = "null";
-    else {
-      InlinePrinter printer = new InlinePrinter();
-      t.prettyPrint(printer);
-      content = printer.getString();
-    }
-    writeToFile(content, f);
-  }
-  
-  private void writeToFile(String s, String f) {
-    FileOutputStream fos = null;
-    try {
-      fos = new FileOutputStream(f);
-      fos.write(s.getBytes());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } finally {
-      if (fos != null)
-        try {
-          fos.close();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-    }
   }
   
   private File preprocess(File f, String pkg) {
