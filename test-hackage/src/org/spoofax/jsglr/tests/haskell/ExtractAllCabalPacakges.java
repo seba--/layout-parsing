@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
+
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  */
@@ -49,7 +51,12 @@ public class ExtractAllCabalPacakges {
       }
     };
     
-    CommandExecution.execute(out, System.err, null, cmds);
+    try {
+      CommandExecution.execute(out, System.err, null, cmds);
+    } catch (ExecutionError e) {
+      String s = list.isEmpty() ? "" : (": " + list.get(list.size() - 1));
+      throw new ExecutionError(e.getMessage() + s, e.getCmds(), e.getExitValue(), e.getMessages(), e);
+    }
 
     try {
       out.close();
