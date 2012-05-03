@@ -214,6 +214,10 @@ public class Disambiguator {
     return layoutFiltering;
   }
 
+  public int getLayoutFilterCallCount() {
+    return layoutFilter.getFilterCallCount();
+  }
+
   public final void setDefaultFilters() {
     filterAny = true;
     filterCycles = false; // TODO: filterCycles; enable by default
@@ -269,8 +273,10 @@ public class Disambiguator {
       return yieldTreeTop(t);
 
     } finally {
-      System.out.println("layout filter calls: " + layoutFilter.filterCallCount);
-      System.out.println("illegal layout count: " + layoutFiltering);
+      System.out.println("layout filter calls at parse time: " + parser.getLayoutFilterCallCount());
+      System.out.println("illegal layout filtered at parse time: " + parser.getLayoutFilteringCount());
+      System.out.println("layout filter calls at disambiguation time: " + getLayoutFilterCallCount());
+      System.out.println("illegal layout filtered at disambiguation time: " + getLayoutFilteringCount());
       System.out.println("enforced newline skips: " + parser.getEnforcedNewlineSkip());
       initializeFromParser(null);
     }
@@ -289,7 +295,7 @@ public class Disambiguator {
       prodReader = new ProductionAttributeReader(parseTable.getFactory());
       ambiguityManager = parser.getAmbiguityManager();
       ambiguityCount = 0;
-      layoutFilter = new LayoutFilter(parseTable);
+      layoutFilter = new LayoutFilter(parseTable, false);
       layoutFiltering = 0;
     }
   }

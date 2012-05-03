@@ -23,17 +23,32 @@ public class LayoutFilter {
 
   private final Object NO_VALUE = null;
   
+
+  private final boolean atParseTime;
   private ParseTable parseTable;
   private ProductionAttributeReader attrReader;
   private int disambiguationCount;
-  public int filterCallCount = 0;
+  private int filterCallCount = 0;
   
-  public LayoutFilter(ParseTable parseTable) {
+  /**
+   * 
+   * @param parseTable
+   * @param atParseTime if true, the filter is conservative: it only discards
+   *   trees whose parser state can be discarded in general. This is needed
+   *   when discarding trees at parse time, when a later join may represent
+   *   alternative trees by the same parser state.
+   */
+  public LayoutFilter(ParseTable parseTable, boolean atParseTime) {
     this.parseTable = parseTable;
     this.attrReader = new ProductionAttributeReader(parseTable.getFactory());
+    this.atParseTime = atParseTime;
   }
   
   int error = 0;
+  
+  public int getFilterCallCount() {
+    return filterCallCount;
+  }
   
   public int getDisambiguationCount() {
     return disambiguationCount;
@@ -51,8 +66,10 @@ public class LayoutFilter {
     
     disambiguationCount = 0;
     filterCallCount++;
-    boolean b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(), Boolean.class);
-    return evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(), Boolean.class);
+    Boolean b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(), Boolean.class);
+    if (b == NO_VALUE)
+      return true;
+    return b;
   }
   
   @SuppressWarnings("unchecked")
@@ -107,7 +124,7 @@ public class LayoutFilter {
       if (consName.equals("or")) {
         ensureChildCount(constraint, 2, consName);
         Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env, Boolean.class);
-        if (b1)
+        if (b1 != NO_VALUE && b1)
           return true;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env, Boolean.class);
         return b2;
@@ -115,7 +132,7 @@ public class LayoutFilter {
       if (consName.equals("and")) {
         ensureChildCount(constraint, 2, consName);
         Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env, Boolean.class);
-        if (!b1)
+        if (b1 != NO_VALUE && !b1)
           return false;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env, Boolean.class);
         return b2;
@@ -123,6 +140,8 @@ public class LayoutFilter {
       if (consName.equals("not")) {
         ensureChildCount(constraint, 1, consName);
         Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env, Boolean.class);
+        if (b1 == NO_VALUE)
+          return NO_VALUE;
         return !b1;
       }
       if (consName.equals("all")) {
@@ -176,19 +195,21 @@ public class LayoutFilter {
         
         if (!left && !right)
           return false;
-        if (left && !right)
+        if (left && !right) {
           ((ParseNode) next).disambiguate(next.getChildren()[0]);
-        if (!left && right)
-          ((ParseNode) next).disambiguate(next.getChildren()[1]);
-        if (left && !right || !left && right)
           disambiguationCount++;
+        }
+        if (!left && right) {
+          ((ParseNode) next).disambiguate(next.getChildren()[1]);
+          disambiguationCount++;
+        }
       }
       else if (next.isParseProductionNode() || sort != null && !sort.equals(sortOfNode(next)) || !isListNode(next)){
         Object old = env.get(v);
         env.put(v, next);
         try {
-          boolean b = evalConstraint(constraint.getSubterm(2), kids, env, Boolean.class);
-          if (!b)
+          Boolean b = evalConstraint(constraint.getSubterm(2), kids, env, Boolean.class);
+          if (b != NO_VALUE && !b)
             return false;
         } finally {
           if (old == null)
@@ -247,7 +268,7 @@ public class LayoutFilter {
   
   private Boolean binArithComp(String comp, Integer i1, Integer i2) {
     if (i1 == NO_VALUE || i2 == NO_VALUE)
-      return true;
+      return noValue();
     
     if (comp.equals("eq"))
       return i1 == i2;
@@ -263,8 +284,6 @@ public class LayoutFilter {
     throw new IllegalStateException("unknown comparator " + comp);
   }
 
-  private int leftCount = 0;
-  
   private AbstractParseNode nodeSelector(String sel, AbstractParseNode t) {
     if (sel.equals("first"))
       if (isNothing(t))
@@ -272,53 +291,11 @@ public class LayoutFilter {
       else
         return t;
     
-    if (sel.equals("left")) {
-      return t.getLeft(parseTable);
-//      Stack<AbstractParseNode> stack = new Stack<AbstractParseNode>();
-//      stack.push(t);
-//      AbstractParseNode left = null;
-//      
-//      
-//      while (!stack.isEmpty()) {
-//        AbstractParseNode next = stack.pop();
-//        
-//        if (next.noLeft) {
-//          leftCount++;
-//          continue;
-//        }
-//
-//        if (isNothing(next))
-//          continue;
-//        
-//        if (!next.isParseProductionNode() && !next.isAmbNode() && parseTable.getLabel(next.getLabel()).getAttributes().isIgnoreIndent())
-//          continue;
-//        
-//        if (next.left != null)
-//          leftCount++;
-//
-//        AbstractParseNode compareNode = next.left != null ? next.left : next;
-//        
-//        if (compareNode.getLine() > t.getLine()
-//            && (left == null || compareNode.getColumn() < left.getColumn())
-//            && !isNothing(compareNode))
-//          left = compareNode;
-//        
-//        if (next.left == null)
-//          for (int i = next.getChildren().length - 1; i >= 0; i--)
-//            stack.push(next.getChildren()[i]);
-//      }
-//
-//      // System.out.println(leftCount);
-//      
-//      if (left == null || isNothing(left)) {
-//        t.noLeft = true;
-//        return noValue();
-//      }
-//
-//      t.left = left;
-//
-//      return left;
-    }
+    if (sel.equals("left"))
+      if (atParseTime)
+        return noValue();
+      else
+        return t.getLeft(parseTable);
     
     throw new IllegalStateException("unknown selector " + sel);
   }
@@ -333,8 +310,9 @@ public class LayoutFilter {
       throw new IllegalStateException("not enough arguments to " + what);
   }
   
+  @SuppressWarnings("unchecked")
   private <T> T noValue() {
-    return null;
+    return (T) NO_VALUE;
   }
   
   private boolean isNothing(AbstractParseNode n) {

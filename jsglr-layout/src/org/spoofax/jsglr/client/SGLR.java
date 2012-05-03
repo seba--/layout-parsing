@@ -25,6 +25,9 @@ import org.spoofax.jsglr.shared.Tools;
 public class SGLR {
 
   private static final boolean ENFORCE_NEWLINE_FITER = true;
+  private static final boolean PARSE_TIME_LAYOUT_FITER = true;
+  
+  private int layoutFiltering;
   
   private int enforcedNewlineSkip = 0;
   
@@ -126,7 +129,15 @@ public class SGLR {
 	public int getEnforcedNewlineSkip() {
 	  return enforcedNewlineSkip;
 	}
-    
+   
+	public int getLayoutFilteringCount() {
+    return layoutFiltering;
+  }
+	
+	 public int getLayoutFilterCallCount() {
+	    return layoutFilter.getFilterCallCount();
+	  }
+	  
     /**
      * Attempts to set a timeout for parsing.
      * Default implementation throws an
@@ -166,7 +177,7 @@ public class SGLR {
 		recoverIntegrator = null;
 		history = new ParserHistory();
 		setTreeBuilder(treeBuilder);
-		layoutFilter = new LayoutFilter(parseTable);
+		layoutFilter = new LayoutFilter(parseTable, true);
 	}
 
 	public void setUseStructureRecovery(boolean useRecovery, IRecoveryParser parser) {
@@ -391,6 +402,7 @@ public class SGLR {
 		ambiguityManager = new AmbiguityManager(input.length());
 		parseTree = null;
 		enforcedNewlineSkip = 0;
+		layoutFiltering = 0;
 		if (getTreeBuilder().getTokenizer() != null) {
 			// Make sure we use the same starting offsets as the tokenizer, if any
 			// (crucial for parsing fragments at a time)
@@ -662,27 +674,36 @@ public class SGLR {
 			final State next = parseTable.go(st0.state, prod.label);
 			logReductionPath(prod, path, st0, next);
 			
+			if (SGLR.PARSE_TIME_LAYOUT_FITER &&
+			    !layoutFilter.hasValidLayout(prod.label, kids)) {
+			  layoutFiltering++;
+			  continue;
+			}
+			else
+			  layoutFiltering += layoutFilter.getDisambiguationCount();
+			
 			if (SGLR.ENFORCE_NEWLINE_FITER && 
-			    parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
-			  boolean hasNewline = false;
-			  for (int j = kids.length - 1; j >= 0; j--) {
-			    int status = kids[j].getLayoutStatus();
-			    
-			    if (status == AbstractParseNode.NEWLINE_LAYOUT) {
-			      hasNewline = true;
-  			    break;
-			    }
-  			  if (status == AbstractParseNode.OTHER_LAYOUT) {
-  			    hasNewline = false;
-  			    break;
-  			  }
-			  }
-  			
-			  if (!hasNewline) {
+          parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
+        boolean hasNewline = false;
+        for (int j = kids.length - 1; j >= 0; j--) {
+          int status = kids[j].getLayoutStatus();
+          
+          if (status == AbstractParseNode.NEWLINE_LAYOUT) {
+            hasNewline = true;
+            break;
+          }
+          if (status == AbstractParseNode.OTHER_LAYOUT) {
+            hasNewline = false;
+            break;
+          }
+        }
+        
+        if (!hasNewline) {
           enforcedNewlineSkip++;
           continue;
-			  }
-			}
+        }
+      }
+
 
 			if(!prod.isRecoverProduction())
 				reducer(st0, next, prod, kids, path);
