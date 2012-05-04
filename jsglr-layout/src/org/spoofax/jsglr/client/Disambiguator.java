@@ -17,8 +17,8 @@ import static org.spoofax.jsglr.client.AbstractParseNode.REJECT;
 import static org.spoofax.terms.Term.termAt;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import org.spoofax.NotImplementedException;
 import org.spoofax.interpreter.terms.IStrategoAppl;
@@ -461,15 +461,15 @@ public class Disambiguator {
       Tools.debug("filterTree(node)    - ", node);
     }
     
-    Stack<AbstractParseNode> input= new Stack<AbstractParseNode>();
-    Stack<AbstractParseNode> output = new Stack<AbstractParseNode>();
-    Stack<AbstractParseNode> pending = new Stack<AbstractParseNode>();
+    LinkedList<AbstractParseNode> input= new LinkedList<AbstractParseNode>();
+    LinkedList<AbstractParseNode> output = new LinkedList<AbstractParseNode>();
+    LinkedList<AbstractParseNode> pending = new LinkedList<AbstractParseNode>();
 
-    input.add(node);
+    input.push(node);
 
     while (!input.isEmpty() || !pending.isEmpty()) {
       int pendingPeekPos = pending.isEmpty() ? -1 : output.size() - pending.peek().getChildren().length - 1;
-      if (!pending.isEmpty() && pendingPeekPos >= 0 && output.get(pendingPeekPos) == pending.peek()) {
+      if (!pending.isEmpty() && pendingPeekPos >= 0 && output.get(output.size() - pendingPeekPos - 1) == pending.peek()) {
         AbstractParseNode t = pending.pop();
         
         AbstractParseNode[] args = new AbstractParseNode[t.getChildren().length];
