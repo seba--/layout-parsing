@@ -10,7 +10,10 @@ exports
     "--" ~[\n\r]* ([\r\n] | EOF)    -> Comment
     -> EOF
 
-    "{-" {L-Char* NComment}* "-}" -> NComment
+    "{-" NCommentContent* "-}" -> NComment
+    NCommentText -> NCommentContent
+    NComment -> NCommentContent
+    L-Char+ -> NCommentText
 
     ~[\-\{]                       -> L-Char
     Hyphen                        -> L-Char
@@ -30,6 +33,7 @@ exports
     CurlyOpen -/- [\-]
     EOF -/- ~[]
     NewLineLayout -/- [\r\n\t\ ]
+    NCommentText -/- ~[\-\{] | [\-].~[\}] | [\{].~[\-]
 
   context-free restrictions
     LAYOUT? -/- [\ \t\n\r] | [\-].[\-] | [\{].[\-]
