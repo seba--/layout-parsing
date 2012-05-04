@@ -230,8 +230,19 @@ public class TreeBuilder extends TopdownTreeBuilder {
 			if (inLexicalContext && subnode.isParseProductionChain()) {
 				child = chainToTreeTopdown(subnode);
 			} else {
-				// TODO: Optimize stack - inline toTreeTopdown case selection?
-				child = nodeToTreeTopdown(subnode);
+	      switch (subnode.getNodeType()) {
+	      case AbstractParseNode.CYCLE :
+	        child = buildTreeCycle((CycleParseNode) subnode);
+	        break;
+	      case AbstractParseNode.PARSE_PRODUCTION_NODE :
+	        child = buildTreeProduction((ParseProductionNode) subnode);
+	        break;
+	      case AbstractParseNode.AMBIGUITY :
+	        child = buildTreeAmb((ParseNode) subnode);
+	        break;
+	      default :
+	        child = buildTreeNode((ParseNode) subnode);
+	      }
 			}
 			// TODO: handle ambiguities in lexicals better (ignored now)
 			if (inLexicalContext)
@@ -282,25 +293,22 @@ public class TreeBuilder extends TopdownTreeBuilder {
 		buildTreeProduction((ParseProductionNode) node);
 		return null;
 	}
-	
-	public Object nodeToTreeTopdown(AbstractParseNode n) {
-	  switch (n.getNodeType()) {
-	  case AbstractParseNode.CYCLE :
-	    return buildTreeCycle((CycleParseNode) n);
-	  case AbstractParseNode.PARSE_PRODUCTION_NODE :
-	    return buildTreeProduction((ParseProductionNode) n);
-	  case AbstractParseNode.AMBIGUITY :
-	    return buildTreeAmb((ParseNode) n);
-    default :
-      return buildTreeNode((ParseNode) n);
-	  }
-	}
 
 	@Override
 	public Object buildTreeAmb(ParseNode a) {
 		if (inLexicalContext) {
 			// Ignore ambiguities in lexicals; can't show them in AST
-			return nodeToTreeTopdown(a.getChildren()[0]);
+			AbstractParseNode n = a.getChildren()[0];
+			switch (n.getNodeType()) {
+	    case AbstractParseNode.CYCLE :
+	      return buildTreeCycle((CycleParseNode) n);
+	    case AbstractParseNode.PARSE_PRODUCTION_NODE :
+	      return buildTreeProduction((ParseProductionNode) n);
+	    case AbstractParseNode.AMBIGUITY :
+	      return buildTreeAmb((ParseNode) n);
+	    default :
+	      return buildTreeNode((ParseNode) n);
+	    }
 		}
 		
 		final int oldOffset = offset;
@@ -318,7 +326,22 @@ public class TreeBuilder extends TopdownTreeBuilder {
 			tokenizer.setStartOffset(oldBeginOffset);
 			inLexicalContext = oldLexicalContext;
 			
-			Object child = tryBuildAutoConcatListNode(nodeToTreeTopdown(subnode));
+			Object subtree;
+			switch (subnode.getNodeType()) {
+      case AbstractParseNode.CYCLE :
+        subtree = buildTreeCycle((CycleParseNode) subnode);
+        break;
+      case AbstractParseNode.PARSE_PRODUCTION_NODE :
+        subtree = buildTreeProduction((ParseProductionNode) subnode);
+        break;
+      case AbstractParseNode.AMBIGUITY :
+        subtree = buildTreeAmb((ParseNode) subnode);
+        break;
+      default :
+        subtree = buildTreeNode((ParseNode) subnode);
+      }
+			Object child = tryBuildAutoConcatListNode(subtree);
+			
 			if (child != null) children.add(child);
 		}
 		IToken leftToken = null; 
