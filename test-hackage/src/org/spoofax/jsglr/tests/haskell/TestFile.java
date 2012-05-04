@@ -64,6 +64,8 @@ public class TestFile extends ChainedTestCase {
       System.out.println("[" + pkg + "] " + "parsing " + f.getAbsolutePath());
     
     File preparedInput = prepareFile(pkg, f);
+    if (preparedInput == null)
+      return;
     
     newParseCorrectness(preparedInput, pkg);
     File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);

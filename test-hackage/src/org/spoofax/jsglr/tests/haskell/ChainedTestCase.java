@@ -28,6 +28,7 @@ public abstract class ChainedTestCase extends TestCase {
   protected ParseComparisonFailure logComparisonFailure(String file, IStrategoTerm expected, IStrategoTerm actual) {
     ParseComparisonFailure f = new ParseComparisonFailure(file, expected, actual);
     failures.add(f);
+    comparisonFailures++;
     return f;
   }
   
