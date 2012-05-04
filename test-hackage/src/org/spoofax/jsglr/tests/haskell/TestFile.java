@@ -29,14 +29,18 @@ public class TestFile extends ChainedTestCase {
   
 //  private Context normalizeContext = NormalizeAST.init();
   private Context compareContext = CompareAST.init();
-  public HaskellParser newParser = new HaskellParser();
+  public HaskellParser newParserCorrectness = new HaskellParser();
+  public HaskellParser newParserSpeed = new HaskellParser();
   public HaskellOrigParser oldParser = new HaskellOrigParser();
   
-  private IStrategoTerm newResult;
-  private org.spoofax.jsglr.shared.SGLRException newException;
+  private IStrategoTerm newResultCorrectness;
+  private Throwable newExceptionCorrectness;
+  private IStrategoTerm newResultSpeed;
+  private Throwable newExceptionSpeed;
   private IStrategoTerm oldResult;
   private org.spoofax.jsglr_orig.shared.SGLRException oldException;
   private String[][] mkExplicitMessages;
+  private String[][] mkImplicitMessages;
   
   static final Context normalizeContext = normalize.init();
   
@@ -50,159 +54,125 @@ public class TestFile extends ChainedTestCase {
   }
   
   public void testFile(File f, String pkg) throws IOException {
-    if (f.getPath().indexOf(pkg+"-") > 0 && TestConfiguration.SKIP_FILES.contains(f.getPath().substring(f.getPath().indexOf(pkg+"-")))) {
+    if (TestConfiguration.skipFile(f)) {
       if (LOGGING)
         System.out.println("[" + pkg + "] " + "skipping " + f.getAbsolutePath());
       return;
     }
-      
     
     if (LOGGING)
       System.out.println("[" + pkg + "] " + "parsing " + f.getAbsolutePath());
     
+    File preparedInput = prepareFile(pkg, f);
+    
+    newParseCorrectness(preparedInput, pkg);
+    File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
+    newParseSpeed(implicitLayoutInput, pkg);
+
+    File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
+    oldParse(explicitLayoutInput, pkg);
+
+    Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new");
+    Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
+    
+    checkAmbiguities(pkg);
+    checkMakeLayoutMessages();
+    checkExceptions(pkg);
+    
+    boolean failed = 
+      checkTimeout(f) || 
+      checkAmbInfix(pkg) ||
+      checkDiff(pkg, f) ||
+      checkReferenceParserFailed(pkg, explicitLayoutInput) || 
+      checkAllParsersFailed(pkg, explicitLayoutInput);
+    
+    if (!failed) {
+      assert newResultCorrectness != null && newResultSpeed != null && oldResult != null;
+      logOk();
+      if (LOGGING)
+        System.out.println("[" + pkg + "] " + "ok");
+    }
+  }
+  
+  private File prepareFile(String pkg, File f) throws IOException {
     File fnorm = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().length() - 3) + "-norm.hs");
     DeleteUnicode.deleteUnicode(f.getAbsolutePath(), fnorm.getAbsolutePath());
-    
     File fpp = preprocess(fnorm, pkg);
     
     if (fpp == null && LOGGING)
       System.out.println("[" + pkg + "] preprocessing failed");
     
-    newParse(fpp, pkg);
-
-    File explicitLayoutInput = makeExplicitLayout(fpp, pkg);
-    oldParse(explicitLayoutInput, pkg);
-
-    Utilities.writeToFile(newResult, f.getAbsolutePath() + ".new");
-    Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
-    
-    IStrategoTerm newResultNorm = normalize(newResult);
-    IStrategoTerm oldResultNorm = normalize(oldResult);
-    Utilities.writeToFile(newResultNorm, f.getAbsolutePath() + ".new.norm");
-    Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
-    
-    boolean ambiguities = false;
-    
-    if (newParser.parseTree != null && newParser.ambiguities > 0) {
-      ambiguities = true;
-      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
-      System.out.println("*error*" + "[" + pkg + ", new] " + "tree contains " + newParser.ambiguities + " ambiguities");
-    }
-
-    if (oldParser.parseTree != null && oldParser.ambiguities > 0) {
-      ambiguities = true;
-      //writeToFile(oldParser.parseTree.toString(), f.getAbsolutePath() + ".old.pt");
-      System.out.println("*error*" + "[" + pkg + ", old] " + "tree contains " + oldParser.ambiguities + " ambiguities");
-    }
-    
-    if (mkExplicitMessages[1].length > 0 && LOGGING) {
-      System.out.println(mkExplicitMessages[1][0]);
-    }
-    
-    IStrategoList diff = compare(newResultNorm, oldResultNorm);
-    
-    if (diff == null || !diff.isEmpty()) {
-      if (newException != null) {
-        System.out.println("[" + pkg + ", new] failed");
-        newException.printStackTrace(System.out);
-      }
-      
-      if (oldException != null) {
-        System.out.println("[" + pkg + ", old] failed");
-        oldException.printStackTrace(System.out);
-      }
-      
-      if (newResult != null && mkExplicitMessages[1].length > 0 && mkExplicitMessages[1][0].endsWith("pp-haskell: Ambiguous infix expression")) {
-        logAmbInfix();
-        
-        if (LOGGING)
-          System.out.println("[" + pkg + "] " + "ambInfix");
-      }
-      else if (newParser.timeParse < 0 || oldParser.timeParse < 0) {
-        if (newParser.timeParse < 0)
-          logTimeout(f.getAbsolutePath() + ".new");
-        if (oldParser.timeParse < 0)
-          logTimeout(f.getAbsolutePath() + ".old");
-      }
-      else {
-        ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), oldResultNorm, newResultNorm);
-      
-        if (LOGGING) {
-          System.out.println("*error*" + "[" + pkg + "] " + failure.getMessage());
-          if (diff != null) {
-            String diffString = diff.toString();
-            Utilities.writeToFile(diffString, f.getAbsolutePath() + ".diff");
-            System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diffString);
-          }
-        }
-      }
-    }
-    else {
-      // new and old result are equal
-      
-      if (newResult == null && explicitLayoutInput != null && oldResult == null) {
-        // reference parser succeeded, but we failed independent of layout
-        logNoParse();
-        
-        if (newException != null) {
-          System.out.println("[" + pkg + ", new] failed");
-          newException.printStackTrace(System.out);
-        }
-
-        if (oldException != null) {
-          System.out.println("[" + pkg + ", old] failed");
-          oldException.printStackTrace(System.out);
-        }
-        
-        if (LOGGING)
-          System.out.println("[" + pkg + "] " + "no parse");
-      }
-      else if (newResult == null && explicitLayoutInput == null) {
-        // original parser failed as well
-        logOkFail();
-        if (LOGGING)
-          System.out.println("[" + pkg + "] " + "okFail");
-      } 
-      else if(newResult != null && oldResult != null) {
-        // new and old parser succeeded
-        logOk();
-        if (LOGGING)
-          System.out.println("[" + pkg + "] " + "ok");
-      }
-      else
-        assert false;
-      
-    }
+    return fpp;
   }
   
-  private IStrategoTerm newParse(File f, String pkg) {
-    newResult = null;
-    newException = null;
+  private IStrategoTerm newParseCorrectness(File f, String pkg) {
+    newResultCorrectness = null;
+    newExceptionCorrectness = null;
 
     if (f == null)
       return null;
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
     try {
-      newResult = (IStrategoTerm) newParser.parse(input, f.getAbsolutePath());
+      newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
       if (e.getCause() instanceof SGLRException)
-        newException = (SGLRException) e.getCause();
+        newExceptionCorrectness = (SGLRException) e.getCause();
+      else if (e.getCause() instanceof StackOverflowError) {
+        newExceptionCorrectness = e.getCause();
+        if (LOGGING)
+          System.out.println("[" + pkg + ", new, corre] " + "STACK OVERFLOW");
+      }
+      else
+        throw new RuntimeException(e);
+    } 
+    
+    if (LOGGING) {
+      String time;
+      if (newParserCorrectness.timeParse >= 0)
+        time = newParserCorrectness.timeParse + "ms";
+      else
+        time = "TIMEOUT";
+      System.out.println("[" + pkg + ", new, corre] " + "parsing took " + time + ", " + (newResultCorrectness != null ? "success" : "failure"));
+    }
+    
+    return newResultCorrectness;
+  }
+  
+  private IStrategoTerm newParseSpeed(File f, String pkg) {
+    newResultSpeed = null;
+    newExceptionSpeed = null;
+
+    if (f == null)
+      return null;
+    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    try {
+      newResultSpeed = (IStrategoTerm) newParserSpeed .parse(input, f.getAbsolutePath());
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof SGLRException)
+        newExceptionSpeed = (SGLRException) e.getCause();
+      else if (e.getCause() instanceof StackOverflowError) {
+        newExceptionCorrectness = e.getCause();
+        if (LOGGING)
+          System.out.println("[" + pkg + ", new, speed] " + "STACK OVERFLOW");
+      }
       else
         throw new RuntimeException(e);
     }
     
     if (LOGGING) {
       String time;
-      if (newParser.timeParse >= 0)
-        time = newParser.timeParse + "ms";
+      if (newParserSpeed .timeParse >= 0)
+        time = newParserSpeed .timeParse + "ms";
       else
         time = "TIMEOUT";
-      System.out.println("[" + pkg + ", new] " + "parsing took " + time + ", " + (newResult != null ? "success" : "failure"));
+      System.out.println("[" + pkg + ", new, speed] " + "parsing took " + time + ", " + (newResultSpeed != null ? "success" : "failure"));
     }
     
-    return newResult;
+    return newResultCorrectness;
   }
   
 //  private IStrategoTerm normalize(IStrategoTerm term, String pkg) {
@@ -226,18 +196,25 @@ public class TestFile extends ChainedTestCase {
     return null;
   }
 
+  private File makeImplicitLayout(File f, String pkg) throws IOException {
+    return makeLayout(f, pkg, false);
+  }
   
   private File makeExplicitLayout(File f, String pkg) throws IOException {
+    return makeLayout(f, pkg, true);
+  }
+  
+  private File makeLayout(File f, String pkg, boolean explicit) throws IOException {
     if (f == null)
       return null;
     
-    File res = new File(f.getAbsolutePath() + ".pp.hs");
+    File res = new File(f.getAbsolutePath() + (explicit ? ".expl" : ".impl"));
 
     String[] cmds = new String[] {
         TestConfiguration.PP_HASKELL_COMMAND, 
         "-i", f.getAbsolutePath(), 
         "-o", res.getAbsolutePath(), 
-        "--explicit-layout",
+        explicit ? "--explicit-layout" : "--implicit-layout",
         "--ignore-language-pragmas"};
     
     List<String> cmdList = new ArrayList<String>(Arrays.asList(cmds));
@@ -249,16 +226,21 @@ public class TestFile extends ChainedTestCase {
     CommandExecution.SILENT_EXECUTION = true;
     CommandExecution.SUB_SILENT_EXECUTION = true;
     
-    mkExplicitMessages = new String[][] {new String[] {}, new String[] {}};
+    String[][] messages = new String[][] {new String[] {}, new String[] {}};
     
     try {
-      mkExplicitMessages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds);
+      messages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds);
     } catch (ExecutionError e) {
-      mkExplicitMessages = e.getMessages();
+      messages = e.getMessages();
       if (e.getExitValue() == -1)
         throw e;
       
       return null;
+    } finally {
+      if (explicit)
+        mkExplicitMessages = messages;
+      else
+        mkImplicitMessages = messages;
     }
     
     return res;
@@ -317,4 +299,138 @@ public class TestFile extends ChainedTestCase {
   private IStrategoTerm normalize(IStrategoTerm term) {
     return term == null ? null : normalize_0_0.instance.invoke(normalizeContext, term);
   }
+  
+  private void checkAmbiguities(String pkg) {
+    if (newParserCorrectness.parseTree != null && newParserCorrectness.ambiguities > 0) {
+      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
+      System.out.println("*error*" + "[" + pkg + ", new, corre] " + "tree contains " + newParserCorrectness.ambiguities + " ambiguities");
+    }
+
+    if (newParserSpeed.parseTree != null && newParserSpeed.ambiguities > 0) {
+      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
+      System.out.println("*error*" + "[" + pkg + ", new, speed] " + "tree contains " + newParserSpeed.ambiguities + " ambiguities");
+    }
+
+    if (oldParser.parseTree != null && oldParser.ambiguities > 0) {
+      //writeToFile(oldParser.parseTree.toString(), f.getAbsolutePath() + ".old.pt");
+      System.out.println("*error*" + "[" + pkg + ", old] " + "tree contains " + oldParser.ambiguities + " ambiguities");
+    }
+  }
+  
+  private void checkMakeLayoutMessages() {
+    if (mkExplicitMessages[1].length > 0 && LOGGING) {
+      System.out.println(mkExplicitMessages[1][0]);
+    }
+    
+    if (mkImplicitMessages[1].length > 0 && LOGGING) {
+      System.out.println(mkExplicitMessages[1][0]);
+    }
+  }
+  
+  private void checkExceptions(String pkg) {
+//    if (newExceptionCorrectness != null) {
+//      System.out.println("[" + pkg + ", new] failed");
+//      newExceptionCorrectness.printStackTrace(System.out);
+//    }
+//
+//    if (newExceptionSpeed != null) {
+//      System.out.println("[" + pkg + ", new] failed");
+//      newExceptionSpeed.printStackTrace(System.out);
+//    }
+//
+//    if (oldException != null) {
+//      System.out.println("[" + pkg + ", old] failed");
+//      oldException.printStackTrace(System.out);
+//    }
+  }
+  
+  private boolean checkTimeout(File f) {
+    if (newParserCorrectness.timeParse < 0) {
+      logTimeout(f.getAbsolutePath() + ".new");
+      return true;
+    }
+    if (newParserSpeed.timeParse < 0) {
+      logTimeout(f.getAbsolutePath() + ".new");
+      return true;
+    }
+    if (oldParser.timeParse < 0) {
+      logTimeout(f.getAbsolutePath() + ".old");
+      return true;
+    }
+    
+    return false;
+  }
+  
+  private boolean checkAmbInfix(String pkg) {
+    if (newResultCorrectness != null && newResultSpeed != null && mkExplicitMessages[1].length > 0 && mkExplicitMessages[1][0].endsWith("pp-haskell: Ambiguous infix expression")) {
+      logAmbInfix();
+      
+      if (LOGGING)
+        System.out.println("[" + pkg + "] " + "ambInfix");
+      
+      return true;
+    }
+    
+    return false;
+  }
+  
+  private boolean checkDiff(String pkg, File f) {
+    IStrategoTerm newResultCorrectnessNorm = normalize(newResultCorrectness);
+    IStrategoTerm newResultSpeedNorm = normalize(newResultSpeed);
+    IStrategoTerm oldResultNorm = normalize(oldResult);
+    Utilities.writeToFile(newResultCorrectnessNorm, f.getAbsolutePath() + ".new.corre.norm");
+    Utilities.writeToFile(newResultSpeedNorm, f.getAbsolutePath() + ".new.speed.norm");
+    Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
+    
+    return 
+      !(newExceptionCorrectness instanceof StackOverflowError) && checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre") ||
+      checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
+  }
+  
+  private boolean checkDiff(String pkg, File f, IStrategoTerm actual, IStrategoTerm expected, String actualDescriptor) {
+    IStrategoList diff = compare(actual, expected);
+    
+    if (diff == null || !diff.isEmpty()) {
+      ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), expected, actual);
+    
+      if (LOGGING) {
+        System.out.println("*error*" + "[" + pkg + ", new, " + actualDescriptor + "] " + failure.getMessage());
+        if (diff != null) {
+          String diffString = diff.toString();
+          Utilities.writeToFile(diffString, f.getAbsolutePath() + ".new." + actualDescriptor + ".diff");
+          System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diffString);
+        }
+      }
+      
+      return true;
+    }
+    
+    return false;
+  }
+
+  private boolean checkAllParsersFailed(String pkg, File explicitLayoutInput) {
+    if (newResultCorrectness == null && newResultSpeed == null && explicitLayoutInput != null && oldResult == null) {
+      // reference parser succeeded, but we failed independent of layout
+      logNoParse();
+      
+      if (LOGGING)
+        System.out.println("[" + pkg + "] " + "no parse");
+      
+      return true;
+    }
+    
+    return false;
+  }
+
+  private boolean checkReferenceParserFailed(String pkg, File explicitLayoutInput) {
+    if (newResultCorrectness == null && explicitLayoutInput == null) {
+      // original parser failed as well
+      logOkFail();
+      if (LOGGING)
+        System.out.println("[" + pkg + "] " + "okFail");
+      return true;
+    }
+    return false;
+  }
+  
 }

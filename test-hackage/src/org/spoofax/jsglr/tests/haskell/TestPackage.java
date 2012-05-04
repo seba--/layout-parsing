@@ -21,7 +21,7 @@ public class TestPackage extends ChainedTestCase {
   private TestFile fileTester = new TestFile();
   
   public void testPackage() throws IOException {
-    testPackage("4Blocks");
+    testPackage("Agda");
     printShortLog();
     raiseFailures();
   }

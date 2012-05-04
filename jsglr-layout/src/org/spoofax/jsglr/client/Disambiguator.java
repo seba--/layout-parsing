@@ -273,11 +273,11 @@ public class Disambiguator {
       return yieldTreeTop(t);
 
     } finally {
-      System.out.println("layout filter calls at parse time: " + parser.getLayoutFilterCallCount());
-      System.out.println("illegal layout filtered at parse time: " + parser.getLayoutFilteringCount());
-      System.out.println("layout filter calls at disambiguation time: " + getLayoutFilterCallCount());
-      System.out.println("illegal layout filtered at disambiguation time: " + getLayoutFilteringCount());
-      System.out.println("enforced newline skips: " + parser.getEnforcedNewlineSkip());
+      System.out.println("  layout filter calls at parse time: " + parser.getLayoutFilterCallCount());
+      System.out.println("  illegal layout filtered at parse time: " + parser.getLayoutFilteringCount());
+      System.out.println("  layout filter calls at disambiguation time: " + getLayoutFilterCallCount());
+      System.out.println("  illegal layout filtered at disambiguation time: " + getLayoutFilteringCount());
+      System.out.println("  enforced newline skips: " + parser.getEnforcedNewlineSkip());
       initializeFromParser(null);
     }
   }
