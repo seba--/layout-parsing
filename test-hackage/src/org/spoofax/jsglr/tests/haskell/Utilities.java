@@ -11,12 +11,15 @@ public class Utilities {
     String content;
     if (t == null)
       content = "null";
-    else {
-      InlinePrinter printer = new InlinePrinter();
-      t.prettyPrint(printer);
-      content = printer.getString();
-    }
+    else
+      content = termToString(t);
     writeToFile(content, f);
+  }
+  
+  public static String termToString(IStrategoTerm t) {
+    InlinePrinter printer = new InlinePrinter();
+    t.prettyPrint(printer);
+    return printer.getString();
   }
   
   public static void writeToFile(String s, String f) {

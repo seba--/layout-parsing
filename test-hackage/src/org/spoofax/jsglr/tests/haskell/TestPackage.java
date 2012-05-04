@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
+
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  */
@@ -27,7 +29,15 @@ public class TestPackage extends ChainedTestCase {
   }
   
   public void testPackage(String pkg) throws IOException {
-    File dir = cabalUnpack(pkg);
+    
+    File dir;
+    try { 
+      dir = cabalUnpack(pkg);
+    } catch (ExecutionError e) {
+      System.out.println("[" + pkg + "] " + "cabal unpack failed");
+      return;
+    }
+    
     testFiles(dir, pkg);
     
     logResult(pkg);

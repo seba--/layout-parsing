@@ -18,10 +18,11 @@ public class TestDebug extends TestCase {
   public void test() throws IOException {
     List<String> files = new ArrayList<String>();
     
-    files.add("c:/Users/seba.INFORMATIK.000/AppData/Local/Temp/Agda5212721424395968027/Agda-2.3.0.1/src/full/Agda/Packaging/Database.hs");
+    files.add("c:/Users/SEBAIN~1.000/AppData/Local/Temp/BASIC3816339167381594818/BASIC-0.1.5.0/Language/BASIC/Interp.hs");
     
     for (String f : files) {
       fileTester.testFile(new File(f), "test");
+
       String path = new File(f).getAbsolutePath() + ".new.pt";
       Utilities.writeToFile(fileTester.newParserCorrectness.parseTree.toString(), path);
       System.out.println("wrote parse tree to " + path);

@@ -38,7 +38,7 @@ public class TestFile extends ChainedTestCase {
   private IStrategoTerm newResultSpeed;
   private Throwable newExceptionSpeed;
   private IStrategoTerm oldResult;
-  private org.spoofax.jsglr_orig.shared.SGLRException oldException;
+  private Throwable oldException;
   private String[][] mkExplicitMessages;
   private String[][] mkImplicitMessages;
   
@@ -157,7 +157,7 @@ public class TestFile extends ChainedTestCase {
       if (e.getCause() instanceof SGLRException)
         newExceptionSpeed = (SGLRException) e.getCause();
       else if (e.getCause() instanceof StackOverflowError) {
-        newExceptionCorrectness = e.getCause();
+        newExceptionSpeed = e.getCause();
         if (LOGGING)
           System.out.println("[" + pkg + ", new, speed] " + "STACK OVERFLOW");
       }
@@ -263,6 +263,11 @@ public class TestFile extends ChainedTestCase {
     } catch (ExecutionException e) {
       if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException)
         oldException = (org.spoofax.jsglr_orig.shared.SGLRException) e.getCause();
+      else if (e.getCause() instanceof StackOverflowError) {
+        oldException = e.getCause();
+        if (LOGGING)
+          System.out.println("[" + pkg + ", old] " + "STACK OVERFLOW");
+      }
       else
         throw new RuntimeException(e);
     }
