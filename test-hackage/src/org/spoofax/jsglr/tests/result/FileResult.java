@@ -1,6 +1,5 @@
 package org.spoofax.jsglr.tests.result;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,83 +41,149 @@ public class FileResult {
   
   
   public void writeAsCSV(String file) throws IOException {
-    FileOutputStream fos = new FileOutputStream(file);
+    FileOutputStream out = new FileOutputStream(file);
     try {
-      writeAsCSV(fos);
-    } finally {
-      fos.close();
-    }
-  }
-  
-  public void appendAsCSV(String file) throws IOException {
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(file, true));
-    try {
-      writeAsCSV(out);
+      out.write(getAsCSVString().getBytes());
     } finally {
       out.close();
     }
   }
   
-  private void writeAsCSV(OutputStream out) throws IOException {
-    write(out, pkg); writeSem(out);
-    write(out, this.file); writeSem(out);
-    
-    write(out, makeExplicitLayout); writeSem(out);
-    write(out, makeImplicitLayout); writeSem(out);
-    
-    write(out, ambInfix); writeSem(out);
-    
-    write(out, linesOfCode); writeSem(out);
-    write(out, byteSize); writeSem(out);
-    
-    write(out, syntaxTrees); writeSem(out);
-    write(out, ambiguities); writeSem(out);
-    write(out, stackOverflow); writeSem(out);
-    write(out, parseExceptions); writeSem(out);
-    write(out, timeout); writeSem(out);
-    
-    write(out, layoutFilterCallsParseTime); writeSem(out);
-    write(out, layoutFilteringParseTime); writeSem(out);
-    write(out, layoutFilterCallsDisambiguationTime); writeSem(out);
-    write(out, layoutFilteringDisambiguationTime); writeSem(out);
-    write(out, enforcedNewlineSkips); writeSem(out);
-    
-    write(out, differencesToReferenceParser); writeSem(out);
+  public void appendAsCSV(String file) throws IOException {
+    OutputStream out = new FileOutputStream(file, true);
+    try {
+      out.write(getAsCSVString().getBytes());
+    } finally {
+      out.close();
+    }
   }
   
-  private void write(OutputStream out, SGLRException e) throws IOException {
+  public String getAsCSVString() {
+    StringBuilder builder = new StringBuilder();
+    writeAsCSV(builder);
+    return builder.toString();
+  }
+  
+  public void writeCSVHeader(String file) throws IOException {
+    FileOutputStream out = new FileOutputStream(file);
+    try {
+      out.write(getCSVHeaderString().getBytes());
+    } finally {
+      out.close();
+    }
+  }
+  
+  public void appendCSVHeader(String file) throws IOException {
+    OutputStream out = new FileOutputStream(file, true);
+    try {
+      out.write(getCSVHeaderString().getBytes());
+    } finally {
+      out.close();
+    }
+  }
+  
+  public String getCSVHeaderString() {
+    StringBuilder builder = new StringBuilder();
+    writeCSVHeader(builder);
+    return builder.toString();
+  }
+  
+  private void write(StringBuilder out, SGLRException e) {
     writeString(out, e.getMessage());
   }
   
 
-  private void write(OutputStream out, IStrategoTerm t) throws IOException {
+  private void write(StringBuilder out, IStrategoTerm t) {
     writeString(out, Utilities.termToString(t));
   }
 
-  private void write(OutputStream out, Object o) throws IOException {
+  private void write(StringBuilder out, Object o) {
     if (o instanceof SGLRException)
       write(out, (SGLRException) o);
     else if (o instanceof IStrategoTerm)
       write(out, (IStrategoTerm) o);
-    else 
+    else if (o == null)
+      writeString(out, "null");
+    else
       writeString(out, o.toString());
   }
   
-  private void write(OutputStream out, DataPoint<? extends Object> d) throws IOException {
+  private void write(StringBuilder out, DataPoint<? extends Object> d) {
     write(out, d.t1); writeSem(out);
     write(out, d.t2); writeSem(out);
     write(out, d.t3); writeSem(out);
   }
 
-  private void writeSem(OutputStream out) throws IOException {
+  private void writeSem(StringBuilder out) {
     writeString(out, ";");
   }
   
-  private void writeString(OutputStream out, String s) throws IOException {
-    out.write(escapeString(s).getBytes());
+  private void writeString(StringBuilder out, String s) {
+    out.append(escapeString(s));
   }
   
   private String escapeString(String s) {
     return "\"" + s.replace("\"", "\"\"") + "\"";
   }
+  
+  private void writeAsCSV(StringBuilder builder) {
+    write(builder, pkg); writeSem(builder);
+    write(builder, this.file); writeSem(builder);
+    
+    write(builder, makeExplicitLayout); writeSem(builder);
+    write(builder, makeImplicitLayout); writeSem(builder);
+    
+    write(builder, ambInfix); writeSem(builder);
+    
+    write(builder, linesOfCode); writeSem(builder);
+    write(builder, byteSize); writeSem(builder);
+    
+    write(builder, syntaxTrees); writeSem(builder);
+    write(builder, ambiguities); writeSem(builder);
+    write(builder, stackOverflow); writeSem(builder);
+    write(builder, parseExceptions); writeSem(builder);
+    write(builder, timeout); writeSem(builder);
+    
+    write(builder, layoutFilterCallsParseTime); writeSem(builder);
+    write(builder, layoutFilteringParseTime); writeSem(builder);
+    write(builder, layoutFilterCallsDisambiguationTime); writeSem(builder);
+    write(builder, layoutFilteringDisambiguationTime); writeSem(builder);
+    write(builder, enforcedNewlineSkips); writeSem(builder);
+    
+    write(builder, differencesToReferenceParser); writeSem(builder);
+  }
+
+  private void writeCSVHeader(StringBuilder builder) {
+    write(builder, "package"); writeSem(builder);
+    write(builder, "source file"); writeSem(builder);
+    
+    write(builder, "explicit layout OK"); writeSem(builder);
+    write(builder, "implicit layout OK"); writeSem(builder);
+    
+    write(builder, "ambInfix error"); writeSem(builder);
+    
+    write(builder, "lines of code"); writeSem(builder);
+    write(builder, "byte size"); writeSem(builder);
+    
+    writeDataPointDesc(builder, "AST"); writeSem(builder);
+    writeDataPointDesc(builder, "ambiguities"); writeSem(builder);
+    writeDataPointDesc(builder, "stack overflow"); writeSem(builder);
+    writeDataPointDesc(builder, "parse exception"); writeSem(builder);
+    writeDataPointDesc(builder, "timeout"); writeSem(builder);
+    
+    writeDataPointDesc(builder, "layout filter calls (parse time)"); writeSem(builder);
+    writeDataPointDesc(builder, "layout filtering (parse time)"); writeSem(builder);
+    writeDataPointDesc(builder, "layout filter calls (disambiguation time)"); writeSem(builder);
+    writeDataPointDesc(builder, "layout filtering (disambigutation time)"); writeSem(builder);
+    writeDataPointDesc(builder, "enforced newline skips"); writeSem(builder);
+    
+    write(builder, differencesToReferenceParser); writeSem(builder);
+  }
+  
+  private void writeDataPointDesc(StringBuilder builder, String desc) {
+    write(builder, "expl layout: "); write(builder, desc); writeSem(builder);
+    write(builder, "impl layout: "); write(builder, desc); writeSem(builder);
+    write(builder, "impl layout (preprocessed): "); write(builder, desc);
+  }
+  
 }
