@@ -330,7 +330,7 @@ public class TestFile extends ChainedTestCase {
     }
     
     if (mkImplicitMessages[1].length > 0 && LOGGING) {
-      System.out.println(mkExplicitMessages[1][0]);
+      System.out.println(mkImplicitMessages[1][0]);
     }
   }
   

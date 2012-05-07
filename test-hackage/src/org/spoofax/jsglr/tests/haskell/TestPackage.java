@@ -23,7 +23,7 @@ public class TestPackage extends ChainedTestCase {
   private TestFile fileTester = new TestFile();
   
   public void testPackage() throws IOException {
-    testPackage("Agda");
+    testPackage("AC-Vector");
     printShortLog();
     raiseFailures();
   }
@@ -34,7 +34,8 @@ public class TestPackage extends ChainedTestCase {
     try { 
       dir = cabalUnpack(pkg);
     } catch (ExecutionError e) {
-      System.out.println("[" + pkg + "] " + "cabal unpack failed");
+      String msg = e.getCause() == null ? "unknown cause" : e.getCause().getMessage();
+      System.out.println("[" + pkg + "] " + "cabal unpack failed: " + msg);
       return;
     }
     
