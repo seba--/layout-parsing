@@ -27,6 +27,7 @@ public class FileResult {
   public DataPoint<Integer> byteSize = new DataPoint<Integer>(-1);
   
   public DataPoint<Boolean> parseOk = new DataPoint<Boolean>(false);
+  public DataPoint<Boolean> normalizeOk = new DataPoint<Boolean>(false);
   public DataPoint<Integer> time = new DataPoint<Integer>(-2);
   public DataPoint<Integer> ambiguities = new DataPoint<Integer>(0);
   public DataPoint<Boolean> stackOverflow = new DataPoint<Boolean>(false);
@@ -152,6 +153,7 @@ public class FileResult {
     write(builder, byteSize); writeSem(builder);
     
     write(builder, parseOk); writeSem(builder);
+    write(builder, normalizeOk); writeSem(builder);
     write(builder, time); writeSem(builder);
     write(builder, ambiguities); writeSem(builder);
     write(builder, stackOverflow); writeSem(builder);
@@ -185,6 +187,7 @@ public class FileResult {
     writeDataPointDesc(builder, "byte size"); writeSem(builder);
     
     writeDataPointDesc(builder, "parse ok"); writeSem(builder);
+    writeDataPointDesc(builder, "normalize ok"); writeSem(builder);
     writeDataPointDesc(builder, "time"); writeSem(builder);
     writeDataPointDesc(builder, "ambiguities"); writeSem(builder);
     writeDataPointDesc(builder, "stack overflow"); writeSem(builder);
@@ -198,15 +201,15 @@ public class FileResult {
     writeDataPointDesc(builder, "layout filtering (disambigutation time)"); writeSem(builder);
     writeDataPointDesc(builder, "enforced newline skips"); writeSem(builder);
     
-    writeDataPointDesc(builder, "differences to expl layout"); writeSem(builder);
+    writeDataPointDesc(builder, "diffs to 1"); writeSem(builder);
     
     builder.append('\n');
   }
   
   private void writeDataPointDesc(StringBuilder builder, String desc) {
-    write(builder, "expl layout: " + desc); writeSem(builder);
-    write(builder, "impl layout: " + desc); writeSem(builder);
-    write(builder, "impl layout (preprocessed): " + desc);
+    write(builder, "1 " + desc); writeSem(builder);
+    write(builder, "2 " + desc); writeSem(builder);
+    write(builder, "3 " + desc);
   }
   
 }

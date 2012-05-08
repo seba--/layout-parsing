@@ -30,7 +30,7 @@ public class TestPackage extends TestCase {
   private File csvFile;
   
   public void testPackage() throws IOException {
-    testPackage("AC-Vector");
+    testPackage("HPDF");
     System.out.println(csvFile.getAbsolutePath());
   }
   

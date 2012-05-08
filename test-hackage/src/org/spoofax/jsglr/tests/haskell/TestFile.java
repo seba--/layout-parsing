@@ -45,10 +45,13 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    testFile(new File("c:/Users/seba.INFORMATIK.000/AppData/Local/Temp/4Blocks7755594627937130244/4Blocks-0.2/Core/Brick.hs"), "main");
+    String path = "C:\\Users\\SEBAIN~1.000\\AppData\\Local\\Temp\\HPDF2353335347696158236\\HPDF-1.4.2\\Graphics\\PDF\\Hyphenate\\English.hs";
+    testFile(new File(path), "main");
 
-    System.out.print(result.getCSVHeaderString());
-    System.out.print(result.getAsCSVString());
+    String csv = path + ".csv";
+    result.writeCSVHeader(csv);
+    result.appendAsCSV(csv);
+    System.out.println(csv);
   }
   
   public FileResult testFile(File f, String pkg) throws IOException {
@@ -86,7 +89,8 @@ public class TestFile extends TestCase {
     File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
     oldParse(explicitLayoutInput, pkg);
 
-    Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new");
+    Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new.corre");
+    Utilities.writeToFile(newResultSpeed, f.getAbsolutePath() + ".new.speed");
     Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
     
     checkDiff(pkg, f);
@@ -124,7 +128,7 @@ public class TestFile extends TestCase {
       return null;
     
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
-    result.linesOfCode.t1 = input.split("\n\r").length;
+    result.linesOfCode.t1 = input.split("\n").length;
     result.byteSize.t1 = input.getBytes().length;
 
     try {
@@ -168,7 +172,7 @@ public class TestFile extends TestCase {
     if (f == null)
       return null;
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
-    result.linesOfCode.t2 = input.split("\n\r").length;
+    result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
     
     try {
@@ -217,7 +221,7 @@ public class TestFile extends TestCase {
     if (f == null)
       return null;
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
-    result.linesOfCode.t3 = input.split("\n\r").length;
+    result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
 
     try {
@@ -342,9 +346,25 @@ public class TestFile extends TestCase {
   }
   
   private void checkDiff(String pkg, File f) {
-    IStrategoTerm newResultCorrectnessNorm = normalize(newResultCorrectness);
-    IStrategoTerm newResultSpeedNorm = normalize(newResultSpeed);
-    IStrategoTerm oldResultNorm = normalize(oldResult);
+    IStrategoTerm oldResultNorm = null;
+    IStrategoTerm newResultCorrectnessNorm = null;
+    IStrategoTerm newResultSpeedNorm = null;
+    try {
+      oldResultNorm = normalize(oldResult);
+      result.normalizeOk.t1 = true;
+    } catch (StackOverflowError e) {
+    }
+    try {
+      newResultCorrectnessNorm = normalize(newResultCorrectness);
+      result.normalizeOk.t2 = true;
+    } catch (StackOverflowError e) {
+    }
+    try {
+      newResultSpeedNorm = normalize(newResultSpeed);
+      result.normalizeOk.t3 = true;
+    } catch (StackOverflowError e) {
+    }
+
     Utilities.writeToFile(newResultCorrectnessNorm, f.getAbsolutePath() + ".new.corre.norm");
     Utilities.writeToFile(newResultSpeedNorm, f.getAbsolutePath() + ".new.speed.norm");
     Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
