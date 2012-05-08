@@ -2,8 +2,6 @@ package org.spoofax.jsglr.tests.haskell_orig;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -39,11 +37,7 @@ public class HaskellOrigParser {
   
   public AbstractParseNode parseTree;
   
-  public long timeAll;
-  public long timeParse;
-  
-  private ExecutorService executor = Executors.newSingleThreadExecutor();
-  
+  public int timeParse;
   
   public HaskellOrigParser() {
     try {
@@ -54,19 +48,18 @@ public class HaskellOrigParser {
   }
 
   private void reset() {
-    timeAll = -1;
     timeParse = -1;
     ambiguities = 0;
-   parseTree = null;
+    parseTree = null;
   }
   
   public Object parse(String input, String filename) throws InterruptedException, ExecutionException {
     return parse(input, filename, "Module");
   }
   
+  @SuppressWarnings("deprecation")
   public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
     reset();
-    long startAll = System.nanoTime();
     final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
     
     long startParse = -1;
@@ -77,28 +70,27 @@ public class HaskellOrigParser {
         return parser.parse(input, filename, startSymbol);
       }
     });
+    Thread thread = new Thread(parseTask);
 
     Object o = null;
     try {
       startParse = System.nanoTime();
-      executor.execute(parseTask);
+      thread.start();
       o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
       endParse = System.nanoTime();
     } catch (TimeoutException e) {
       endParse = startParse - 1;
-      parseTask.cancel(true);
+      thread.stop();
     } finally {
       if (endParse == -1)
-        endParse = System.nanoTime();
+        endParse = (int) System.nanoTime();
       
       ambiguities = parser.getDisambiguator().getAmbiguityCount();
       parseTree = parser.getParseTree();
       
-      long endAll = System.nanoTime();
-      
-      
-      timeAll = endAll - startAll < 0 ? -1 : (endAll - startAll) / 1000 / 1000;
-      timeParse = endParse - startParse < 0 ? -1 : (endParse - startParse) / 1000 / 1000;
+      timeParse = (int) (endParse - startParse);
+      if (timeParse < 0)
+        timeParse = -1;
     }
     
     return o;

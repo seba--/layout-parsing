@@ -2,8 +2,6 @@ package org.spoofax.jsglr.tests.haskell;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,14 +33,10 @@ public class HaskellParser {
   
   private ParseTable table;
   
-  public long timeAll;
-  public long timeParse;
+  public int timeParse;
   
-  public int ambiguities = 0;
-  
+  public SGLR parser;
   public AbstractParseNode parseTree;
-  
-  private ExecutorService executor = Executors.newSingleThreadExecutor();
   
   public HaskellParser() {
     try {
@@ -53,9 +47,8 @@ public class HaskellParser {
   }
   
   private void reset() {
-    timeAll = -1;
     timeParse = -1;
-    ambiguities = 0;
+    parser = null;
     parseTree = null;
   }
   
@@ -63,12 +56,12 @@ public class HaskellParser {
     return parse(input, filename, "Module");
   }
   
+  @SuppressWarnings("deprecation")
   public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
     reset();
     
-    long startAll = System.nanoTime();
-    final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
-    
+    parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
+
     long startParse = -1;
     long endParse = -1;
 
@@ -91,17 +84,39 @@ public class HaskellParser {
     } finally {
       
       if (endParse == -1)
-        endParse = System.nanoTime();
+        endParse = (int) System.nanoTime();
       
-      ambiguities = parser.getDisambiguator().getAmbiguityCount();
       parseTree = parser.getParseTree();
       
-      long endAll = System.nanoTime();
-      
-      timeAll = endAll - startAll < 0 ? -1 : (endAll - startAll) / 1000 / 1000;
-      timeParse = endParse - startParse < 0 ? -1 : (endParse - startParse) / 1000 / 1000;
+      timeParse = (int) (endParse - startParse);
+      if (timeParse < 0)
+        timeParse = -1;
     }
     
     return o;
+  }
+  
+  public int getAmbiguities() {
+    return parser.getDisambiguator().getAmbiguityCount();
+  }
+  
+  public int getLayoutFilterCountParseTime() {
+    return parser.getLayoutFilterCallCount();
+  }
+  
+  public int getLayoutFilteringCountParseTime() {
+    return parser.getLayoutFilteringCount();
+  }
+
+  public int getLayoutFilterCountDisambiguationTime() {
+    return parser.getDisambiguator().getLayoutFilterCallCount();
+  }
+
+  public int getLayoutFilteringCountDisambiguationTime() {
+    return parser.getDisambiguator().getLayoutFilteringCount();
+  }
+
+  public int getEnforcedNewlineSkips() {
+    return parser.getEnforcedNewlineSkips();
   }
 }

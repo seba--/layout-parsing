@@ -126,7 +126,7 @@ public class SGLR {
 		return collectedErrors;
 	}
 	
-	public int getEnforcedNewlineSkip() {
+	public int getEnforcedNewlineSkips() {
 	  return enforcedNewlineSkip;
 	}
    
