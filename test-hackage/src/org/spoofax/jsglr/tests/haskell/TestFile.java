@@ -2,8 +2,7 @@ package org.spoofax.jsglr.tests.haskell;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -45,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String path = "C:\\Users\\SEBAIN~1.000\\AppData\\Local\\Temp\\HPDF2353335347696158236\\HPDF-1.4.2\\Graphics\\PDF\\Hyphenate\\English.hs";
+    String path = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/HPDF3011494024294633954/HPDF-1.4.2/Graphics/PDF/Hyphenate/English.hs";
     testFile(new File(path), "main");
 
     String csv = path + ".csv";
@@ -95,19 +94,13 @@ public class TestFile extends TestCase {
     
     checkDiff(pkg, f);
     
-    boolean failed = 
-        result.ambInfix || 
-        result.differencesToReferenceParser.t2 > 0 ||
-        result.differencesToReferenceParser.t3 > 0 ||
-        result.timeout.t1 || result.timeout.t2 || result.timeout.t3;
-        
-    if (!failed) {
-      result.success = true;
-      assert newResultCorrectness != null && newResultSpeed != null && oldResult != null;
-      if (LOGGING)
-        System.out.println("[" + pkg + "] " + "ok");
-    }
+    result.allNull = oldResult == null && newResultCorrectness == null && newResultSpeed == null;
+    result.allSuccess = oldResult != null && newResultCorrectness != null && newResultSpeed != null &&
+                        result.differencesToReferenceParser.t2 == 0 && result.differencesToReferenceParser.t3 == 0;
     
+    if (LOGGING)
+      System.out.println("[" + pkg + "] " + "done");
+
     result.writeCSVHeader(f.getAbsolutePath() + ".csv");
     result.appendAsCSV(f.getAbsolutePath() + ".csv");
     return result;
@@ -131,6 +124,8 @@ public class TestFile extends TestCase {
     result.linesOfCode.t1 = input.split("\n").length;
     result.byteSize.t1 = input.getBytes().length;
 
+    System.gc();
+    
     try {
       oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
       result.parseOk.t1 = oldResult != null;
@@ -174,6 +169,8 @@ public class TestFile extends TestCase {
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
     result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
+    
+    System.gc();
     
     try {
       newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
@@ -224,6 +221,8 @@ public class TestFile extends TestCase {
     result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
 
+    System.gc();
+    
     try {
       newResultSpeed = (IStrategoTerm) newParserSpeed.parse(input, f.getAbsolutePath());
       result.parseOk.t3 = newResultSpeed != null;
@@ -279,18 +278,19 @@ public class TestFile extends TestCase {
     
     File res = new File(f.getAbsolutePath() + (explicit ? ".expl" : ".impl"));
 
-    String[] cmds = new String[] {
-        TestConfiguration.PP_HASKELL_COMMAND, 
-        "-i", f.getAbsolutePath(), 
-        "-o", res.getAbsolutePath(), 
-        explicit ? "--explicit-layout" : "--implicit-layout",
-        "--ignore-language-pragmas"};
+    List<String> cmds = new LinkedList<String>();
+    cmds.add(TestConfiguration.PP_HASKELL_COMMAND);
+    cmds.add("-i"); cmds.add(f.getAbsolutePath());
+    cmds.add("-o"); cmds.add(res.getAbsolutePath());
+    cmds.add("--ignore-language-pragmas");
+    cmds.add(explicit ? "--explicit-layout" : "--implicit-layout");
+    if (explicit)
+      cmds.add("--one-line-per-decl");
     
-    List<String> cmdList = new ArrayList<String>(Arrays.asList(cmds));
     for (String ext : TestConfiguration.HASKELL_EXTENSIONS)
-      cmdList.add("-X" + ext);
+      cmds.add("-X" + ext);
     
-    cmds = cmdList.toArray(new String[cmdList.size()]);
+    cmds.toArray(new String[cmds.size()]);
     
     CommandExecution.SILENT_EXECUTION = true;
     CommandExecution.SUB_SILENT_EXECUTION = true;
@@ -298,7 +298,7 @@ public class TestFile extends TestCase {
     String[][] messages = new String[][] {new String[] {}, new String[] {}};
     
     try {
-      messages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds);
+      messages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds.toArray(new String[cmds.size()]));
     } catch (ExecutionError e) {
       messages = e.getMessages();
       if (e.getExitValue() == -1)
@@ -370,8 +370,16 @@ public class TestFile extends TestCase {
     Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
     
     result.differencesToReferenceParser.t1 = 0;
-    result.differencesToReferenceParser.t2 = checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre");
-    result.differencesToReferenceParser.t3 = checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
+    try {
+      result.differencesToReferenceParser.t2 = checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre");
+    } catch (StackOverflowError e) {
+      result.normalizeOk.t2 = false;
+    }
+    try {
+      result.differencesToReferenceParser.t3 = checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
+    } catch (StackOverflowError e) {
+      result.normalizeOk.t3 = false;
+    }
   }
   
   private int checkDiff(String pkg, File f, IStrategoTerm actual, IStrategoTerm expected, String actualDescriptor) {

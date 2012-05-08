@@ -15,7 +15,9 @@ public class FileResult {
   
   public String pkg;
   public String file;
-  public boolean success;
+  
+  public boolean allSuccess;
+  public boolean allNull;
 
   public boolean skipped;
   public boolean cppPreprocess;
@@ -141,8 +143,10 @@ public class FileResult {
   private void writeAsCSV(StringBuilder builder) {
     write(builder, pkg); writeSem(builder);
     write(builder, file); writeSem(builder);
-    write(builder, success); writeSem(builder);
-    
+
+    write(builder, allSuccess); writeSem(builder);
+    write(builder, allNull); writeSem(builder);
+
     write(builder, skipped); writeSem(builder);
     write(builder, cppPreprocess); writeSem(builder);
     write(builder, makeExplicitLayout); writeSem(builder);
@@ -175,8 +179,10 @@ public class FileResult {
   private void writeCSVHeader(StringBuilder builder) {
     write(builder, "package"); writeSem(builder);
     write(builder, "source file"); writeSem(builder);
-    write(builder, "success"); writeSem(builder);
-    
+
+    write(builder, "all success"); writeSem(builder);
+    write(builder, "all null"); writeSem(builder);
+
     write(builder, "skipped"); writeSem(builder);
     write(builder, "cpp ok"); writeSem(builder);
     write(builder, "explicit layout OK"); writeSem(builder);
