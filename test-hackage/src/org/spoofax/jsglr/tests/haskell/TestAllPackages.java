@@ -1,41 +1,33 @@
 package org.spoofax.jsglr.tests.haskell;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import org.spoofax.jsglr.tests.result.FileResult;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  *
  */
-public class TestAllPackages extends ChainedTestCase {
+public class TestAllPackages extends TestCase {
   
   private TestPackage packageTester = new TestPackage();
   
-  public TestAllPackages() {
-    BufferedWriter  writer = null;
-  
-    try {
-      writer = new BufferedWriter(new FileWriter(TestPackage.SUCCESS_LOG, true));
-      writer.write("\n\n\n\nTest all packages at " + new Date(System.currentTimeMillis()) + "\n");
-      writer.close();
-      
-      writer = new BufferedWriter(new FileWriter(TestPackage.FAILURE_LOG, true));
-      writer.write("\n\n\n\nTest all packages at " + new Date(System.currentTimeMillis()) + "\n");
-      writer.close();
-    } catch (IOException e) {
-      if (writer != null) 
-        try { writer.close(); }
-        catch (IOException e2) {
-        }
-      throw new RuntimeException(e);
-    }
-  }
+  private File csvDir;
+  private File csvFile;
   
   public void testAllPackages() throws IOException {
+    String path = "all" + System.currentTimeMillis();
+    csvDir = new File(path);
+    csvDir.mkdirs();
+    csvFile = new File(path + ".csv");
+    new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
+    
     BufferedReader in = null;
     
     try {
@@ -51,26 +43,25 @@ public class TestAllPackages extends ChainedTestCase {
           continue;
         }
         
-        packageTester.testPackage(pkg);
-        
-        addAllFailures(packageTester.getFailures());
-        addOks(packageTester.getOkCount());
-        addOkFails(packageTester.getOkFailCount());
-        addNoParses(packageTester.getNoParseCount());
-        addAmbInfix(packageTester.getAmbInfixCount());
-        addTimeout(packageTester.getTimeout());
-        addComparisonFailures(packageTester.getComparisonFailures());
-        packageTester.reset();
-        
-        printShortLog();
+        List<FileResult> packageResults = packageTester.testPackage(pkg);
+        logResults(pkg, packageResults);
       }
       
     } finally { 
       if (in != null)
         in.close();
     }
+  }
+  
+  private void logResults(String pkg, List<FileResult> packageResults) throws IOException {
+    File pkgCsv = new File(csvDir, pkg + ".csv");
+    new FileResult().writeCSVHeader(pkgCsv.getAbsolutePath());
     
-    printShortLog();
-    raiseFailures();
+    for (FileResult result : packageResults) {
+      result.appendAsCSV(csvFile.getAbsolutePath());
+      result.appendAsCSV(pkgCsv.getAbsolutePath());
+    }
+    
+    System.out.println(csvFile.getAbsolutePath());
   }
 }

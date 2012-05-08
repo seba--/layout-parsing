@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import junit.framework.TestCase;
+
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.shared.SGLRException;
@@ -14,6 +16,7 @@ import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.haskell_orig.HaskellOrigParser;
+import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
 import org.strategoxt.lang.Context;
@@ -23,49 +26,58 @@ import org.sugarj.haskell.normalize.normalize_0_0;
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  */
-public class TestFile extends ChainedTestCase {
+public class TestFile extends TestCase {
   
   private final static boolean LOGGING = true;
   
-//  private Context normalizeContext = NormalizeAST.init();
+  static final Context normalizeContext = normalize.init();
+  
   private Context compareContext = CompareAST.init();
   public HaskellParser newParserCorrectness = new HaskellParser();
   public HaskellParser newParserSpeed = new HaskellParser();
   public HaskellOrigParser oldParser = new HaskellOrigParser();
   
   private IStrategoTerm newResultCorrectness;
-  private Throwable newExceptionCorrectness;
   private IStrategoTerm newResultSpeed;
-  private Throwable newExceptionSpeed;
   private IStrategoTerm oldResult;
-  private Throwable oldException;
-  private String[][] mkExplicitMessages;
-  private String[][] mkImplicitMessages;
   
-  static final Context normalizeContext = normalize.init();
-  
+  private FileResult result;
   
   public void testFile_main() throws IOException {
-    
     // src/org/spoofax/jsglr/tests/haskell/main.hs
     testFile(new File("c:/Users/seba.INFORMATIK.000/AppData/Local/Temp/4Blocks7755594627937130244/4Blocks-0.2/Core/Brick.hs"), "main");
-    printShortLog();
-    raiseFailures();
+
+    System.out.print(result.getCSVHeaderString());
+    System.out.print(result.getAsCSVString());
   }
   
-  public void testFile(File f, String pkg) throws IOException {
+  public FileResult testFile(File f, String pkg) throws IOException {
+    result = new FileResult();
+    
+    result.pkg = pkg;
+    result.file = f.getAbsolutePath();
+    
     if (TestConfiguration.skipFile(f)) {
+      result.skipped = true;
       if (LOGGING)
         System.out.println("[" + pkg + "] " + "skipping " + f.getAbsolutePath());
-      return;
+      return result;
     }
+    else
+      result.skipped = false;
     
     if (LOGGING)
       System.out.println("[" + pkg + "] " + "parsing " + f.getAbsolutePath());
     
     File preparedInput = prepareFile(pkg, f);
-    if (preparedInput == null)
-      return;
+    if (preparedInput == null) {
+      result.cppPreprocess = false;
+      if (LOGGING)
+        System.out.println("[" + pkg + "] preprocessing failed");
+      return result;
+    }
+    else
+      result.cppPreprocess = true;
     
     newParseCorrectness(preparedInput, pkg);
     File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
@@ -77,63 +89,120 @@ public class TestFile extends ChainedTestCase {
     Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new");
     Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
     
-    checkAmbiguities(pkg);
-    checkMakeLayoutMessages();
-    checkExceptions(pkg);
+    checkDiff(pkg, f);
     
     boolean failed = 
-      checkTimeout(f) || 
-      checkAmbInfix(pkg) ||
-      checkDiff(pkg, f) ||
-      checkReferenceParserFailed(pkg, explicitLayoutInput) || 
-      checkAllParsersFailed(pkg, explicitLayoutInput);
-    
+        result.ambInfix || 
+        result.differencesToReferenceParser.t2 > 0 ||
+        result.differencesToReferenceParser.t3 > 0 ||
+        result.timeout.t1 || result.timeout.t2 || result.timeout.t3;
+        
     if (!failed) {
+      result.success = true;
       assert newResultCorrectness != null && newResultSpeed != null && oldResult != null;
-      logOk();
       if (LOGGING)
         System.out.println("[" + pkg + "] " + "ok");
     }
+    
+    result.writeCSVHeader(f.getAbsolutePath() + ".csv");
+    result.appendAsCSV(f.getAbsolutePath() + ".csv");
+    return result;
   }
   
   private File prepareFile(String pkg, File f) throws IOException {
     File fnorm = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().length() - 3) + "-norm.hs");
     DeleteUnicode.deleteUnicode(f.getAbsolutePath(), fnorm.getAbsolutePath());
     File fpp = preprocess(fnorm, pkg);
-    
-    if (fpp == null && LOGGING)
-      System.out.println("[" + pkg + "] preprocessing failed");
-    
     return fpp;
+  }
+  
+
+  private IStrategoTerm oldParse(File f, String pkg) {
+    oldResult = null;
+    
+    if (f == null)
+      return null;
+    
+    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    result.linesOfCode.t1 = input.split("\n\r").length;
+    result.byteSize.t1 = input.getBytes().length;
+
+    try {
+      oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
+      result.parseOk.t1 = oldResult != null;
+      result.stackOverflow.t1 = false;
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
+        result.parseExceptions.t1 = e.getCause().getMessage();
+        if (LOGGING)
+          System.out.println(e.getCause().getMessage());
+      }
+      
+      result.stackOverflow.t1 = e.getCause() instanceof StackOverflowError;
+
+      if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError))
+        result.otherExceptions.t1 = e.getCause().getMessage();
+    } finally {
+      result.ambiguities.t1 = oldParser.ambiguities;
+      result.layoutFilterCallsParseTime.t1 = 0;
+      result.layoutFilteringParseTime.t1 = 0;
+      result.layoutFilterCallsDisambiguationTime.t1 = 0;
+      result.layoutFilteringDisambiguationTime.t1 = 0;
+      result.enforcedNewlineSkips.t1 = 0;
+      result.time.t1 = oldParser.timeParse;
+      result.timeout.t1 = oldParser.timeParse < 0;
+    }
+    
+    if (LOGGING) {
+      System.out.println("[" + pkg + ", old] " + "parsing took " + (oldParser.timeParse / 1000 / 1000) + "ms, " + (oldResult != null ? "success" : "failure"));
+    }
+    
+    return oldResult;
   }
   
   private IStrategoTerm newParseCorrectness(File f, String pkg) {
     newResultCorrectness = null;
-    newExceptionCorrectness = null;
 
     if (f == null)
       return null;
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    result.linesOfCode.t2 = input.split("\n\r").length;
+    result.byteSize.t2 = input.getBytes().length;
+    
     try {
       newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
+      result.parseOk.t2 = newResultCorrectness != null;
+      result.stackOverflow.t2 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
-      if (e.getCause() instanceof SGLRException)
-        newExceptionCorrectness = (SGLRException) e.getCause();
-      else if (e.getCause() instanceof StackOverflowError) {
-        newExceptionCorrectness = e.getCause();
+      if (e.getCause() instanceof SGLRException) {
+        result.parseExceptions.t2 = e.getCause().getMessage();
         if (LOGGING)
-          System.out.println("[" + pkg + ", new, corre] " + "STACK OVERFLOW");
+          System.out.println(e.getCause().getMessage());
       }
-      else
-        throw new RuntimeException(e);
-    } 
+
+      result.stackOverflow.t2 = e.getCause() instanceof StackOverflowError;
+
+      if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
+        result.otherExceptions.t2 = e.getCause().getMessage();
+    } finally {
+      result.ambiguities.t2 = newParserCorrectness.getAmbiguities();
+      result.layoutFilterCallsParseTime.t2 = newParserCorrectness.getLayoutFilterCountParseTime();
+      result.layoutFilteringParseTime.t2 = newParserCorrectness.getLayoutFilteringCountParseTime();
+      result.layoutFilterCallsDisambiguationTime.t2 = newParserCorrectness.getLayoutFilterCountDisambiguationTime();
+      result.layoutFilteringDisambiguationTime.t2 = newParserCorrectness.getLayoutFilteringCountDisambiguationTime();
+      result.enforcedNewlineSkips.t2 = newParserCorrectness.getEnforcedNewlineSkips();
+      result.time.t2 = newParserCorrectness.timeParse;
+      result.timeout.t2 = newParserCorrectness.timeParse < 0;
+    }
     
     if (LOGGING) {
       String time;
       if (newParserCorrectness.timeParse >= 0)
-        time = newParserCorrectness.timeParse + "ms";
+        time = newParserCorrectness.timeParse / 1000 / 1000 + "ms";
       else
         time = "TIMEOUT";
       System.out.println("[" + pkg + ", new, corre] " + "parsing took " + time + ", " + (newResultCorrectness != null ? "success" : "failure"));
@@ -144,59 +213,53 @@ public class TestFile extends ChainedTestCase {
   
   private IStrategoTerm newParseSpeed(File f, String pkg) {
     newResultSpeed = null;
-    newExceptionSpeed = null;
 
     if (f == null)
       return null;
     String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    result.linesOfCode.t3 = input.split("\n\r").length;
+    result.byteSize.t3 = input.getBytes().length;
+
     try {
-      newResultSpeed = (IStrategoTerm) newParserSpeed .parse(input, f.getAbsolutePath());
+      newResultSpeed = (IStrategoTerm) newParserSpeed.parse(input, f.getAbsolutePath());
+      result.parseOk.t3 = newResultSpeed != null;
+      result.stackOverflow.t3 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
-      if (e.getCause() instanceof SGLRException)
-        newExceptionSpeed = (SGLRException) e.getCause();
-      else if (e.getCause() instanceof StackOverflowError) {
-        newExceptionSpeed = e.getCause();
+      if (e.getCause() instanceof SGLRException) {
+        result.parseExceptions.t3 = e.getCause().getMessage();
         if (LOGGING)
-          System.out.println("[" + pkg + ", new, speed] " + "STACK OVERFLOW");
+          System.out.println(e.getCause().getMessage());
       }
-      else
-        throw new RuntimeException(e);
+      
+      result.stackOverflow.t3 = e.getCause() instanceof StackOverflowError;
+
+      if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
+        result.otherExceptions.t3 = e.getCause().getMessage();
+    } finally {
+      result.ambiguities.t3 = newParserSpeed.getAmbiguities();
+      result.layoutFilterCallsParseTime.t3 = newParserSpeed.getLayoutFilterCountParseTime();
+      result.layoutFilteringParseTime.t3 = newParserSpeed.getLayoutFilteringCountParseTime();
+      result.layoutFilterCallsDisambiguationTime.t3 = newParserSpeed.getLayoutFilterCountDisambiguationTime();
+      result.layoutFilteringDisambiguationTime.t3 = newParserSpeed.getLayoutFilteringCountDisambiguationTime();
+      result.enforcedNewlineSkips.t3 = newParserCorrectness.getEnforcedNewlineSkips();
+      result.time.t3 = newParserSpeed.timeParse;
+      result.timeout.t3 = newParserSpeed.timeParse < 0;
     }
     
     if (LOGGING) {
       String time;
-      if (newParserSpeed .timeParse >= 0)
-        time = newParserSpeed .timeParse + "ms";
+      if (newParserSpeed.timeParse >= 0)
+        time = newParserSpeed.timeParse / 1000 / 1000 + "ms";
       else
         time = "TIMEOUT";
       System.out.println("[" + pkg + ", new, speed] " + "parsing took " + time + ", " + (newResultSpeed != null ? "success" : "failure"));
     }
     
-    return newResultCorrectness;
+    return newResultSpeed;
   }
   
-//  private IStrategoTerm normalize(IStrategoTerm term, String pkg) {
-//    if (term == null)
-//      return null;
-//    
-//    IStrategoTerm result = normalize_0_0.instance.invoke(normalizeContext, term);
-//    return result;
-//  }
-
-  private IStrategoList compare(IStrategoTerm term1, IStrategoTerm term2) {
-    if (term1 == null && term2 == null)
-      return compareContext.getFactory().makeList();
-    if (term1 == null || term2 == null)
-      return null;
-    
-    IStrategoTerm result = compare_0_0.instance.invoke(compareContext, compareContext.getFactory().makeTuple(term1, term2));
-    if (result != null && Term.isTermList(result))
-      return (IStrategoList) result;
-    
-    return null;
-  }
 
   private File makeImplicitLayout(File f, String pkg) throws IOException {
     return makeLayout(f, pkg, false);
@@ -240,43 +303,14 @@ public class TestFile extends ChainedTestCase {
       return null;
     } finally {
       if (explicit)
-        mkExplicitMessages = messages;
+        result.makeExplicitLayout = messages[1].length == 0; 
       else
-        mkImplicitMessages = messages;
+        result.makeImplicitLayout = messages[1].length == 0;
+      
+      result.ambInfix |= messages[1].length > 0 && messages[1][0].endsWith("pp-haskell: Ambiguous infix expression");
     }
     
     return res;
-  }
-  
-  private IStrategoTerm oldParse(File f, String pkg) {
-    oldResult = null;
-    oldException = null;
-    
-    if (f == null)
-      return null;
-    
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
-    try {
-      oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (ExecutionException e) {
-      if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException)
-        oldException = (org.spoofax.jsglr_orig.shared.SGLRException) e.getCause();
-      else if (e.getCause() instanceof StackOverflowError) {
-        oldException = e.getCause();
-        if (LOGGING)
-          System.out.println("[" + pkg + ", old] " + "STACK OVERFLOW");
-      }
-      else
-        throw new RuntimeException(e);
-    }
-    
-    if (LOGGING) {
-      System.out.println("[" + pkg + ", old] " + "parsing took " + oldParser.timeParse + "ms, " + (oldResult != null ? "success" : "failure"));
-    }
-    
-    return oldResult;
   }
   
   private File preprocess(File f, String pkg) {
@@ -307,81 +341,7 @@ public class TestFile extends ChainedTestCase {
     return term == null ? null : normalize_0_0.instance.invoke(normalizeContext, term);
   }
   
-  private void checkAmbiguities(String pkg) {
-    if (newParserCorrectness.parseTree != null && newParserCorrectness.ambiguities > 0) {
-      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
-      System.out.println("*error*" + "[" + pkg + ", new, corre] " + "tree contains " + newParserCorrectness.ambiguities + " ambiguities");
-    }
-
-    if (newParserSpeed.parseTree != null && newParserSpeed.ambiguities > 0) {
-      //writeToFile(newParser.parseTree.toString(), f.getAbsolutePath() + ".new.pt");
-      System.out.println("*error*" + "[" + pkg + ", new, speed] " + "tree contains " + newParserSpeed.ambiguities + " ambiguities");
-    }
-
-    if (oldParser.parseTree != null && oldParser.ambiguities > 0) {
-      //writeToFile(oldParser.parseTree.toString(), f.getAbsolutePath() + ".old.pt");
-      System.out.println("*error*" + "[" + pkg + ", old] " + "tree contains " + oldParser.ambiguities + " ambiguities");
-    }
-  }
-  
-  private void checkMakeLayoutMessages() {
-    if (mkExplicitMessages[1].length > 0 && LOGGING) {
-      System.out.println(mkExplicitMessages[1][0]);
-    }
-    
-    if (mkImplicitMessages[1].length > 0 && LOGGING) {
-      System.out.println(mkImplicitMessages[1][0]);
-    }
-  }
-  
-  private void checkExceptions(String pkg) {
-//    if (newExceptionCorrectness != null) {
-//      System.out.println("[" + pkg + ", new] failed");
-//      newExceptionCorrectness.printStackTrace(System.out);
-//    }
-//
-//    if (newExceptionSpeed != null) {
-//      System.out.println("[" + pkg + ", new] failed");
-//      newExceptionSpeed.printStackTrace(System.out);
-//    }
-//
-//    if (oldException != null) {
-//      System.out.println("[" + pkg + ", old] failed");
-//      oldException.printStackTrace(System.out);
-//    }
-  }
-  
-  private boolean checkTimeout(File f) {
-    if (newParserCorrectness.timeParse < 0) {
-      logTimeout(f.getAbsolutePath() + ".new");
-      return true;
-    }
-    if (newParserSpeed.timeParse < 0) {
-      logTimeout(f.getAbsolutePath() + ".new");
-      return true;
-    }
-    if (oldParser.timeParse < 0) {
-      logTimeout(f.getAbsolutePath() + ".old");
-      return true;
-    }
-    
-    return false;
-  }
-  
-  private boolean checkAmbInfix(String pkg) {
-    if (newResultCorrectness != null && newResultSpeed != null && mkExplicitMessages[1].length > 0 && mkExplicitMessages[1][0].endsWith("pp-haskell: Ambiguous infix expression")) {
-      logAmbInfix();
-      
-      if (LOGGING)
-        System.out.println("[" + pkg + "] " + "ambInfix");
-      
-      return true;
-    }
-    
-    return false;
-  }
-  
-  private boolean checkDiff(String pkg, File f) {
+  private void checkDiff(String pkg, File f) {
     IStrategoTerm newResultCorrectnessNorm = normalize(newResultCorrectness);
     IStrategoTerm newResultSpeedNorm = normalize(newResultSpeed);
     IStrategoTerm oldResultNorm = normalize(oldResult);
@@ -389,55 +349,39 @@ public class TestFile extends ChainedTestCase {
     Utilities.writeToFile(newResultSpeedNorm, f.getAbsolutePath() + ".new.speed.norm");
     Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
     
-    return 
-      !(newExceptionCorrectness instanceof StackOverflowError) && checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre") ||
-      checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
+    result.differencesToReferenceParser.t1 = 0;
+    result.differencesToReferenceParser.t2 = checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre");
+    result.differencesToReferenceParser.t3 = checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
   }
   
-  private boolean checkDiff(String pkg, File f, IStrategoTerm actual, IStrategoTerm expected, String actualDescriptor) {
+  private int checkDiff(String pkg, File f, IStrategoTerm actual, IStrategoTerm expected, String actualDescriptor) {
     IStrategoList diff = compare(actual, expected);
     
     if (diff == null || !diff.isEmpty()) {
-      ParseComparisonFailure failure = logComparisonFailure(f.getAbsolutePath(), expected, actual);
-    
       if (LOGGING) {
-        System.out.println("*error*" + "[" + pkg + ", new, " + actualDescriptor + "] " + failure.getMessage());
+        System.out.println("*error*" + "[" + pkg + ", new, " + actualDescriptor + "] " + "Comparison failed for " + f.getAbsolutePath());
         if (diff != null) {
           String diffString = diff.toString();
           Utilities.writeToFile(diffString, f.getAbsolutePath() + ".new." + actualDescriptor + ".diff");
           System.out.println("*error*" + "[" + pkg + "] " + "diff: " + diffString);
         }
       }
-      
-      return true;
     }
     
-    return false;
-  }
-
-  private boolean checkAllParsersFailed(String pkg, File explicitLayoutInput) {
-    if (newResultCorrectness == null && newResultSpeed == null && explicitLayoutInput != null && oldResult == null) {
-      // reference parser succeeded, but we failed independent of layout
-      logNoParse();
-      
-      if (LOGGING)
-        System.out.println("[" + pkg + "] " + "no parse");
-      
-      return true;
-    }
-    
-    return false;
-  }
-
-  private boolean checkReferenceParserFailed(String pkg, File explicitLayoutInput) {
-    if (newResultCorrectness == null && explicitLayoutInput == null) {
-      // original parser failed as well
-      logOkFail();
-      if (LOGGING)
-        System.out.println("[" + pkg + "] " + "okFail");
-      return true;
-    }
-    return false;
+    return diff == null ? 0 : diff.size();
   }
   
+  private IStrategoList compare(IStrategoTerm term1, IStrategoTerm term2) {
+    if (term1 == null && term2 == null)
+      return compareContext.getFactory().makeList();
+    if (term1 == null || term2 == null)
+      return null;
+    
+    IStrategoTerm result = compare_0_0.instance.invoke(compareContext, compareContext.getFactory().makeTuple(term1, term2));
+    if (result != null && Term.isTermList(result))
+      return (IStrategoList) result;
+    
+    return null;
+  }
+
 }

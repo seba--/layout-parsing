@@ -1,17 +1,20 @@
 package org.spoofax.jsglr.tests.haskell;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
+import org.spoofax.jsglr.tests.result.FileResult;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  */
-public class TestPackage extends ChainedTestCase {
+public class TestPackage extends TestCase {
   
   private final static boolean LOGGING = false;
   
@@ -20,15 +23,22 @@ public class TestPackage extends ChainedTestCase {
   
   private final static Pattern SOURCE_FILE_PATTERN = Pattern.compile(".*\\.hs");
   
+  private List<FileResult> results;
+  
   private TestFile fileTester = new TestFile();
+  
+  private File csvFile;
   
   public void testPackage() throws IOException {
     testPackage("AC-Vector");
-    printShortLog();
-    raiseFailures();
+    System.out.println(csvFile.getAbsolutePath());
   }
   
-  public void testPackage(String pkg) throws IOException {
+  public List<FileResult> testPackage(String pkg) throws IOException {
+    results = new LinkedList<FileResult>();
+    
+    if (LOGGING)
+      System.out.println(pkg + " starting");
     
     File dir;
     try { 
@@ -36,37 +46,29 @@ public class TestPackage extends ChainedTestCase {
     } catch (ExecutionError e) {
       String msg = e.getCause() == null ? "unknown cause" : e.getCause().getMessage();
       System.out.println("[" + pkg + "] " + "cabal unpack failed: " + msg);
-      return;
+      return results;
     }
+    
+    csvFile = new File(dir + ".csv");
+    new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     
     testFiles(dir, pkg);
     
-    logResult(pkg);
+    if (LOGGING)
+      System.out.println(pkg + " done");
     
-    addAllFailures(fileTester.getFailures());
-    addOks(fileTester.getOkCount());
-    addOkFails(fileTester.getOkFailCount());
-    addNoParses(fileTester.getNoParseCount());
-    addAmbInfix(fileTester.getAmbInfixCount());
-    addTimeout(fileTester.getTimeout());
-    addComparisonFailures(fileTester.getComparisonFailures());
-    fileTester.reset();
+    return results;
   }
   
-  private void logResult(String pkg) throws IOException {
-    boolean success = fileTester.getFailures().isEmpty();
-    
-    BufferedWriter writer = new BufferedWriter(new FileWriter(success ? SUCCESS_LOG : FAILURE_LOG, true));
-    writer.write(pkg + ": " + (success ? "success" : "failure") + "\n");
-    writer.write("  " + fileTester.getShortLog() + "\n");
-    
-    writer.close();
+  private void logResult(FileResult result) throws IOException {
+    results.add(result);
+    result.appendAsCSV(csvFile.getAbsolutePath());
   }
   
   public void testFiles(File dir, String pkg) throws IOException {
     for (File f : dir.listFiles())
       if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
-        fileTester.testFile(f, pkg);
+        logResult(fileTester.testFile(f, pkg));
       else if (f.isDirectory())
         testFiles(f, pkg);
   }
