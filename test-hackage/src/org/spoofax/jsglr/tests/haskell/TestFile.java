@@ -44,8 +44,8 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "C:\Users\SEBAIN~1.000\AppData\Local\Temp\4Blocks3612212284168367870";
-    String path = "4Blocks-0.2\Rendering\IntroText.hs";
+    String dir = "C:\\Users\\SEBAIN~1.000\\AppData\\Local\\Temp\\4Blocks3612212284168367870";
+    String path = "4Blocks-0.2\\Rendering\\IntroText.hs";
     testFile(new File(dir + "/" + path), path, "main");
 
     String csv = path + ".csv";
