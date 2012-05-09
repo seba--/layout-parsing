@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.spoofax.jsglr.tests.result.FileResult;
+import org.spoofax.jsglr.tests.result.FileResultObserver;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
@@ -32,7 +32,7 @@ public class TestAllPackages extends TestCase {
     };
     
     for (String pkg : warmupPackages)
-      new TestPackage().testPackage(pkg);
+      new TestPackage().testPackage(pkg, new FileResultObserver() { public void observe(FileResult result) { } });
   }
   
   public void testAllPackages() throws IOException {
@@ -59,8 +59,7 @@ public class TestAllPackages extends TestCase {
           continue;
         }
         
-        List<FileResult> packageResults = new TestPackage().testPackage(pkg);
-        logResults(pkg, packageResults);
+        new TestPackage().testPackage(pkg, new MyFileResultObserver(pkg));
       }
       
     } finally { 
@@ -68,16 +67,18 @@ public class TestAllPackages extends TestCase {
         in.close();
     }
   }
-  
-  private void logResults(String pkg, List<FileResult> packageResults) throws IOException {
-    File pkgCsv = new File(csvDir, pkg + ".csv");
-    new FileResult().writeCSVHeader(pkgCsv.getAbsolutePath());
-    
-    for (FileResult result : packageResults) {
-      result.appendAsCSV(csvFile.getAbsolutePath());
-      result.appendAsCSV(pkgCsv.getAbsolutePath());
+
+  private class MyFileResultObserver implements FileResultObserver {
+    private File pkgCsv;
+    private MyFileResultObserver(String pkg) throws IOException {
+      pkgCsv = new File(csvDir, pkg + ".csv");
+      new FileResult().writeCSVHeader(pkgCsv.getAbsolutePath());
     }
-    
-    System.out.println(csvFile.getAbsolutePath());
+    public void observe(FileResult packageResult) throws IOException {
+      packageResult.appendAsCSV(csvFile.getAbsolutePath());
+      packageResult.appendAsCSV(pkgCsv.getAbsolutePath());
+      
+      System.out.println(csvFile.getAbsolutePath());
+    }
   }
 }

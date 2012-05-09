@@ -20,6 +20,7 @@ public class Utilities {
     writeToFile(content, f);
   }
   
+  @SuppressWarnings("deprecation")
   public static String termToString(IStrategoTerm t) {
     InlinePrinter printer = new InlinePrinter();
     t.prettyPrint(printer);

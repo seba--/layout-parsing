@@ -2,14 +2,13 @@ package org.spoofax.jsglr.tests.haskell;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.result.FileResult;
+import org.spoofax.jsglr.tests.result.FileResultObserver;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
@@ -18,25 +17,21 @@ public class TestPackage extends TestCase {
   
   private final static boolean LOGGING = false;
   
-  public final static String SUCCESS_LOG = "success.log";
-  public final static String FAILURE_LOG = "failure.log";
-  
   private final static Pattern SOURCE_FILE_PATTERN = Pattern.compile(".*\\.hs");
   
-  private List<FileResult> results;
-  
   private File csvFile;
+  private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("KiCS-debugger");
+    testPackage("KiCS-debugger", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   
-  public List<FileResult> testPackage(String pkg) throws IOException {
-    results = new LinkedList<FileResult>();
-    
+  public void testPackage(String pkg, FileResultObserver observer) throws IOException {
     if (LOGGING)
       System.out.println(pkg + " starting");
+    
+    this.observer = observer;
     
     File dir;
     try { 
@@ -44,7 +39,7 @@ public class TestPackage extends TestCase {
     } catch (ExecutionError e) {
       String msg = e.getCause() == null ? "unknown cause" : e.getCause().getMessage();
       System.out.println("[" + pkg + "] " + "cabal unpack failed: " + msg);
-      return results;
+      return;
     }
     
     csvFile = new File(dir + ".csv");
@@ -55,11 +50,10 @@ public class TestPackage extends TestCase {
     if (LOGGING)
       System.out.println(pkg + " done");
     
-    return results;
   }
   
   private void logResult(FileResult result) throws IOException {
-    results.add(result);
+    observer.observe(result);
     result.appendAsCSV(csvFile.getAbsolutePath());
   }
   
