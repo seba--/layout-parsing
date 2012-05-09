@@ -44,8 +44,9 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String path = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/HPDF3011494024294633954/HPDF-1.4.2/Graphics/PDF/Hyphenate/English.hs";
-    testFile(new File(path), "main");
+    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/HPDF3011494024294633954/HPDF-1.4.2";
+    String path = "Graphics/PDF/Hyphenate/English.hs";
+    testFile(new File(dir + "/" + path), path, "main");
 
     String csv = path + ".csv";
     result.writeCSVHeader(csv);
@@ -53,11 +54,11 @@ public class TestFile extends TestCase {
     System.out.println(csv);
   }
   
-  public FileResult testFile(File f, String pkg) throws IOException {
+  public FileResult testFile(File f, String path, String pkg) throws IOException {
     result = new FileResult();
     
     result.pkg = pkg;
-    result.file = f.getAbsolutePath();
+    result.path = path;
     
     if (TestConfiguration.skipFile(f)) {
       result.skipped = true;

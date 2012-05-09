@@ -55,5 +55,9 @@ public class Utilities {
     reader.close();
     return fileData.toString();
   }
+  
+  public static String extendPath(String path, String name) {
+    return path.isEmpty() ? name : (path + "/" + name);
+  }
 }
 

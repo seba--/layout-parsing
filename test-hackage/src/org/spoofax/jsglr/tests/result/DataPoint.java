@@ -28,4 +28,17 @@ public class DataPoint<T> {
     this.t2 = t2;
     this.t3 = t3;
   }
+  
+  public T get(int run) {
+    switch (run) {
+    case 1:
+      return t1;
+    case 2:
+      return t2;
+    case 3:
+      return t3;
+    }
+    
+    throw new IllegalArgumentException();
+  }
 }

@@ -19,12 +19,30 @@ public class TestAllPackages extends TestCase {
   private File csvDir;
   private File csvFile;
   
+  public void warmup() throws IOException {
+    String[] warmupPackages = new String[] {
+        "matlab",
+        "matrix-market",
+        "matsuri",
+        "maude",
+        "maximal-cliques",
+        "maybench",
+        "mbox",
+        "mdo",
+    };
+    
+    for (String pkg : warmupPackages)
+      new TestPackage().testPackage(pkg);
+  }
+  
   public void testAllPackages() throws IOException {
     String path = "all" + System.currentTimeMillis();
     csvDir = new File(path);
     csvDir.mkdirs();
     csvFile = new File(path + ".csv");
     new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
+    
+    warmup();
     
     BufferedReader in = null;
     

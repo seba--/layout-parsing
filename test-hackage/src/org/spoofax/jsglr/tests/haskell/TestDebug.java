@@ -22,7 +22,7 @@ public class TestDebug extends TestCase {
     files.add("c:/Users/SEBAIN~1.000/AppData/Local/Temp/BASIC3816339167381594818/BASIC-0.1.5.0/Language/BASIC/Interp.hs");
     
     for (String f : files) {
-      FileResult result = fileTester.testFile(new File(f), "test");
+      FileResult result = fileTester.testFile(new File(f), f, "test");
 
       String path = new File(f).getAbsolutePath() + ".new.pt";
       Utilities.writeToFile(fileTester.newParserCorrectness.parseTree.toString(), path);

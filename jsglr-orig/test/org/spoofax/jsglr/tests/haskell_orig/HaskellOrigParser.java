@@ -29,9 +29,16 @@ public class HaskellOrigParser {
    */
   private static final int TIMEOUT = 10;
 
-  private static String tableLocation = HaskellOrigParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr/tests/haskell_orig/Haskell.tbl";
+  private static final String tableLocation = HaskellOrigParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr/tests/haskell_orig/Haskell.tbl";
   
-  private ParseTable table;
+  private static final ParseTable table;
+  static {
+    try {
+      table = new ParseTableManager().loadFromFile(tableLocation);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   public int ambiguities;
   
@@ -40,11 +47,6 @@ public class HaskellOrigParser {
   public int timeParse;
   
   public HaskellOrigParser() {
-    try {
-      table = new ParseTableManager().loadFromFile(tableLocation);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private void reset() {

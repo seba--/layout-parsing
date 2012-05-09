@@ -50,7 +50,7 @@ public class TestPackage extends TestCase {
     csvFile = new File(dir + ".csv");
     new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     
-    testFiles(dir, pkg);
+    testFiles(dir, "", pkg);
     
     if (LOGGING)
       System.out.println(pkg + " done");
@@ -63,12 +63,12 @@ public class TestPackage extends TestCase {
     result.appendAsCSV(csvFile.getAbsolutePath());
   }
   
-  public void testFiles(File dir, String pkg) throws IOException {
+  public void testFiles(File dir, String path, String pkg) throws IOException {
     for (File f : dir.listFiles())
       if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
-        logResult(new TestFile().testFile(f, pkg));
+        logResult(new TestFile().testFile(f, Utilities.extendPath(path, f.getName()), pkg));
       else if (f.isDirectory())
-        testFiles(f, pkg);
+        testFiles(f, Utilities.extendPath(path, f.getName()), pkg);
   }
   
   private File cabalUnpack(String pkg) throws IOException {

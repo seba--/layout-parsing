@@ -14,7 +14,7 @@ import org.spoofax.jsglr.tests.haskell.Utilities;
 public class FileResult {
   
   public String pkg;
-  public String file;
+  public String path;
   
   public boolean allSuccess;
   public boolean allNull;
@@ -65,7 +65,9 @@ public class FileResult {
   
   public String getAsCSVString() {
     StringBuilder builder = new StringBuilder();
-    writeAsCSV(builder);
+    writeAsCSV(builder, 1);
+    writeAsCSV(builder, 2);
+    writeAsCSV(builder, 3);
     return builder.toString();
   }
   
@@ -110,10 +112,8 @@ public class FileResult {
       writeString(out, o.toString());
   }
   
-  private void write(StringBuilder out, DataPoint<? extends Object> d) {
-    write(out, d.t1); writeSem(out);
-    write(out, d.t2); writeSem(out);
-    write(out, d.t3);
+  private void write(StringBuilder out, DataPoint<? extends Object> d, int run) {
+    write(out, d.get(run));
   }
 
   private void writeSem(StringBuilder out) {
@@ -140,9 +140,10 @@ public class FileResult {
     return "\"" + s.replace("\"", "\"\"") + "\"";
   }
   
-  private void writeAsCSV(StringBuilder builder) {
+  private void writeAsCSV(StringBuilder builder, int run) {
     write(builder, pkg); writeSem(builder);
-    write(builder, file); writeSem(builder);
+    write(builder, path); writeSem(builder);
+    write(builder, run); writeSem(builder);
 
     write(builder, allSuccess); writeSem(builder);
     write(builder, allNull); writeSem(builder);
@@ -153,32 +154,33 @@ public class FileResult {
     write(builder, makeImplicitLayout); writeSem(builder);
     write(builder, ambInfix); writeSem(builder);
     
-    write(builder, linesOfCode); writeSem(builder);
-    write(builder, byteSize); writeSem(builder);
+    write(builder, linesOfCode, run); writeSem(builder);
+    write(builder, byteSize, run); writeSem(builder);
     
-    write(builder, parseOk); writeSem(builder);
-    write(builder, normalizeOk); writeSem(builder);
-    write(builder, time); writeSem(builder);
-    write(builder, ambiguities); writeSem(builder);
-    write(builder, stackOverflow); writeSem(builder);
-    write(builder, timeout); writeSem(builder);
-    write(builder, parseExceptions); writeSem(builder);
-    write(builder, otherExceptions); writeSem(builder);
+    write(builder, parseOk, run); writeSem(builder);
+    write(builder, normalizeOk, run); writeSem(builder);
+    write(builder, time, run); writeSem(builder);
+    write(builder, ambiguities, run); writeSem(builder);
+    write(builder, stackOverflow, run); writeSem(builder);
+    write(builder, timeout, run); writeSem(builder);
+    write(builder, parseExceptions, run); writeSem(builder);
+    write(builder, otherExceptions, run); writeSem(builder);
     
-    write(builder, layoutFilterCallsParseTime); writeSem(builder);
-    write(builder, layoutFilteringParseTime); writeSem(builder);
-    write(builder, layoutFilterCallsDisambiguationTime); writeSem(builder);
-    write(builder, layoutFilteringDisambiguationTime); writeSem(builder);
-    write(builder, enforcedNewlineSkips); writeSem(builder);
+    write(builder, layoutFilterCallsParseTime, run); writeSem(builder);
+    write(builder, layoutFilteringParseTime, run); writeSem(builder);
+    write(builder, layoutFilterCallsDisambiguationTime, run); writeSem(builder);
+    write(builder, layoutFilteringDisambiguationTime, run); writeSem(builder);
+    write(builder, enforcedNewlineSkips, run); writeSem(builder);
     
-    write(builder, differencesToReferenceParser); writeSem(builder);
+    write(builder, differencesToReferenceParser, run); writeSem(builder);
     
     builder.append('\n');
   }
 
   private void writeCSVHeader(StringBuilder builder) {
     write(builder, "package"); writeSem(builder);
-    write(builder, "source file"); writeSem(builder);
+    write(builder, "path"); writeSem(builder);
+    write(builder, "run"); writeSem(builder);
 
     write(builder, "all success"); writeSem(builder);
     write(builder, "all null"); writeSem(builder);
@@ -189,33 +191,28 @@ public class FileResult {
     write(builder, "implicit layout OK"); writeSem(builder);
     write(builder, "ambInfix error"); writeSem(builder);
     
-    writeDataPointDesc(builder, "lines of code"); writeSem(builder);
-    writeDataPointDesc(builder, "byte size"); writeSem(builder);
+    write(builder, "lines of code"); writeSem(builder);
+    write(builder, "byte size"); writeSem(builder);
     
-    writeDataPointDesc(builder, "parse ok"); writeSem(builder);
-    writeDataPointDesc(builder, "normalize ok"); writeSem(builder);
-    writeDataPointDesc(builder, "time"); writeSem(builder);
-    writeDataPointDesc(builder, "ambiguities"); writeSem(builder);
-    writeDataPointDesc(builder, "stack overflow"); writeSem(builder);
-    writeDataPointDesc(builder, "timeout"); writeSem(builder);
-    writeDataPointDesc(builder, "parse exception"); writeSem(builder);
-    writeDataPointDesc(builder, "other exception"); writeSem(builder);
+    write(builder, "parse ok"); writeSem(builder);
+    write(builder, "normalize ok"); writeSem(builder);
+    write(builder, "time"); writeSem(builder);
+    write(builder, "ambiguities"); writeSem(builder);
+    write(builder, "stack overflow"); writeSem(builder);
+    write(builder, "timeout"); writeSem(builder);
+    write(builder, "parse exception"); writeSem(builder);
+    write(builder, "other exception"); writeSem(builder);
     
-    writeDataPointDesc(builder, "layout filter calls (parse time)"); writeSem(builder);
-    writeDataPointDesc(builder, "layout filtering (parse time)"); writeSem(builder);
-    writeDataPointDesc(builder, "layout filter calls (disambiguation time)"); writeSem(builder);
-    writeDataPointDesc(builder, "layout filtering (disambigutation time)"); writeSem(builder);
-    writeDataPointDesc(builder, "enforced newline skips"); writeSem(builder);
+    write(builder, "layout filter calls (parse time)"); writeSem(builder);
+    write(builder, "layout filtering (parse time)"); writeSem(builder);
+    write(builder, "layout filter calls (disambiguation time)"); writeSem(builder);
+    write(builder, "layout filtering (disambigutation time)"); writeSem(builder);
+    write(builder, "enforced newline skips"); writeSem(builder);
     
-    writeDataPointDesc(builder, "diffs to 1"); writeSem(builder);
+    write(builder, "diffs to 1"); writeSem(builder);
     
     builder.append('\n');
   }
-  
-  private void writeDataPointDesc(StringBuilder builder, String desc) {
-    write(builder, "1 " + desc); writeSem(builder);
-    write(builder, "2 " + desc); writeSem(builder);
-    write(builder, "3 " + desc);
-  }
+
   
 }
