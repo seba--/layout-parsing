@@ -1,7 +1,11 @@
 package org.spoofax.jsglr.tests.haskell;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.terms.io.InlinePrinter;
@@ -38,6 +42,18 @@ public class Utilities {
         }
     }
   }
-  
+
+
+  public static String readFileAsString(String file) throws IOException {
+    StringBuilder fileData = new StringBuilder(1000);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
+    char[] buf = new char[1024];
+    int numRead = 0;
+    while ((numRead = reader.read(buf)) != -1)
+      fileData.append(buf, 0, numRead);
+
+    reader.close();
+    return fileData.toString();
+  }
 }
 

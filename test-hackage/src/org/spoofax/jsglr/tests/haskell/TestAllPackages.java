@@ -16,8 +16,6 @@ import org.spoofax.jsglr.tests.result.FileResult;
  */
 public class TestAllPackages extends TestCase {
   
-  private TestPackage packageTester = new TestPackage();
-  
   private File csvDir;
   private File csvFile;
   
@@ -43,7 +41,7 @@ public class TestAllPackages extends TestCase {
           continue;
         }
         
-        List<FileResult> packageResults = packageTester.testPackage(pkg);
+        List<FileResult> packageResults = new TestPackage().testPackage(pkg);
         logResults(pkg, packageResults);
       }
       

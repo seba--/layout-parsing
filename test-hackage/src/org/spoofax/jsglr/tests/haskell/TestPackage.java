@@ -25,8 +25,6 @@ public class TestPackage extends TestCase {
   
   private List<FileResult> results;
   
-  private TestFile fileTester = new TestFile();
-  
   private File csvFile;
   
   public void testPackage() throws IOException {
@@ -68,7 +66,7 @@ public class TestPackage extends TestCase {
   public void testFiles(File dir, String pkg) throws IOException {
     for (File f : dir.listFiles())
       if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
-        logResult(fileTester.testFile(f, pkg));
+        logResult(new TestFile().testFile(f, pkg));
       else if (f.isDirectory())
         testFiles(f, pkg);
   }
