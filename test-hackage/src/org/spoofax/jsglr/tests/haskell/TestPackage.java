@@ -28,7 +28,7 @@ public class TestPackage extends TestCase {
   private File csvFile;
   
   public void testPackage() throws IOException {
-    testPackage("HPDF");
+    testPackage("KiCS-debugger");
     System.out.println(csvFile.getAbsolutePath());
   }
   

@@ -44,8 +44,8 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/HPDF3011494024294633954/HPDF-1.4.2";
-    String path = "Graphics/PDF/Hyphenate/English.hs";
+    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/KiCS-debugger6859230723297512911";
+    String path = "KiCS-debugger-0.1.1/dist/build/Curry/DebugModule/ReadShowTerm.hs";
     testFile(new File(dir + "/" + path), path, "main");
 
     String csv = path + ".csv";
@@ -108,10 +108,16 @@ public class TestFile extends TestCase {
   }
   
   private File prepareFile(String pkg, File f) throws IOException {
-    File fnorm = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().length() - 3) + "-norm.hs");
-    DeleteUnicode.deleteUnicode(f.getAbsolutePath(), fnorm.getAbsolutePath());
-    File fpp = preprocess(fnorm, pkg);
-    return fpp;
+    try {
+      File fnorm = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().length() - 3) + "-norm.hs");
+      DeleteUnicode.deleteUnicode(f.getAbsolutePath(), fnorm.getAbsolutePath());
+      File fpp = preprocess(fnorm, pkg);
+      return fpp;
+    } catch (OutOfMemoryError e) {
+      e = null;
+      System.gc();
+      return null;
+    }
   }
   
 
@@ -156,7 +162,12 @@ public class TestFile extends TestCase {
     }
     
     if (LOGGING) {
-      System.out.println("[" + pkg + ", old] " + "parsing took " + (oldParser.timeParse / 1000 / 1000) + "ms, " + (oldResult != null ? "success" : "failure"));
+      String time;
+      if (oldParser.timeParse >= 0)
+        time = oldParser.timeParse / 1000 / 1000 + "ms";
+      else
+        time = "TIMEOUT";
+      System.out.println("[" + pkg + ", old] " + "parsing took " + time + ", " + (oldResult != null ? "success" : "failure"));
     }
     
     return oldResult;
