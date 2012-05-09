@@ -5,7 +5,7 @@ import java.io.IOException;
 public class DeleteUnicode {
 
   public static void deleteUnicode(String inFile, String outFile) throws IOException {
-    Utilities.writeToFile(outFile, deleteUnicode(Utilities.readFileAsString(inFile)));
+    Utilities.writeToFile(deleteUnicode(Utilities.readFileAsString(inFile)), outFile);
   }
 
   public static String deleteUnicode(String s) {
