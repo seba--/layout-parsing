@@ -60,5 +60,9 @@ public class Utilities {
   public static String extendPath(String path, String name) {
     return path.isEmpty() ? name : (path + "/" + name);
   }
+  
+  public static long usedMemory() {
+    return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+  }
 }
 

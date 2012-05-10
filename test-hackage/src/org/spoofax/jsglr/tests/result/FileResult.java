@@ -36,6 +36,9 @@ public class FileResult {
   public DataPoint<String> parseExceptions = new DataPoint<String>("");
   public DataPoint<String> otherExceptions = new DataPoint<String>("");
   public DataPoint<Boolean> timeout = new DataPoint<Boolean>(false);
+  public DataPoint<Long> memoryBefore = new DataPoint<Long>(-1l);
+  public DataPoint<Long> memoryAfter = new DataPoint<Long>(-1l);
+  
   
   public DataPoint<Integer> layoutFilterCallsParseTime = new DataPoint<Integer>(-1);
   public DataPoint<Integer> layoutFilteringParseTime = new DataPoint<Integer>(-1);
@@ -163,6 +166,9 @@ public class FileResult {
     write(builder, ambiguities, run); writeSem(builder);
     write(builder, stackOverflow, run); writeSem(builder);
     write(builder, timeout, run); writeSem(builder);
+    write(builder, memoryBefore, run); writeSem(builder);
+    write(builder, memoryAfter, run); writeSem(builder);
+    
     write(builder, parseExceptions, run); writeSem(builder);
     write(builder, otherExceptions, run); writeSem(builder);
     
@@ -200,6 +206,9 @@ public class FileResult {
     write(builder, "ambiguities"); writeSem(builder);
     write(builder, "stack overflow"); writeSem(builder);
     write(builder, "timeout"); writeSem(builder);
+    write(builder, "used mem before"); writeSem(builder);
+    write(builder, "used mem after"); writeSem(builder);
+    
     write(builder, "parse exception"); writeSem(builder);
     write(builder, "other exception"); writeSem(builder);
     

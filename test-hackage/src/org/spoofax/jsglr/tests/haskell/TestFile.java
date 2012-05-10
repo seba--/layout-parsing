@@ -29,7 +29,7 @@ public class TestFile extends TestCase {
   
   private final static boolean LOGGING = true;
   
-  static final Context normalizeContext = normalize.init();
+  private Context normalizeContext = normalize.init();
   
   private Context compareContext = CompareAST.init();
   public HaskellParser newParserCorrectness = new HaskellParser();
@@ -44,11 +44,11 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "C:\\Users\\SEBAIN~1.000\\AppData\\Local\\Temp\\4Blocks3612212284168367870";
-    String path = "4Blocks-0.2\\Rendering\\IntroText.hs";
+    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/KiCS-debugger2353668115810362596";
+    String path = "KiCS-debugger-0.1.1/dist/build/Curry/DebugModule/Time.hs";
     testFile(new File(dir + "/" + path), path, "main");
 
-    String csv = path + ".csv";
+    String csv = dir + "/" + path + ".csv";
     result.writeCSVHeader(csv);
     result.appendAsCSV(csv);
     System.out.println(csv);
@@ -132,11 +132,13 @@ public class TestFile extends TestCase {
     result.byteSize.t1 = input.getBytes().length;
 
     System.gc();
+    result.memoryBefore.t1 = Utilities.usedMemory();
     
     try {
       oldResult = (IStrategoTerm) oldParser.parse(input, f.getAbsolutePath());
       result.parseOk.t1 = oldResult != null;
       result.stackOverflow.t1 = false;
+      
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
@@ -183,6 +185,7 @@ public class TestFile extends TestCase {
     result.byteSize.t2 = input.getBytes().length;
     
     System.gc();
+    result.memoryBefore.t2 = Utilities.usedMemory();
     
     try {
       newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
@@ -234,6 +237,7 @@ public class TestFile extends TestCase {
     result.byteSize.t3 = input.getBytes().length;
 
     System.gc();
+    result.memoryBefore.t3 = Utilities.usedMemory();
     
     try {
       newResultSpeed = (IStrategoTerm) newParserSpeed.parse(input, f.getAbsolutePath());

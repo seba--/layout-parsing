@@ -40,9 +40,11 @@ public class HaskellParser {
     }
   }
   
+  long startParse = -1;
+  long endParse = -1;
   public int timeParse;
   
-  public SGLR parser;
+  private SGLR parser;
   public AbstractParseNode parseTree;
   
   public HaskellParser() {
@@ -64,29 +66,32 @@ public class HaskellParser {
     
     parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
 
-    long startParse = -1;
-    long endParse = -1;
-
     FutureTask<Object> parseTask = new FutureTask<Object>(new Callable<Object>() {
       public Object call() throws BadTokenException, TokenExpectedException, ParseException, SGLRException {
-        return parser.parse(input, filename, startSymbol);
+        startParse = System.nanoTime();
+        try { 
+          return parser.parse(input, filename, startSymbol);
+        } finally {
+          endParse = System.nanoTime();
+        }
       }
     });
     Thread thread = new Thread(parseTask);
-
+    
+    startParse = -1;
+    endParse = -1;
+    
     Object o = null;
     try {
-      startParse = System.nanoTime();
       thread.start();
       o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
-      endParse = System.nanoTime();
     } catch (TimeoutException e) {
-      endParse = startParse - 1;
       thread.stop();
+      endParse = startParse - 1;
     } finally {
       
       if (endParse == -1)
-        endParse = (int) System.nanoTime();
+        endParse = System.nanoTime();
       
       parseTree = parser.getParseTree();
       
