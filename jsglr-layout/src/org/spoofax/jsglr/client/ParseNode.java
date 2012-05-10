@@ -35,7 +35,8 @@ public class ParseNode extends AbstractParseNode {
   
   private AbstractParseNode left;
   
-  private boolean isLayout;
+  private final boolean isLayout;
+  private final boolean isIgnoreLayout;
 
   @Override
   public int getLabel() {
@@ -44,9 +45,10 @@ public class ParseNode extends AbstractParseNode {
     return label;
   }
 
-  public ParseNode(int label, AbstractParseNode[] kids, int type, int line, int column, boolean isLayout) {
+  public ParseNode(int label, AbstractParseNode[] kids, int type, int line, int column, boolean isLayout, boolean isIgnoreLayout) {
     super(line, column);
     this.isLayout = isLayout;
+    this.isIgnoreLayout = isIgnoreLayout;
     setFields(label, kids, type);
     if (type == AbstractParseNode.AMBIGUITY) {
       this.isParseProductionChain = false;
@@ -66,7 +68,7 @@ public class ParseNode extends AbstractParseNode {
       assert kids[i].getColumn() == column;
     }
 
-    ParseNode amb = new ParseNode(AMB_LABEL, kids, AbstractParseNode.AMBIGUITY, line, column, kids[0].isLayout());
+    ParseNode amb = new ParseNode(AMB_LABEL, kids, AbstractParseNode.AMBIGUITY, line, column, kids[0].isLayout(), kids[0].isIgnoreLayout());
     return amb;
   }
 
@@ -77,6 +79,18 @@ public class ParseNode extends AbstractParseNode {
     this.kids = kids;
     this.isParseProductionChain = false;
     this.isSetPPC = false;
+    
+    for (AbstractParseNode kid : kids)
+      if (!kid.isLayout() && !kid.isEmpty() && !kid.isIgnoreLayout()) {
+        if (kid.getLine() > getLine() && (left == null || kid.getColumn() < left.getColumn()))
+          left = kid;
+        AbstractParseNode kidLeft = kid.getLeft();
+        if (kidLeft != null && 
+            kidLeft.getLine() > getLine() &&
+            (left == null || kidLeft.getColumn() < left.getColumn()))
+          left = kidLeft;
+      }
+
   }
 
   @Override
@@ -102,7 +116,7 @@ public class ParseNode extends AbstractParseNode {
     assert getLine() == pn.getLine();
     assert getColumn() == pn.getColumn();
 
-    ParseNode left = new ParseNode(this.label, this.kids, this.nodeType, getLine(), getColumn(), isLayout);
+    ParseNode left = new ParseNode(this.label, this.kids, this.nodeType, getLine(), getColumn(), isLayout, isIgnoreLayout);
     setFields(AMB_LABEL, new AbstractParseNode[] { left, pn }, AbstractParseNode.AMBIGUITY);
 
     if (pn instanceof ParseNode)
@@ -319,10 +333,6 @@ public class ParseNode extends AbstractParseNode {
     return kids;
   }
 
-  public void setChildren(AbstractParseNode[] kids) {
-    this.kids = kids;
-  }
-  
   @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof ParseNode) || !super.equals(obj))
@@ -378,30 +388,19 @@ public class ParseNode extends AbstractParseNode {
     return isEmpty;
   }
 
-  private void computeLeft(ParseTable parseTable) {
-    for (AbstractParseNode kid : kids)
-      if (!kid.isLayout() && !kid.isEmpty() && !kid.ignoreIndent(parseTable)) {
-        if (kid.getLine() > getLine() && (left == null || kid.getColumn() < left.getColumn()))
-          left = kid;
-        AbstractParseNode kidLeft = kid.getLeft(parseTable);
-        if (kidLeft != null && 
-            kidLeft.getLine() > getLine() &&
-            (left == null || kidLeft.getColumn() < left.getColumn()))
-          left = kidLeft;
-      }
-  }
-
   @Override
-  public AbstractParseNode getLeft(ParseTable parseTable) {
-    if (left == null)
-      computeLeft(parseTable);
-    
+  public AbstractParseNode getLeft() {
     return left;
   }
   
   @Override
   public boolean isLayout() {
     return isLayout;
+  }
+
+  @Override
+  public boolean isIgnoreLayout() {
+    return isIgnoreLayout;
   }
   
   /*

@@ -111,10 +111,11 @@ public abstract class AbstractParseNode {
    */
   public abstract boolean isEmpty();
   
-  public abstract AbstractParseNode getLeft(ParseTable parseTable);
+  public abstract AbstractParseNode getLeft();
   
   public abstract boolean isLayout();
-  
+  public abstract boolean isIgnoreLayout();
+
   public int getAmbiguityCount() {
     Stack<AbstractParseNode> nodes = new Stack<AbstractParseNode>();
     nodes.push(this);
@@ -130,15 +131,6 @@ public abstract class AbstractParseNode {
     }
     
     return amb;
-  }
-
-  public boolean ignoreIndent(ParseTable parseTable) {
-    if (isAmbNode())
-      return false;
-    Label l = parseTable.getLabel(getLabel());
-    if (l == null)
-      return false;
-    return l.getAttributes().isIgnoreIndent();
   }
 
   public final static int NEWLINE_LAYOUT = 2;

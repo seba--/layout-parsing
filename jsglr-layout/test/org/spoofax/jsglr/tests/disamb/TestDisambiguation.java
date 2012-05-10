@@ -43,27 +43,27 @@ public class TestDisambiguation extends TestCase {
       new ParseNode(3, 
                     new AbstractParseNode[] {new ParseProductionNode(3, 0, 0)}, 
                     AbstractParseNode.PARSENODE, 
-                    0, 0, false);
+                    0, 0, false, false);
     AbstractParseNode d =
       new ParseNode(4, 
           new AbstractParseNode[] {new ParseProductionNode(4, 0, 0)}, 
           AbstractParseNode.PARSENODE, 
-          0, 1, false);
+          0, 1, false, false);
     AbstractParseNode b =
       new ParseNode(2, 
           new AbstractParseNode[] {c, d}, 
           AbstractParseNode.PARSENODE, 
-          0, 2, false);
+          0, 2, false, false);
     AbstractParseNode e =
       new ParseNode(5, 
           new AbstractParseNode[] {new ParseProductionNode(5, 0, 0)}, 
           AbstractParseNode.PARSENODE, 
-          0, 3, false);
+          0, 3, false, false);
     AbstractParseNode a =
       new ParseNode(1, 
           new AbstractParseNode[] {b, e}, 
           AbstractParseNode.PARSENODE, 
-          0, 4, false);
+          0, 4, false, false);
 
     tree1 = a;
     

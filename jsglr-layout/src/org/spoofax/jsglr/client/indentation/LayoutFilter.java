@@ -295,7 +295,7 @@ public class LayoutFilter {
       if (atParseTime)
         return noValue();
       else
-        return t.getLeft(parseTable);
+        return t.getLeft();
     
     throw new IllegalStateException("unknown selector " + sel);
   }

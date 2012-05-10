@@ -300,6 +300,9 @@ public class SGLR {
 		getPerformanceMeasuring().startParse();
 		try {
 			do {
+		     if (Thread.currentThread().isInterrupted())
+		        throw new InterruptedException();
+
 				readNextToken();
 				//System.out.print((char)currentToken);
 				history.keepTokenAndState(this);
@@ -731,9 +734,10 @@ public class SGLR {
 		final int length = path.getLength();
 		final int numberOfRecoveries = calcRecoverCount(prod, path);
 		final AbstractParseNode t = prod.apply(kids, 
-		                                      path.getParentCount() > 0 ? path.getParent().getLink().getLine() : lineNumber, 
-		                                      path.getParentCount() > 0 ? path.getParent().getLink().getColumn() : columnNumber,
-		                                      parseTable.getLabel(prod.label).isLayout());
+		                                       path.getParentCount() > 0 ? path.getParent().getLink().getLine() : lineNumber, 
+		                                       path.getParentCount() > 0 ? path.getParent().getLink().getColumn() : columnNumber,
+		                                       parseTable.getLabel(prod.label).isLayout(),
+		                                       parseTable.getLabel(prod.label).getAttributes().isIgnoreLayout());
 		final Frame st1 = findStack(activeStacks, s);
 
 		if (st1 == null) {
@@ -822,7 +826,7 @@ public class SGLR {
 		assert(prod.isRecoverProduction());
 		final int length = path.getLength();
 		final int numberOfRecoveries = calcRecoverCount(prod, path);
-		final AbstractParseNode t = prod.apply(kids, lineNumber, columnNumber, parseTable.getLabel(prod.label).isLayout());
+		final AbstractParseNode t = prod.apply(kids, lineNumber, columnNumber, parseTable.getLabel(prod.label).isLayout(), parseTable.getLabel(prod.label).getAttributes().isIgnoreLayout());
 		final Frame stActive = findStack(activeStacks, s);
 		if(stActive!=null){
 			Link lnActive=stActive.findDirectLink(st0);

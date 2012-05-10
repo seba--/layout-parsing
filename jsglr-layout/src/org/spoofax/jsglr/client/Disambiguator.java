@@ -428,8 +428,7 @@ public class Disambiguator {
         return results.get(0);
       default:
         ambiguityManager.increaseAmbiguityCount();
-        return ParseNode.createAmbNode(results
-            .toArray(new AbstractParseNode[results.size()]));
+        return ParseNode.createAmbNode(results.toArray(new AbstractParseNode[results.size()]));
       }
     } else {
       final IStrategoTerm prod = getProduction(t);
@@ -495,7 +494,8 @@ public class Disambiguator {
                             t.getNodeType(),
                             t.getLine(),
                             t.getColumn(),
-                            t.isLayout());
+                            t.isLayout(),
+                            t.isIgnoreLayout());
         
         if (!rejected) {
           if (filterAssociativity)
@@ -661,8 +661,7 @@ public class Disambiguator {
       if (!newAmbiguities.isEmpty()) {
         AbstractParseNode extraAmb;
         if (newAmbiguities.size() > 1) {
-          extraAmb = ParseNode.createAmbNode(newAmbiguities
-              .toArray(new AbstractParseNode[newAmbiguities.size()]));
+          extraAmb = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
           ambiguityManager.increaseAmbiguityCount();
         } else {
           extraAmb = newAmbiguities.get(0);
@@ -673,7 +672,7 @@ public class Disambiguator {
       }
 
       // FIXME is this correct?
-      return new ParseNode(t.getLabel(), restKids, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout());
+      return new ParseNode(t.getLabel(), restKids, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
 
     } else if (firstKid.isParseNode()) {
       if (((ParseNode) firstKid).getLabel() == prodLabel.labelNumber) {
@@ -717,8 +716,7 @@ public class Disambiguator {
         if (!newAmbiguities.isEmpty()) {
           AbstractParseNode n = null;
           if (newAmbiguities.size() > 1) {
-            n = ParseNode.createAmbNode(newAmbiguities
-                .toArray(new AbstractParseNode[newAmbiguities.size()]));
+            n = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
             ambiguityManager.increaseAmbiguityCount();
           } else {
             n = newAmbiguities.get(0);
@@ -747,7 +745,7 @@ public class Disambiguator {
     // FIXME (KTK) get rid of toArray by precomputing the necessary size of
     // newKids earlier in the method
     return new ParseNode(t.getLabel(),
-        newKids.toArray(new AbstractParseNode[newKids.size()]), AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout());
+        newKids.toArray(new AbstractParseNode[newKids.size()]), AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
   }
 
   private AbstractParseNode replaceUnderInjections(AbstractParseNode alt,
@@ -847,15 +845,14 @@ public class Disambiguator {
         }
 
         if (newAmbiguities.size() > 1) {
-          last = ParseNode.createAmbNode(newAmbiguities
-              .toArray(new AbstractParseNode[newAmbiguities.size()]));
+          last = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
           ambiguityManager.increaseAmbiguityCount();
         } else {
           last = newAmbiguities.get(0);
         }
         rest[rest.length - 1] = last;
         ambiguityManager.increaseAmbiguityCount();
-        return new ParseNode(t.getLabel(), rest, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout());
+        return new ParseNode(t.getLabel(), rest, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
       } else {
         throw new FilterException(parser);
       }
@@ -921,8 +918,7 @@ public class Disambiguator {
     }
     
     ambiguityManager.increaseAmbiguityCount();
-    return ParseNode.createAmbNode(newAmbiguities
-        .toArray(new AbstractParseNode[newAmbiguities.size()]));
+    return ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
   }
 
   private List<AbstractParseNode> filterAmbiguityList(

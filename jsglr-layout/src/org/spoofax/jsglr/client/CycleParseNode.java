@@ -105,12 +105,17 @@ public class CycleParseNode extends AbstractParseNode {
   }
   
   @Override
-  public AbstractParseNode getLeft(ParseTable parseTable) {
-    return target.getLeft(parseTable);
+  public AbstractParseNode getLeft() {
+    return target.getLeft();
   }
   
   @Override
   public boolean isLayout() {
     return target.isLayout();
+  }
+
+  @Override
+  public boolean isIgnoreLayout() {
+    return target.isIgnoreLayout();
   }
 }

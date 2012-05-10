@@ -77,12 +77,17 @@ public class ParseProductionNode extends AbstractParseNode {
   }
   
   @Override
-  public AbstractParseNode getLeft(ParseTable parseTable) {
+  public AbstractParseNode getLeft() {
     return this;
   }
   
   @Override
   public boolean isLayout() {
+    return false;
+  }
+
+  @Override
+  public boolean isIgnoreLayout() {
     return false;
   }
 }

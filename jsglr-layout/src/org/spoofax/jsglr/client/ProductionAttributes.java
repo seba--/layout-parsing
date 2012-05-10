@@ -24,7 +24,7 @@ public class ProductionAttributes implements Serializable {
     private final boolean isOffsideBlock;
     private final boolean isSameIndent;
     private final boolean isMoreIndent;
-    private final boolean isIgnoreIndent;
+    private final boolean isIgnoreLayout;
     private final IStrategoTerm layoutConstraint;
     private final boolean isNewlineEnforced;
 
@@ -37,7 +37,7 @@ public class ProductionAttributes implements Serializable {
         this.isOffsideBlock = isOffsideBlock;
         this.isSameIndent = isSameIndent;
         this.isMoreIndent = isMoreIndent;
-        this.isIgnoreIndent = isIgnoreIndent;
+        this.isIgnoreLayout = isIgnoreIndent;
         this.layoutConstraint = layoutConstraint;
         this.isNewlineEnforced = isNewlineEnforced;
     }
@@ -66,8 +66,8 @@ public class ProductionAttributes implements Serializable {
       return isMoreIndent;
     }
     
-    public boolean isIgnoreIndent() {
-      return isIgnoreIndent;
+    public boolean isIgnoreLayout() {
+      return isIgnoreLayout;
     }
     
     public IStrategoTerm getLayoutConstraint() {

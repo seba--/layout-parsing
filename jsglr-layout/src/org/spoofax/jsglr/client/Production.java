@@ -33,16 +33,16 @@ public class Production implements Serializable {
     this.isRecover = isRecover;
   }
 
-  public AbstractParseNode apply(AbstractParseNode[] kids, int line, int column, boolean isLayout) {
+  public AbstractParseNode apply(AbstractParseNode[] kids, int line, int column, boolean isLayout, boolean isIgnoreLayout) {
     switch (status) {
     case REJECT:
-      return new ParseNode(label, kids, AbstractParseNode.REJECT, line, column, isLayout);
+      return new ParseNode(label, kids, AbstractParseNode.REJECT, line, column, isLayout, isIgnoreLayout);
     case AVOID:
-      return new ParseNode(label, kids, AbstractParseNode.AVOID, line, column, isLayout);
+      return new ParseNode(label, kids, AbstractParseNode.AVOID, line, column, isLayout, isIgnoreLayout);
     case PREFER:
-      return new ParseNode(label, kids, AbstractParseNode.PREFER, line, column, isLayout);
+      return new ParseNode(label, kids, AbstractParseNode.PREFER, line, column, isLayout, isIgnoreLayout);
     case NO_TYPE:
-      return new ParseNode(label, kids, AbstractParseNode.PARSENODE, line, column, isLayout);
+      return new ParseNode(label, kids, AbstractParseNode.PARSENODE, line, column, isLayout, isIgnoreLayout);
     }
     throw new IllegalStateException();
   }
