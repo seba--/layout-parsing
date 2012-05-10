@@ -86,10 +86,11 @@ public class IncrementalSGLR<TNode extends ISimpleTerm> {
 	 * @throws IncrementalSGLRException
 	 *             If the input could not be incrementally parsed.
 	 *             It may still be possible to parse it non-incrementally.
+	 * @throws InterruptedException 
 	 */
 	@SuppressWarnings("unchecked")
 	public TNode parseIncremental(String newInput, String filename, String startSymbol)
-			throws TokenExpectedException, BadTokenException, ParseException, SGLRException, IncrementalSGLRException {
+			throws TokenExpectedException, BadTokenException, ParseException, SGLRException, IncrementalSGLRException, InterruptedException {
 		
 		lastReconstructedNodes = Collections.emptyList();
 

@@ -244,13 +244,13 @@ public class SGLR {
 	
 	@Deprecated
 	public Object parse(String input) throws BadTokenException,
-    TokenExpectedException, ParseException, SGLRException {
+    TokenExpectedException, ParseException, SGLRException, InterruptedException {
 	    return parse(input, null, null);
 	}
 
     @Deprecated
 	public final Object parse(String input, String filename) throws BadTokenException,
-    TokenExpectedException, ParseException, SGLRException {
+    TokenExpectedException, ParseException, SGLRException, InterruptedException {
 
         return parse(input, filename, null);
     }
@@ -261,9 +261,10 @@ public class SGLR {
 	 * @param input        The input string.
 	 * @param filename     The source filename of the string, or null if not available.
 	 * @param startSymbol  The start symbol to use, or null if any applicable.
+	 * @throws InterruptedException 
 	 */
     public Object parse(String input, String filename, String startSymbol) throws BadTokenException, TokenExpectedException, ParseException,
-	SGLRException {
+	SGLRException, InterruptedException {
 		logBeforeParsing();
 		initParseVariables(input, filename);
 		startTime = System.currentTimeMillis();
@@ -274,7 +275,7 @@ public class SGLR {
 
 	private Object sglrParse(String startSymbol)
 	throws BadTokenException, TokenExpectedException,
-	ParseException, SGLRException {
+	ParseException, SGLRException, InterruptedException {
 		getPerformanceMeasuring().startParse();
 		try {
 			do {
@@ -331,7 +332,7 @@ public class SGLR {
 		currentToken = getNextToken();
 	}
 
-	protected void doParseStep() {
+	protected void doParseStep() throws InterruptedException {
 		logBeforeParseCharacter();
 		parseCharacter(); //applies reductions on active stack structure and fills forshifter
 		shifter(); //renewes active stacks with states in forshifter
@@ -436,7 +437,7 @@ public class SGLR {
 		activeStacks.addFirst(st1);
 	}
 
-	private void parseCharacter() {
+	private void parseCharacter() throws InterruptedException {
 		logBeforeParseCharacter();
 
 		activeStacksWorkQueue.clear();
@@ -446,6 +447,9 @@ public class SGLR {
 		forShifter.clear();
 
 		while (activeStacksWorkQueue.size() > 0 || forActor.size() > 0) {
+		  if (Thread.currentThread().isInterrupted())
+		    throw new InterruptedException();
+		  
 			final Frame st = pickStackNodeFromActivesOrForActor(activeStacksWorkQueue);
 			if (!st.allLinksRejected()) {
 				actor(st);

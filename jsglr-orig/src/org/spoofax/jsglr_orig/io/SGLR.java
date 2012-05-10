@@ -79,47 +79,50 @@ public class SGLR extends org.spoofax.jsglr_orig.client.SGLR {
 	}
 
 	/**
+	 * @throws InterruptedException 
 	 * @deprecated Call {@link #parse(Reader, String)} instead.
 	 */
 	public final Object parse(InputStream fis)
 			throws BadTokenException, TokenExpectedException, ParseException,
-			SGLRException, SGLRException, IOException {
+			SGLRException, SGLRException, IOException, InterruptedException {
 		return parse(fis, null, null);
 	}
 
 	/**
+	 * @throws InterruptedException 
 	 * @deprecated Call {@link #parse(Reader, String)} instead.
 	 */
 	public final Object parse(InputStream fis, String filename)
 			throws BadTokenException, TokenExpectedException, ParseException,
-			SGLRException, SGLRException, IOException {
+			SGLRException, SGLRException, IOException, InterruptedException {
 		return parse(fis, null, null);
 	}
 
 	/**
+	 * @throws InterruptedException 
 	 * @deprecated Call {@link #parse(Reader, String, String)} instead.
 	 */
 	public final Object parse(InputStream fis, String filename, String startSymbol)
 			throws BadTokenException, TokenExpectedException, ParseException,
-			SGLRException, IOException {
+			SGLRException, IOException, InterruptedException {
 		return parse(new InputStreamReader(fis), filename, startSymbol);
 	}
 
 	public final Object parse(Reader in) throws BadTokenException,
 			TokenExpectedException, ParseException, SGLRException,
-			SGLRException, IOException {
+			SGLRException, IOException, InterruptedException {
 		return parse(in, null, null);
 	}
 
 	public final Object parse(Reader in, String filename)
 			throws BadTokenException, TokenExpectedException, ParseException,
-			SGLRException, SGLRException, IOException {
+			SGLRException, SGLRException, IOException, InterruptedException {
 		return parse(in, null, null);
 	}
 
 	public Object parse(Reader in, String filename, String startSymbol)
 			throws BadTokenException, TokenExpectedException, ParseException,
-			SGLRException, IOException {
+			SGLRException, IOException, InterruptedException {
 		String input = FileTools.loadFileAsString(in);
 		return parse(input, filename, startSymbol);
 	}

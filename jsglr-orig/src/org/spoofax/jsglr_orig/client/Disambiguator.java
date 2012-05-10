@@ -221,7 +221,7 @@ public class Disambiguator {
 		setDefaultFilters();
 	}
 
-    public Object applyFilters(SGLR parser, AbstractParseNode root, String sort, int inputLength) throws SGLRException, FilterException {
+    public Object applyFilters(SGLR parser, AbstractParseNode root, String sort, int inputLength) throws SGLRException, FilterException, InterruptedException {
     	AbstractParseNode t = root;
 		if(Tools.debugging) {
 			Tools.debug("applyFilters()");
@@ -410,13 +410,17 @@ public class Disambiguator {
 
 	/**
 	 * @param inAmbiguityCluster  We're inside an amb and can return null to reject this branch.
+	 * @throws InterruptedException 
 	 */
-	private AbstractParseNode filterTree(AbstractParseNode t, boolean inAmbiguityCluster) throws FilterException {
-		// SG_FilterTreeRecursive
+	private AbstractParseNode filterTree(AbstractParseNode t, boolean inAmbiguityCluster) throws FilterException, InterruptedException {
+    if (Thread.currentThread().isInterrupted())
+      throw new InterruptedException();
+
+	  // SG_FilterTreeRecursive
 		if (Tools.debugging) {
 			Tools.debug("filterTree(node)    - ", t);
 		}
-
+		
 		// parseTable.setTreeBuilder(new Asfix2TreeBuilder());
 		switch (t.getNodeType()) {
 		case AMBIGUITY:
@@ -472,8 +476,9 @@ public class Disambiguator {
 	 * Filters child parse nodes.
 	 *
 	 * @return An array of filtered child nodes, or null if no changes were made.
+	 * @throws InterruptedException 
 	 */
-	private AbstractParseNode[] filterTree(AbstractParseNode[] args, boolean inAmbiguityCluster) throws FilterException {
+	private AbstractParseNode[] filterTree(AbstractParseNode[] args, boolean inAmbiguityCluster) throws FilterException, InterruptedException {
 
 		if(Tools.debugging) {
 			Tools.debug("filterTree(<nodes>) - ", args);
@@ -819,7 +824,7 @@ public class Disambiguator {
 		return t.isParseRejectNode();
 	}
 
-	private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs) throws FilterException {
+	private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs) throws FilterException, InterruptedException {
 		// SG_FilterAmb
 
 		if(Tools.debugging) {

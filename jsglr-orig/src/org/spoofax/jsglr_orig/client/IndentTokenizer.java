@@ -58,7 +58,7 @@ public class IndentTokenizer {
     /*
      * Recognizes an indent or dedent at the new line and tries to parse a indent-token or dedent-token
      */
-    public void handleIndentShifts(SGLR parser) throws IOException, ParseException
+    public void handleIndentShifts(SGLR parser) throws IOException, ParseException, InterruptedException
     {
         int curTok=parser.currentToken;
         if(myIndentHandler.lineMarginEnded()){
@@ -70,7 +70,7 @@ public class IndentTokenizer {
     }    
 
     private void parseIndentation(SGLR parser) throws ParseException,
-            IOException {
+            IOException, InterruptedException {
         ArrayDeque<Frame> oldActiveStacks = parser.activeStacks;
         if(dedentCount > 0 && indentShift){
             //TODO: warnings?

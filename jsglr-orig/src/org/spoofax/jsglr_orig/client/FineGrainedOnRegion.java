@@ -1,7 +1,6 @@
 package org.spoofax.jsglr_orig.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class FineGrainedOnRegion {
 
@@ -50,14 +49,14 @@ public class FineGrainedOnRegion {
         }
     }
     
-    public boolean recover() {
+    public boolean recover() throws InterruptedException {
         int btIndex=choicePoints.size()-1;
         if(btIndex>=0)
         	return recoverFrom(btIndex, new ArrayList<RecoverNode>());
         return false;
     }
 
-	private boolean recoverFrom(int btIndex, ArrayList<RecoverNode> unexplored_branches) {
+	private boolean recoverFrom(int btIndex, ArrayList<RecoverNode> unexplored_branches) throws InterruptedException {
         ArrayList<RecoverNode> rec_Branches=new ArrayList<RecoverNode>();
         if(btIndex>=0){
         	rec_Branches=collectRecoverBranches(btIndex); //collect permissive branches at btIndex line
@@ -95,7 +94,7 @@ public class FineGrainedOnRegion {
         getHistory().setTokenIndex(btrPosition.tokensSeen);
 	}
 
-	private ArrayList<RecoverNode> collectRecoverBranches(int btIndex) {
+	private ArrayList<RecoverNode> collectRecoverBranches(int btIndex) throws InterruptedException {
 		resetSGLR(btIndex);
         mySGLR.activeStacks.addAll(choicePoints.get(btIndex).recoverStacks);
         int endPos=btIndex<choicePoints.size()-1 ? choicePoints.get(btIndex+1).tokensSeen-1 : regionEndPosition;
@@ -103,7 +102,7 @@ public class FineGrainedOnRegion {
 		return rec1_Branches;
 	}
 	
-	private ArrayList<RecoverNode> collectRecoverBranches(int btIndex, int btIndex_end) {
+	private ArrayList<RecoverNode> collectRecoverBranches(int btIndex, int btIndex_end) throws InterruptedException {
 		resetSGLR(btIndex);
         mySGLR.activeStacks.addAll(choicePoints.get(btIndex).recoverStacks);
         int endPos=btIndex_end < choicePoints.size() ? choicePoints.get(btIndex_end).tokensSeen-1 : regionEndPosition;
@@ -113,8 +112,9 @@ public class FineGrainedOnRegion {
     
     /** 
      * Explores permissive branches, and collects derived branches with higher recover count
+     * @throws InterruptedException 
      */
-    private ArrayList<RecoverNode> recoverParse(ArrayList<RecoverNode> candidates, int endRecoverSearchPos) {
+    private ArrayList<RecoverNode> recoverParse(ArrayList<RecoverNode> candidates, int endRecoverSearchPos) throws InterruptedException {
     	mySGLR.setFineGrainedOnRegion(true);
         ArrayList<RecoverNode> newCandidates=new ArrayList<RecoverNode>();
         int curTokIndex;
@@ -133,8 +133,9 @@ public class FineGrainedOnRegion {
     
     /**
      * Permissive branches are accepted if they are still alive at the accepting position
+     * @throws InterruptedException 
      */
-    private boolean acceptParse(){
+    private boolean acceptParse() throws InterruptedException{
         while(getHistory().getTokenIndex()<= acceptRecoveryPosition && mySGLR.acceptingStack==null && mySGLR.activeStacks.size()>0){
             getHistory().readRecoverToken(mySGLR, false);
             //System.out.print((char)mySGLR.currentToken);
@@ -172,7 +173,7 @@ public class FineGrainedOnRegion {
         choicePoints=new ArrayList<BacktrackPosition>();
     }
 
-    public boolean parseRemainingTokens() {
+    public boolean parseRemainingTokens() throws InterruptedException {
         // TODO what if parsing fails here???
         while(!getHistory().hasFinishedRecoverTokens() && mySGLR.activeStacks.size()>0 && mySGLR.acceptingStack==null){        
             getHistory().readRecoverToken(mySGLR, true);
