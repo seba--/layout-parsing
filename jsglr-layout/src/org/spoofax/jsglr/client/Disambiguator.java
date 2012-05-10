@@ -238,7 +238,7 @@ public class Disambiguator {
   }
 
   public Object applyFilters(SGLR parser, AbstractParseNode root, String sort,
-      int inputLength) throws SGLRException, FilterException {
+      int inputLength) throws SGLRException, FilterException, InterruptedException {
     AbstractParseNode t = root;
     if (Tools.debugging) {
       Tools.debug("applyFilters()");
@@ -454,8 +454,9 @@ public class Disambiguator {
   /**
    * @param inAmbiguityCluster
    *          We're inside an amb and can return null to reject this branch.
+   * @throws InterruptedException 
    */
-  public AbstractParseNode filterTree(AbstractParseNode node, boolean inAmbiguityCluster) throws FilterException {
+  public AbstractParseNode filterTree(AbstractParseNode node, boolean inAmbiguityCluster) throws FilterException, InterruptedException {
     // SG_FilterTreeRecursive
     if (Tools.debugging) {
       Tools.debug("filterTree(node)    - ", node);
@@ -468,6 +469,9 @@ public class Disambiguator {
     input.push(node);
 
     while (!input.isEmpty() || !pending.isEmpty()) {
+      if (Thread.currentThread().isInterrupted())
+        throw new InterruptedException();
+      
       int pendingPeekPos = pending.isEmpty() ? -1 : output.size() - pending.peek().getChildren().length - 1;
       if (!pending.isEmpty() && pendingPeekPos >= 0 && output.get(output.size() - pendingPeekPos - 1) == pending.peek()) {
         AbstractParseNode t = pending.pop();
@@ -879,7 +883,7 @@ public class Disambiguator {
   }
 
   private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs)
-      throws FilterException {
+      throws FilterException, InterruptedException {
     // SG_FilterAmb
 
     if (Tools.debugging) {

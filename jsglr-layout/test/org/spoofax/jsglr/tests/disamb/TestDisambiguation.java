@@ -69,7 +69,7 @@ public class TestDisambiguation extends TestCase {
     
   }
   
-  public void testFilterTree() throws FilterException, SGLRException {
+  public void testFilterTree() throws FilterException, SGLRException, InterruptedException {
     Disambiguator disamb = new Disambiguator();
     disamb.setFilterAssociativity(false);
     disamb.initializeFromParser(parser);
