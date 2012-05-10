@@ -43,13 +43,13 @@ public class RecoveryConnector {
     private ParserHistory getHistory() {
         return mySGLR.getHistory();
     }
-    public void recover() {
+    public void recover() throws InterruptedException {
         mySGLR.getPerformanceMeasuring().startRecovery();
         combinedRecover();
         mySGLR.getPerformanceMeasuring().endRecovery(recoverySucceeded());
     }
 
-    private void combinedRecover() {
+    private void combinedRecover() throws InterruptedException {
         if(onlyFineGrained){
             mySGLR.getPerformanceMeasuring().startFG();
             boolean fg=tryFineGrainedRepair();
@@ -110,7 +110,7 @@ public class RecoveryConnector {
         }
     }
 
-    private void addSkipOption(boolean skipSucceeded) {
+    private void addSkipOption(boolean skipSucceeded) throws InterruptedException {
         ArrayDeque<Frame> fgStacks=new ArrayDeque<Frame>();
         fgStacks.addAll(mySGLR.activeStacks);
         if(skipSucceeded && parseErrorFragmentAsWhiteSpace(false) && parseRemainingTokens(false)){
@@ -129,7 +129,7 @@ public class RecoveryConnector {
         return (mySGLR.activeStacks.size()>0 || mySGLR.acceptingStack!=null);
     }
 
-    private boolean tryFineGrainedRepair() {
+    private boolean tryFineGrainedRepair() throws InterruptedException {
         FineGrainedOnRegion fgRepair=new FineGrainedOnRegion(mySGLR); 
         if(!onlyFineGrained){
             fgRepair.setRegionInfo(skipRecovery.getErroneousRegion(), skipRecovery.getAcceptPosition());
@@ -142,7 +142,7 @@ public class RecoveryConnector {
         return recoverySucceeded();
     }
 
-    private boolean tryBridgeRepair(String errorFragment) {
+    private boolean tryBridgeRepair(String errorFragment) throws InterruptedException {
         String repairedFragment = repairBridges(errorFragment);
         mySGLR.activeStacks.addAll(skipRecovery.getStartLineErrorFragment().getStackNodes());   
         tryParsing(repairedFragment, false);      
@@ -166,7 +166,7 @@ public class RecoveryConnector {
         return  errorFragment;
     }
     
-    private void tryParsing(String fragment, boolean asLayout) {
+    private void tryParsing(String fragment, boolean asLayout) throws InterruptedException {
         // Skip any leading whitespace, since we already parsed up to that point
         int indexFragment = findFirstNonLayoutToken(fragment);
         while(indexFragment<fragment.length() && mySGLR.activeStacks.size()>0) {                        
@@ -179,7 +179,7 @@ public class RecoveryConnector {
         }       
     }
     
-    public boolean parseErrorFragmentAsWhiteSpace(boolean keepLines) {
+    public boolean parseErrorFragmentAsWhiteSpace(boolean keepLines) throws InterruptedException {
         //System.out.println("---------- Start WhiteSpace Parsing ----------");
         mySGLR.activeStacks.clear();
         mySGLR.activeStacks.addAll(skipRecovery.getStartLineErrorFragment().getStackNodes());
@@ -193,7 +193,7 @@ public class RecoveryConnector {
         return recoverySucceeded();
     }
     
-    public boolean parseRemainingTokens(boolean keepHistory) {
+    public boolean parseRemainingTokens(boolean keepHistory) throws InterruptedException {
         //System.out.println("------------- REMAINING CHARACTERS --------------- ");
         //System.out.println();
         getHistory().setTokenIndex(skipRecovery.getEndPositionErrorFragment());
@@ -211,7 +211,7 @@ public class RecoveryConnector {
         return recoverySucceeded();
     }
     
-    private void parseAsLayout() {
+    private void parseAsLayout() throws InterruptedException {
         if(!isLayoutCharacter((char)mySGLR.getCurrentToken()) && mySGLR.getCurrentToken()!=SGLR.EOF){
             mySGLR.setCurrentToken(' ');
         }

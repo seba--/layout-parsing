@@ -83,7 +83,9 @@ public class JSGLREntryPoint implements EntryPoint {
 			wrap(e);
 		} catch (final SGLRException e) {
 			wrap(e);
-		}
+		} catch (InterruptedException e) {
+      wrap(e);
+    }
 
 	}
 	private static void wrap(Exception e) {

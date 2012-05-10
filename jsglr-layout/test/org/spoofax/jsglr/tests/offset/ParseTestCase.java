@@ -175,6 +175,8 @@ public abstract class ParseTestCase extends TestCase {
         e.printStackTrace();
       } catch (SGLRException e) {
         System.err.println(e.getMessage());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
       parseTime = System.nanoTime() - parseTime;
 

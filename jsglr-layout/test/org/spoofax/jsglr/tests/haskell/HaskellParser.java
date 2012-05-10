@@ -44,7 +44,7 @@ public class HaskellParser {
   long endParse = -1;
   public int timeParse;
   
-  private SGLR parser;
+  SGLR parser;
   public AbstractParseNode parseTree;
   
   public HaskellParser() {
@@ -60,14 +60,13 @@ public class HaskellParser {
     return parse(input, filename, "Module");
   }
   
-  @SuppressWarnings("deprecation")
-  public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
+  public Object parse(final String input, final String filename, final String startSymbol) throws ExecutionException {
     reset();
     
     parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
 
     FutureTask<Object> parseTask = new FutureTask<Object>(new Callable<Object>() {
-      public Object call() throws BadTokenException, TokenExpectedException, ParseException, SGLRException {
+      public Object call() throws BadTokenException, TokenExpectedException, ParseException, SGLRException, InterruptedException {
         startParse = System.nanoTime();
         try { 
           return parser.parse(input, filename, startSymbol);
@@ -86,7 +85,16 @@ public class HaskellParser {
       thread.start();
       o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
-      thread.stop();
+      thread.interrupt();
+      try {
+        parseTask.get();
+      } catch (InterruptedException e1) {
+        // do nothing
+      } catch (ExecutionException e1) {
+        // do nothing
+      }
+      endParse = startParse - 1;
+    } catch (InterruptedException e) {
       endParse = startParse - 1;
     } finally {
       

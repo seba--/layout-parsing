@@ -35,7 +35,7 @@ public class Main {
 	
 	private static final String NO_OUTPUT = "-";
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, InvalidParseTableException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, InvalidParseTableException, InterruptedException {
 
 		if(args.length < 2) {
 			usage();
@@ -152,7 +152,7 @@ public class Main {
 
 	private static void warmup(final SGLR sglr, String inputFile, String input,
 			String startSymbol, int warmup) throws FileNotFoundException,
-			IOException {
+			IOException, InterruptedException {
 		long time = System.currentTimeMillis();
 		while (System.currentTimeMillis() < time + warmup * 1000) {
 			parseFile(input, inputFile, NO_OUTPUT, sglr, startSymbol);
@@ -161,7 +161,7 @@ public class Main {
 	}
 
 	public static long parseFile(String input, String inputFile, String output, SGLR sglr, String startSymbol)
-	throws FileNotFoundException, IOException {
+	throws FileNotFoundException, IOException, InterruptedException {
 		/* TODO: support stdin input
 		InputStream fis = null;
 		if(input == null) {

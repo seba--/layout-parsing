@@ -351,7 +351,7 @@ public class SGLR {
 		performanceMeasuring=new RecoveryPerformance();
 		getTreeBuilder().initializeInput(input, filename);
 		PooledPathList.resetPerformanceCounters();
-		PathListPool.resetPerformanceCounters();
+		pathCache.resetPerformanceCounters();
 		ambiguityManager = new AmbiguityManager(input.length());
 		parseTree = null;
 		if (getTreeBuilder().getTokenizer() != null) {

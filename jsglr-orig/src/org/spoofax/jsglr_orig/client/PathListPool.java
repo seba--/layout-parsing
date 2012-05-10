@@ -11,10 +11,10 @@ public class PathListPool {
 	private PooledPathList asyncP3 = new PooledPathList(512, false);
 	private PooledPathList asyncP4 = new PooledPathList(512, false);
 	
-	public static int asyncCacheMisses = 0;
+	public int asyncCacheMisses = 0;
 	
 	// this would be a weak reference, if GWT had one
-	private static PathListPool asyncInstance = new PathListPool();
+//	private static PathListPool asyncInstance = new PathListPool();
 	
 	private PathListPool() {
 		// singleton
@@ -25,7 +25,7 @@ public class PathListPool {
 	}
 	
 	public static PathListPool getInstance() {
-		return asyncInstance;
+		return new PathListPool();
 	}
 	
 	public PooledPathList create() {
@@ -48,7 +48,7 @@ public class PathListPool {
 		}
 	}
 	
-	public static void resetPerformanceCounters() {
+	public void resetPerformanceCounters() {
 		synchronized (getSyncRoot()) {
 			asyncCacheMisses = 0;
 		}
