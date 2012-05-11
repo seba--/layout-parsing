@@ -44,8 +44,8 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/KiCS-debugger2353668115810362596";
-    String path = "KiCS-debugger-0.1.1/dist/build/Curry/DebugModule/Time.hs";
+    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/Salsa8541522299521337999";
+    String path = "Salsa-0.1.0.1/Foreign/Salsa/Driver.hs";
     testFile(new File(dir + "/" + path), path, "main");
 
     String csv = dir + "/" + path + ".csv";
@@ -82,12 +82,12 @@ public class TestFile extends TestCase {
     else
       result.cppPreprocess = true;
     
-    newParseCorrectness(preparedInput, pkg);
     File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
-    newParseSpeed(implicitLayoutInput, pkg);
-
     File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
+
     oldParse(explicitLayoutInput, pkg);
+    newParseCorrectness(preparedInput, pkg);
+    newParseSpeed(implicitLayoutInput, pkg);
 
     Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new.corre");
     Utilities.writeToFile(newResultSpeed, f.getAbsolutePath() + ".new.speed");

@@ -61,6 +61,7 @@ public class HaskellOrigParser {
     return parse(input, filename, "Module");
   }
   
+  @SuppressWarnings("deprecation")
   public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
     reset();
     final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
@@ -84,11 +85,14 @@ public class HaskellOrigParser {
     } catch (TimeoutException e) {
       thread.interrupt();
       try {
-        parseTask.get();
+        parseTask.get(TIMEOUT, TimeUnit.SECONDS);
       } catch (InterruptedException e1) {
         // do nothing
       } catch (ExecutionException e1) {
         // do nothing
+      } catch (TimeoutException e1) {
+        System.err.println("does not interrupt: " + filename);
+        thread.stop();
       }
       endParse = startParse - 1;
     } finally {

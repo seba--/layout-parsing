@@ -60,6 +60,7 @@ public class HaskellParser {
     return parse(input, filename, "Module");
   }
   
+  @SuppressWarnings("deprecation")
   public Object parse(final String input, final String filename, final String startSymbol) throws ExecutionException {
     reset();
     
@@ -87,11 +88,14 @@ public class HaskellParser {
     } catch (TimeoutException e) {
       thread.interrupt();
       try {
-        parseTask.get();
+        parseTask.get(TIMEOUT, TimeUnit.SECONDS);
       } catch (InterruptedException e1) {
         // do nothing
       } catch (ExecutionException e1) {
         // do nothing
+      } catch (TimeoutException e1) {
+        System.err.println("does not interrupt: " + filename);
+        thread.stop();
       }
       endParse = startParse - 1;
     } catch (InterruptedException e) {
