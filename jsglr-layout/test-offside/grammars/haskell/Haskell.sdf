@@ -1,7 +1,6 @@
 module Haskell
 imports Haskell-Syntax
-imports GHC-HierarchicalModules
-        GHC-Flexible-Stuff
+imports GHC-Flexible-Stuff
         GHC-Magic-Hash
         GHC-GeneralizedNewtypeDeriving
 exports

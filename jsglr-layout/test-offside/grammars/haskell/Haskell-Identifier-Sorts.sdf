@@ -18,36 +18,18 @@ exports
     "(" ","+ ")"   	-> Gcon		{cons("Product")}
     Qcon           	-> Gcon		
 
-  context-free syntax
-
-    %% variable identifiers
-
-    Varid          	-> Var		{cons("Var")}
-    Qvarid          	-> Qvar
-    Varid  		-> Qvarid
-    QVARID 		-> Qvarid
-
-    %% constructor identifiers
-
-    Conid          	-> Con		{cons("ConId")}
-    Qconid          	-> Qcon
-    Conid  		-> Qconid
-    QCONID 		-> Qconid
-    CONID 		-> Conid
-
-
-  %% in each of these cases the constructor ID in fact is a module ID
-  %% that quantifies a variable, constructor, type or operator
-  context-free restrictions
-  	Qconid -/- [\.] . [a-zA-Z\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
-  	Qconid -/- [\.] . [\_] %% . [A-Za-z0-9\'\_]
-  	Qconid -/- [\.] . [\:] %% . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
-  	
-   	
   %% The following portion can be put into module Haskell-Infix
   %% in order to factor out infix operators from the kernel language
 
   context-free syntax
+
+    %% variable identifiers
+
+    Varid     -> Qvarid
+    QVARID    -> Qvarid
+    Varid           -> Var    {cons("Var")}
+    Qvarid            -> Qvar
+
 
     %% infix operators
 
@@ -95,10 +77,6 @@ exports
 
     QVARSYM 		-> Qvarsym1
 
-  lexical syntax
-    CONID -> Modid
-
-
   context-free syntax
     CONID 		-> Tycon
     Tycon  		-> Qtycon
@@ -106,3 +84,39 @@ exports
     Tycon		-> Tycls
     Qtycon 		-> Qtycls
    
+    %% constructor identifiers
+
+    CONID     -> Conid
+    Conid     -> Qconid
+    QCONID    -> Qconid
+    Conid           -> Con    {cons("ConId")}
+    Qconid            -> Qcon
+
+
+  %% in each of these cases the constructor ID in fact is a module ID
+  %% that quantifies a variable, constructor, type or operator
+  context-free restrictions
+    Qconid -/- [\.] . [a-zA-Z\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+    Qconid -/- [\.] . [\_] %% . [A-Za-z0-9\'\_]
+    Qconid -/- [\.] . [\:] %% . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+
+    Qtycon -/- [\.] . [a-zA-Z\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+    Qtycon -/- [\.] . [\_] %% . [A-Za-z0-9\'\_]
+    Qtycon -/- [\.] . [\:] %% . [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+
+
+  lexical syntax
+    CONID -> Modid
+
+  syntax
+    <Modid-LEX> -> Modid
+    Modid "." <VARID-LEX>           -> <QVARID-CF>  {cons("QVarId")}
+    Modid "." <CONID-LEX>           -> <QCONID-CF>  {cons("QConId")}
+    Modid "." <VARSYM-LEX>          -> <QVARSYM-CF> {cons("QVarSym")}
+    Modid "." <CONSYM-LEX>          -> <QCONSYM-CF> {cons("QConSym")}
+    
+  syntax
+    <CONID-LEX> "." <Modid-LEX> -> QModid {cons("QModId")}
+    <CONID-LEX> "." QModid -> QModid {cons("QModId")}
+    QModid -> Modid
+    QModid -> <Modid-CF>

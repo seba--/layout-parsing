@@ -19,11 +19,3 @@ exports
   lexical restrictions
     CONID VARID -/- [A-Za-z0-9\'\_]
     VARSYM      -/- [\!\#\$\%\&\*\+\.\/] \/ [\<\=\>\?\@\\\^\|\-\~]
-
-   syntax
-  	<Modid-LEX> -> Modid
-    Modid "." <VARID-LEX>           -> <QVARID-CF>  {cons("QVarId")}
-    Modid "." <CONID-LEX>           -> <QCONID-CF>  {cons("QConId")}
-    Modid "." <VARSYM-LEX>          -> <QVARSYM-CF> {cons("QVarSym")}
-    Modid "." <CONSYM-LEX>          -> <QCONSYM-CF> {cons("QConSym")}
-    
