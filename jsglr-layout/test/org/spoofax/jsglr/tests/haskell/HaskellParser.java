@@ -43,6 +43,8 @@ public class HaskellParser {
   long startParse = -1;
   long endParse = -1;
   public int timeParse;
+  public long memoryBefore;
+  public long memoryAfter;
   
   SGLR parser;
   public AbstractParseNode parseTree;
@@ -54,6 +56,8 @@ public class HaskellParser {
     timeParse = -1;
     parser = null;
     parseTree = null;
+    memoryBefore = -1;
+    memoryAfter = -1;
   }
   
   public Object parse(String input, String filename) throws InterruptedException, ExecutionException {
@@ -68,11 +72,13 @@ public class HaskellParser {
 
     FutureTask<Object> parseTask = new FutureTask<Object>(new Callable<Object>() {
       public Object call() throws BadTokenException, TokenExpectedException, ParseException, SGLRException, InterruptedException {
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         startParse = System.nanoTime();
-        try { 
+        try {
           return parser.parse(input, filename, startSymbol);
         } finally {
           endParse = System.nanoTime();
+          memoryAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         }
       }
     });

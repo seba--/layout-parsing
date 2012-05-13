@@ -161,6 +161,8 @@ public class TestFile extends TestCase {
       result.enforcedNewlineSkips.t1 = 0;
       result.time.t1 = oldParser.timeParse;
       result.timeout.t1 = oldParser.timeParse < 0;
+      result.memoryBefore.t1 = oldParser.memoryBefore;
+      result.memoryAfter.t1 = oldParser.memoryAfter;
     }
     
     if (LOGGING) {
@@ -185,7 +187,6 @@ public class TestFile extends TestCase {
     result.byteSize.t2 = input.getBytes().length;
     
     System.gc();
-    result.memoryBefore.t2 = Utilities.usedMemory();
     
     try {
       newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
@@ -213,6 +214,8 @@ public class TestFile extends TestCase {
       result.enforcedNewlineSkips.t2 = newParserCorrectness.getEnforcedNewlineSkips();
       result.time.t2 = newParserCorrectness.timeParse;
       result.timeout.t2 = newParserCorrectness.timeParse < 0;
+      result.memoryBefore.t2 = newParserCorrectness.memoryBefore;
+      result.memoryAfter.t2 = newParserCorrectness.memoryAfter;
     }
     
     if (LOGGING) {
@@ -265,6 +268,8 @@ public class TestFile extends TestCase {
       result.enforcedNewlineSkips.t3 = newParserCorrectness.getEnforcedNewlineSkips();
       result.time.t3 = newParserSpeed.timeParse;
       result.timeout.t3 = newParserSpeed.timeParse < 0;
+      result.memoryBefore.t3 = newParserSpeed.memoryBefore;
+      result.memoryAfter.t3 = newParserSpeed.memoryAfter;
     }
     
     if (LOGGING) {
