@@ -23,7 +23,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("Salsa", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("regular", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   

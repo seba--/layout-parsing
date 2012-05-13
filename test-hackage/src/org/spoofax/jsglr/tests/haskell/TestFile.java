@@ -322,9 +322,6 @@ public class TestFile extends TestCase {
       messages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds.toArray(new String[cmds.size()]));
     } catch (ExecutionError e) {
       messages = e.getMessages();
-      if (e.getExitValue() == -1)
-        throw e;
-      
       return null;
     } finally {
       if (explicit)
@@ -335,7 +332,7 @@ public class TestFile extends TestCase {
       result.ambInfix |= messages[1].length > 0 && messages[1][0].endsWith("pp-haskell: Ambiguous infix expression");
     }
     
-    return res;
+    return res.exists() ? res : null;
   }
   
   private File preprocess(File f, String pkg) {
