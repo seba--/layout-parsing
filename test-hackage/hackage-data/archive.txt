@@ -1,0 +1,3 @@
+Hackage data downloaded from
+    http://hackage.haskell.org/cgi-bin/hackage-scripts/archive.tar
+on Monday, May 14, 2012, 18.00 CEST.

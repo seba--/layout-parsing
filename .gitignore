@@ -15,3 +15,7 @@ bin/
 /test-hackage/src/org/spoofax/jsglr/tests/haskell/compare/*.java.dep
 
 /test-hackage/*.log
+
+/test-hackage/hackage-data/*/
+/test-hackage/all*.csv
+/test-hackage/all*/
