@@ -1,5 +1,7 @@
 module GHC-Magic-Hash
 imports Haskell-Identifiers
+imports Haskell-Numbers
+imports Haskell-Strings
 exports
   lexical syntax
   	[a-z][A-Za-z0-9\'\_]*[\#]+ -> VARID
@@ -9,3 +11,10 @@ exports
   lexical restrictions
   	VARID -/- [\#]
   	CONID -/- [\#]
+
+  syntax
+    <INTEGER-LEX> "#" -> <Literal-CF> {cons("Int"), prefer}
+    <Char-CF> "#"    -> <Literal-CF> {prefer}
+    <FLOAT-LEX> "#"    -> <Literal-CF> {cons("Float"), prefer}
+    <RATIONAL-LEX> "#"   -> <Literal-CF> {cons("Float"), prefer}
+    <String-CF> "#"   -> <Literal-CF> {prefer}
