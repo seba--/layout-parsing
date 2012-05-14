@@ -96,8 +96,10 @@ public class AutoConcatList<E> implements List<E> {
 	}
 
 	public boolean addAll(Collection<? extends E> c) {
-		// return asList().addAll(c);
-		throw new NotImplementedException();
+	  boolean b = false;
+		for (E e : c)
+		  b |= add(e);
+		return b;
 	}
 
 	public boolean addAll(int index, Collection<? extends E> c) {

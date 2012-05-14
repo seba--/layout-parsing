@@ -28,6 +28,8 @@ public class HaskellOrigParser {
    * Time out for parser (in seconds).
    */
   private static final int TIMEOUT = 10;
+  
+  private static final boolean DEBUG = true;
 
   private static final String tableLocation = HaskellOrigParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr/tests/haskell_orig/Haskell.tbl";
   
@@ -87,7 +89,10 @@ public class HaskellOrigParser {
     Object o = null;
     try {
       thread.start();
-      o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
+      if (DEBUG)
+        o = parseTask.get();
+      else
+        o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       thread.interrupt();
       try {
