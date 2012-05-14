@@ -44,11 +44,10 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/Agda1101878138577185339";
-    String path = "Agda-2.3.0/dist/build/Agda/Syntax/Parser/Lexer.hs";
-    testFile(new File(dir + "/" + path), path, "main");
+    String file = "/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/Agda724611025311904570/Agda-2.3.0/dist/build/Agda/Syntax/Parser/Lexer.hs";
+    testFile(new File(file), file, "main");
 
-    String csv = dir + "/" + path + ".csv";
+    String csv = file + ".csv";
     result.writeCSVHeader(csv);
     result.appendAsCSV(csv);
     System.out.println(csv);
@@ -151,8 +150,10 @@ public class TestFile extends TestCase {
       
       result.stackOverflow.t1 = e.getCause() instanceof StackOverflowError;
 
-      if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError))
+      if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
         result.otherExceptions.t1 = e.getCause().getMessage();
+        e.getCause().printStackTrace();
+      }
     } finally {
       result.ambiguities.t1 = oldParser.ambiguities;
       result.layoutFilterCallsParseTime.t1 = 0;
