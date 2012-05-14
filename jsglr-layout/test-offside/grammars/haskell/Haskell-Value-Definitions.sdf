@@ -2,10 +2,9 @@ module Haskell-Value-Definitions
 exports
   context-free syntax
     Valdef 		   -> Decl
-    FunLHS "=" Exp       -> Valdef 	{cons("Valdef")}
-    FunLHS "=" Exp Where -> Valdef 	{cons("ValdefW")}
+    FunLHS "=" Exp MaybeWhere -> Valdef 	{cons("Valdef")}
 
-    FunLHS Gdrh+ Where?  -> Valdef 	{cons("GdValdef")}
+    FunLHS Gdrh+ MaybeWhere  -> Valdef 	{cons("GdValdef")}
     "|" Exp "=" Exp 	   -> Gdrh   	{cons("Guarded")}   
 
     
@@ -17,10 +16,14 @@ exports
   context-free syntax
     "where" DeclList       -> Where     {cons("Where")}
     
-            -> MaybeWhere {ast("Where(DeclList(Empty))")}
+    NoWhere -> MaybeWhere {ast("Where(DeclList(Empty))")}
+    -> NoWhere
     Where   -> MaybeWhere
-    
+  
     DeclList 		   -> Declbinds
+
+  context-free restrictions
+  	NoWhere -/- [w].[h].[e].[r].[e]
 
   context-free syntax
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
