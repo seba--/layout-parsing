@@ -30,7 +30,7 @@ public class FileResult {
   
   public DataPoint<Boolean> parseOk = new DataPoint<Boolean>(false);
   public DataPoint<Boolean> normalizeOk = new DataPoint<Boolean>(false);
-  public DataPoint<Integer> time = new DataPoint<Integer>(-2);
+  public DataPoint<Long> time = new DataPoint<Long>(-2l);
   public DataPoint<Integer> ambiguities = new DataPoint<Integer>(0);
   public DataPoint<Boolean> stackOverflow = new DataPoint<Boolean>(false);
   public DataPoint<String> parseExceptions = new DataPoint<String>("");

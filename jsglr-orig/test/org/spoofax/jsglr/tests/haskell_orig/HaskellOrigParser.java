@@ -48,7 +48,7 @@ public class HaskellOrigParser {
   
   long startParse = -1;
   long endParse = -1;
-  public int timeParse;
+  public long timeParse;
   public long memoryBefore;
   public long memoryAfter;
   
@@ -113,7 +113,7 @@ public class HaskellOrigParser {
       ambiguities = parser.getDisambiguator().getAmbiguityCount();
       parseTree = parser.getParseTree();
       
-      timeParse = (int) (endParse - startParse);
+      timeParse = endParse - startParse;
       if (timeParse < 0)
         timeParse = -1;
     }

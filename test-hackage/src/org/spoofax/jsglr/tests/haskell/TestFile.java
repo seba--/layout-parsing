@@ -44,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/Agda724611025311904570/Agda-2.3.0/dist/build/Agda/Syntax/Parser/Lexer.hs";
+    String file = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/4Blocks6089664383571804152/4Blocks-0.2/Interface/OnePlayerModeWindow.hs";
     testFile(new File(file), file, "main");
 
     String csv = file + ".csv";

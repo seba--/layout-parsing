@@ -42,7 +42,7 @@ public class HaskellParser {
   
   long startParse = -1;
   long endParse = -1;
-  public int timeParse;
+  public long timeParse;
   public long memoryBefore;
   public long memoryAfter;
   
@@ -113,7 +113,7 @@ public class HaskellParser {
       
       parseTree = parser.getParseTree();
       
-      timeParse = (int) (endParse - startParse);
+      timeParse = endParse - startParse;
       if (timeParse < 0)
         timeParse = -1;
     }
