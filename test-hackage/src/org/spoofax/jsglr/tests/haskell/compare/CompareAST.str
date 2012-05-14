@@ -13,7 +13,9 @@ rules
   compare : (Int(s1), Int(s2)) -> [] where <peq(hs-string-to-int)> (s1, s2)
   compare : (Float(s1), Float(s2)) -> [] where <peq(hs-string-to-float)> (s1, s2)
   
-  compare : (c#(xs), c#(ys)) -> <zip(compare); concat> (xs, ys)
+  compare : ([x|xs],[y|ys]) -> <conc> (head-diff, <compare> (xs, ys))
+    where <compare> (x, y) => head-diff
+  compare : (c#(xs), c#(ys)) -> <compare> (xs, ys)
   
   compare : (x, y) -> [(x, y)]
 
@@ -67,7 +69,7 @@ rules
     where <is-string> dec;
           <string-to-int> dec => int
 
-  hs-string-to-float = string-to-real
+  hs-string-to-float = not(?"");string-to-real
 
 
   
