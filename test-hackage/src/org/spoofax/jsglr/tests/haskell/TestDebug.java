@@ -19,7 +19,7 @@ public class TestDebug extends TestCase {
   public void test() throws IOException {
     List<String> files = new ArrayList<String>();
     
-    files.add("/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/Agda724611025311904570/Agda-2.3.0/dist/build/Agda/Syntax/Parser/Lexer.hs");
+    files.add("c:/Users/SEBAIN~1.001/AppData/Local/Temp/Agda734250224401381050/Agda-2.3.0.1/src/full/Agda/TypeChecking/Rules/Decl.hs");
     
     for (String f : files) {
       FileResult result = fileTester.testFile(new File(f), f, "test");

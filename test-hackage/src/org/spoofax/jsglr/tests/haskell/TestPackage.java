@@ -23,7 +23,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("yst", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("4Blocks", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   
@@ -33,15 +33,7 @@ public class TestPackage extends TestCase {
     
     this.observer = observer;
     
-    File dir;
-    try { 
-      dir = cabalUnpack(pkg);
-    } catch (ExecutionError e) {
-      String msg = e.getCause() == null ? "unknown cause" : e.getCause().getMessage();
-      System.out.println("[" + pkg + "] " + "cabal unpack failed: " + msg);
-      return;
-    }
-    
+    File dir = new File("hackage-data/" + pkg);
     csvFile = new File(dir + ".csv");
     new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     

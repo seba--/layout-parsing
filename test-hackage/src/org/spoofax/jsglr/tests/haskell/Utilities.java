@@ -1,6 +1,7 @@
 package org.spoofax.jsglr.tests.haskell;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,6 +64,24 @@ public class Utilities {
   
   public static long usedMemory() {
     return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+  }
+  
+  public static void deleteFile(File f) {
+    if (f.exists())
+      f.delete();
+  }
+
+  public static void deleteFile(String f) {
+    deleteFile(new File(f));
+  }
+
+  public static String dropExtension(String file) {
+    int i = file.lastIndexOf('.');
+    
+    if (i > 0)
+      return file.substring(0, i);
+    
+    return file;
   }
 }
 

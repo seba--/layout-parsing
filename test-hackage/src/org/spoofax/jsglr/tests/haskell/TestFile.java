@@ -54,6 +54,8 @@ public class TestFile extends TestCase {
   }
   
   public FileResult testFile(File f, String path, String pkg) throws IOException {
+    clean(f);
+    
     result = new FileResult();
     
     result.pkg = pkg;
@@ -109,9 +111,10 @@ public class TestFile extends TestCase {
   
   private File prepareFile(String pkg, File f) throws IOException {
     try {
-      File fnorm = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().length() - 3) + "-norm.hs");
+      File fnorm = new File(f.getAbsolutePath() + ".norm.hs");
       DeleteUnicode.deleteUnicode(f.getAbsolutePath(), fnorm.getAbsolutePath());
       File fpp = preprocess(fnorm, pkg);
+      Utilities.deleteFile(fnorm);
       return fpp;
     } catch (OutOfMemoryError e) {
       e = null;
@@ -338,7 +341,7 @@ public class TestFile extends TestCase {
   }
   
   private File preprocess(File f, String pkg) {
-    File res = new File(f.getAbsolutePath() + "pp");
+    File res = new File(Utilities.dropExtension(f.getAbsolutePath()) + ".pp");
     
     CommandExecution.SILENT_EXECUTION = true;
     CommandExecution.SUB_SILENT_EXECUTION = true;
@@ -347,6 +350,7 @@ public class TestFile extends TestCase {
       "ghc",
       "-E",
       "-cpp", "-optP-P",
+      "-o", res.getAbsolutePath(),
       f.getAbsolutePath()
     };
     
@@ -440,5 +444,18 @@ public class TestFile extends TestCase {
     if (LOGGING && newParserSpeed.getAmbiguities() > 0)
       System.out.println("[" + pkg + ", new speed] " + newParserSpeed.getAmbiguities() + " ambiguities");
   }
+
   
+  private void clean(File f) {
+    Utilities.deleteFile(f.getAbsoluteFile() + ".csv");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".norm");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp.expl");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp.impl");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".old");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.corre");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.speed");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".old.pt");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.pt");
+  }
 }
