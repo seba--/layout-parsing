@@ -44,8 +44,8 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String dir = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/Salsa8541522299521337999";
-    String path = "Salsa-0.1.0.1/Foreign/Salsa/Driver.hs";
+    String dir = "/var/folders/aw/aw2pcGAuGEyvWvKgy3h3GU+++TM/-Tmp-/Agda1101878138577185339";
+    String path = "Agda-2.3.0/dist/build/Agda/Syntax/Parser/Lexer.hs";
     testFile(new File(dir + "/" + path), path, "main");
 
     String csv = dir + "/" + path + ".csv";
@@ -93,6 +93,7 @@ public class TestFile extends TestCase {
     Utilities.writeToFile(newResultSpeed, f.getAbsolutePath() + ".new.speed");
     Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
     
+    checkAmbiguities(pkg, f);
     checkDiff(pkg, f);
     
     result.allNull = oldResult == null && newResultCorrectness == null && newResultSpeed == null;
@@ -430,4 +431,13 @@ public class TestFile extends TestCase {
     return null;
   }
 
+  private void checkAmbiguities(String pkg, File f) {
+    if (LOGGING && oldParser.ambiguities > 0)
+      System.out.println("[" + pkg + ", old] " + oldParser.ambiguities + " ambiguities");
+    if (LOGGING && newParserCorrectness.getAmbiguities() > 0)
+      System.out.println("[" + pkg + ", new corre] " + newParserCorrectness.getAmbiguities() + " ambiguities");
+    if (LOGGING && newParserSpeed.getAmbiguities() > 0)
+      System.out.println("[" + pkg + ", new speed] " + newParserSpeed.getAmbiguities() + " ambiguities");
+  }
+  
 }
