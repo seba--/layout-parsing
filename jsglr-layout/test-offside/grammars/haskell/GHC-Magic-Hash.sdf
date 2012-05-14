@@ -12,9 +12,32 @@ exports
   	VARID -/- [\#]
   	CONID -/- [\#]
 
+  lexical syntax
+    Decimal "#"              -> INTEGER-HASH
+    [0] [Oo] Octal "#"       -> INTEGER-HASH
+    [0] [Xx] Hexadecimal "#" -> INTEGER-HASH
+    
+    Decimal "." Decimal "#"          -> FLOAT-HASH
+    Decimal Exponent "#"             -> RATIONAL-HASH
+    Decimal "." Decimal Exponent "#" -> RATIONAL-HASH
+
   syntax
-    <INTEGER-LEX> "#" -> <Literal-CF> {cons("Int"), prefer}
-    <Char-CF> "#"    -> <Literal-CF> {prefer}
-    <FLOAT-LEX> "#"    -> <Literal-CF> {cons("Float"), prefer}
-    <RATIONAL-LEX> "#"   -> <Literal-CF> {cons("Float"), prefer}
-    <String-CF> "#"   -> <Literal-CF> {prefer}
+    "'" CharChar "'" "#"       -> <Char-HASH-CF> {cons("Char")}
+    "\"" StringChar* "\"" "#"  -> <String-HASH-CF> {cons("String")}
+    
+  context-free syntax
+    INTEGER-HASH  -> Literal {cons("Int")}
+    FLOAT-HASH    -> Literal {cons("Float")}
+    RATIONAL-HASH -> Literal {cons("Float")}
+    
+    Char-HASH   -> Literal
+    String-HASH -> Literal
+
+  lexical restrictions
+    INTEGER -/- [\#]
+    FLOAT -/- [\#]
+    RATIONAL -/- [\#]
+    
+  context-free restrictions
+    Char -/- [\#]
+    String -/- [\#]
