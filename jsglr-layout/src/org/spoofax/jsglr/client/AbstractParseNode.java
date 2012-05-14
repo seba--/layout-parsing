@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import org.spoofax.jsglr.client.imploder.TopdownTreeBuilder;
+
 public abstract class AbstractParseNode {
 
   public static final int PARSE_PRODUCTION_NODE = 1;
@@ -76,6 +78,8 @@ public abstract class AbstractParseNode {
   protected static final int NO_HASH_CODE = 0;
 
   public abstract Object toTreeBottomup(BottomupTreeBuilder builder);
+
+  public abstract Object toTreeTopdown(TopdownTreeBuilder builder);
 
   @Override
   public boolean equals(Object obj) {

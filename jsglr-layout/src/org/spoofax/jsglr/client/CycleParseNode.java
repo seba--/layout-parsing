@@ -1,5 +1,7 @@
 package org.spoofax.jsglr.client;
 
+import org.spoofax.jsglr.client.imploder.TopdownTreeBuilder;
+
 
 /**
  * @author Lennart Kats <lennart add lclnet.nl>
@@ -31,6 +33,11 @@ public class CycleParseNode extends AbstractParseNode {
 	public Object toTreeBottomup(BottomupTreeBuilder builder) {
 		return builder.buildCycle(getTargetLabel());
 	}
+	
+	 @Override
+	  public Object toTreeTopdown(TopdownTreeBuilder builder) {
+	    return builder.buildTreeCycle(this);
+	  }
 
 	private AbstractParseNode getNonAmbiguousTarget() {
 	  if (nonAmbiguousTarget != null)

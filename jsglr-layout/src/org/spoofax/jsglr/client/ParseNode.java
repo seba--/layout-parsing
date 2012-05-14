@@ -15,6 +15,7 @@ import java.util.List;
 import org.spoofax.NotImplementedException;
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.jsglr.client.imploder.TopdownTreeBuilder;
 import org.spoofax.terms.TermFactory;
 
 public class ParseNode extends AbstractParseNode {
@@ -281,6 +282,14 @@ public class ParseNode extends AbstractParseNode {
     addToTreeAmb(builder, collect);
     return builder.buildAmb(collect);
   }
+  
+  @Override 
+  public Object toTreeTopdown(TopdownTreeBuilder builder) {
+    if(isAmbNode())
+        return builder.buildTreeAmb(this);
+    return builder.buildTreeNode(this);
+  }
+
 
   private void addToTreeAmb(BottomupTreeBuilder builder, List<Object> collect) {
     for (int i = kids.length - 1; i >= 0; i--) {

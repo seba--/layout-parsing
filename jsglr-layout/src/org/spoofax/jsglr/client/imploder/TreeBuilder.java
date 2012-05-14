@@ -6,6 +6,7 @@ import static org.spoofax.jsglr.client.imploder.IToken.TK_ERROR_EOF_UNEXPECTED;
 import static org.spoofax.jsglr.client.imploder.IToken.TK_UNKNOWN;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.spoofax.PushbackStringIterator;
@@ -204,73 +205,89 @@ public class TreeBuilder extends TopdownTreeBuilder {
 	 * object.
 	 */
 	@Override
-	public Object buildTreeNode(ParseNode node) {
-		LabelInfo label = labels[node.getLabel() - labelStart];
-		IToken prevToken = tokenizer.currentToken();
-		int lastOffset = offset;
-		AbstractParseNode[] subnodes = node.getChildren();
-		boolean isList = label.isList();
-		boolean lexicalStart = false;
-		
-		if (!inLexicalContext && label.isNonContextFree())
-			inLexicalContext = lexicalStart = true;
-		
-		List<Object> children = null;
-		if (!inLexicalContext) {
-			if (isList) {
-				children = new AutoConcatList<Object>(label.getSort());
-			} else {
-				children = new ArrayList<Object>(max(EXPECTED_NODE_CHILDREN, subnodes.length));
-			}
-		}
+	 public Object buildTreeNode(ParseNode node) {
+    LabelInfo label = labels[node.getLabel() - labelStart];
+    IToken prevToken = tokenizer.currentToken();
+    int lastOffset = offset;
+    AbstractParseNode[] subnodes = node.getChildren();
+    boolean isList = label.isList();
+    boolean lexicalStart = false;
+    
+    if (!inLexicalContext && label.isNonContextFree())
+      inLexicalContext = lexicalStart = true;
+    
+    List<Object> children;
+    
+    if (isList) {
+      children = inLexicalContext ? null : new AutoConcatList<Object>(label.getSort());
 
-		// Recurse
-		for (AbstractParseNode subnode : subnodes) {
-			Object child;
-			if (inLexicalContext && subnode.isParseProductionChain()) {
-				child = chainToTreeTopdown(subnode);
-			} else {
-	      switch (subnode.getNodeType()) {
-	      case AbstractParseNode.CYCLE :
-	        child = buildTreeCycle((CycleParseNode) subnode);
-	        break;
-	      case AbstractParseNode.PARSE_PRODUCTION_NODE :
-	        child = buildTreeProduction((ParseProductionNode) subnode);
-	        break;
-	      case AbstractParseNode.AMBIGUITY :
-	        child = buildTreeAmb((ParseNode) subnode);
-	        break;
-	      default :
-	        child = buildTreeNode((ParseNode) subnode);
-	      }
-			}
-			// TODO: handle ambiguities in lexicals better (ignored now)
-			if (inLexicalContext)
-				child = null;
-			if (child != null)
-				children.add(isList && ((AutoConcatList) children).merges(child) ? child : tryBuildAutoConcatListNode(child));
-		}
-		
-		if (!inLexicalContext && isList && children.isEmpty()) {
-			IToken token = tokenizer.makeToken(tokenizer.getStartOffset() - 1, IToken.TK_LAYOUT, true);
-			((AutoConcatList) children).setEmptyListToken(token);
-		}
-		
-		Object result;
-		if (lexicalStart) {
-			result = tryCreateStringTerminal(label, lastOffset);
-			inLexicalContext = false;
-		} else if (inLexicalContext) {
-			tokenizer.tryMakeLayoutToken(offset - 1, lastOffset - 1, label);
-			result = null; // don't create nodes inside lexical context; just create one big token at the top
-		} else if (isList) {
-			result = children;
-		} else {
-			result = createNodeOrInjection(label, prevToken, children);
-		}
-		tokenizer.markPossibleSyntaxError(label, prevToken, offset - 1, prodReader);
-		return result;
-	}
+      LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+      nodes.push(node);
+
+      while (!nodes.isEmpty()) {
+        AbstractParseNode current = nodes.pop();
+        
+        LabelInfo currentLabel = labels[current.getLabel() - labelStart];
+        
+        if (!current.isAmbNode() && currentLabel.isList() && (label.getSort() == null ? currentLabel.getSort() == null : label.getSort().equals(currentLabel.getSort())))
+          for (int i = current.getChildren().length - 1; i >= 0; i--)
+            nodes.push(current.getChildren()[i]);
+        else {
+          Object child;
+          if (inLexicalContext && current.isParseProductionChain())
+            child = chainToTreeTopdown(current);
+          else
+            child = current.toTreeTopdown(this);
+
+          // TODO: handle ambiguities in lexicals better (ignored now)
+          if (inLexicalContext)
+            child = null;
+          if (child != null)
+            children.add(child);
+        }
+      }
+
+      if (!inLexicalContext && isList && children.isEmpty()) {
+        IToken token = tokenizer.makeToken(tokenizer.getStartOffset() - 1, IToken.TK_LAYOUT, true);
+        ((AutoConcatList) children).setEmptyListToken(token);
+      }
+    }
+    else {
+      children = inLexicalContext ? null : new ArrayList<Object>(max(EXPECTED_NODE_CHILDREN, subnodes.length));
+
+      // Recurse
+      for (AbstractParseNode subnode : subnodes) {
+        Object child;
+        if (inLexicalContext && subnode.isParseProductionChain()) {
+          child = chainToTreeTopdown(subnode);
+        } else {
+          // TODO: Optimize stack - inline toTreeTopdown case selection?
+          child = subnode.toTreeTopdown(this);
+        }
+        // TODO: handle ambiguities in lexicals better (ignored now)
+        if (inLexicalContext)
+          child = null;
+        if (child != null)
+          children.add(tryBuildAutoConcatListNode(child));
+      }
+    }
+
+    
+    Object result;
+    if (lexicalStart) {
+      result = tryCreateStringTerminal(label, lastOffset);
+      inLexicalContext = false;
+    } else if (inLexicalContext) {
+      tokenizer.tryMakeLayoutToken(offset - 1, lastOffset - 1, label);
+      result = null; // don't create nodes inside lexical context; just create one big token at the top
+    } else if (isList) {
+      result = children;
+    } else {
+      result = createNodeOrInjection(label, prevToken, children);
+    }
+    tokenizer.markPossibleSyntaxError(label, prevToken, offset - 1, prodReader);
+    return result;
+  }
 
 	/**
 	 * Efficiently consume lexical chars in parse production chains.

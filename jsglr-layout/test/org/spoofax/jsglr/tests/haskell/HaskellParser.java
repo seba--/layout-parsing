@@ -122,7 +122,7 @@ public class HaskellParser {
   }
   
   public int getAmbiguities() {
-    return parser.getDisambiguator().getAmbiguityCount();
+    return parser.getDisambiguator() == null ? 0 : parser.getDisambiguator().getAmbiguityCount();
   }
   
   public int getLayoutFilterCountParseTime() {
