@@ -12,8 +12,6 @@ rules
 
   compare : (Int(s1), Int(s2)) -> [] where <peq(hs-string-to-int)> (s1, s2)
   compare : (Float(s1), Float(s2)) -> [] where <peq(hs-string-to-float)> (s1, s2)
-  compare : (String(s1), String(s2)) -> [] where <peq(norm-string)> (s1, s2)
-  compare : (Char(s1), Char(s2)) -> [] where <peq(norm-char)> (s1, s2)
   
   compare : (c#(xs), c#(ys)) -> <zip(compare); concat> (xs, ys)
   
@@ -36,10 +34,12 @@ rules
   compare-term : (SContext(c1), SContext([c2])) -> <compare> (c1, c2)
   
   // string escapes
+  compare-term : (Escape(esc), c) -> <compare> (esc, c)
+    where <is-string> c
   compare-term : (HexadecimalEsc(hex), c) -> <compare> (esc, c)
-    where DecimalEsc(<hex-string-to-int; int-to-string> hex) => esc
+    where !DecimalEsc(<hex-string-to-int; int-to-string> hex) => esc
   compare-term : (OctalEsc(oct), c) -> <compare> (esc, c)
-    where DecimalEsc(<oct-string-to-int; int-to-string> oct) => esc
+    where !DecimalEsc(<oct-string-to-int; int-to-string> oct) => esc
   compare-term : (DecimalEsc(int), c2) -> <compare> (c1, c2)
    where <string-to-int; is-ascii> int => int';
          <implode-string> [int'] => c1
@@ -69,99 +69,7 @@ rules
 
   hs-string-to-float = string-to-real
 
-  norm-char-char : Escape(CharEsc("\"")) -> "\""
-  norm-char-char : Escape(ASCIIEsc("SP")) -> " "
-  norm-char-char : Escape(esc) -> Escape(<norm-char-char> esc)
 
-  norm-char-char : HexadecimalEsc(hex) -> DecimalEsc(<hex-string-to-int; int-to-string> hex)
-  norm-char-char : OctalEsc(hex) -> DecimalEsc(<oct-string-to-int; int-to-string> hex)
-  norm-char-char : DecimalEsc(int) -> c
-   where <string-to-int; is-ascii> int => int';
-         <implode-string> [int'] => c
-  
-  norm-char-char : DecimalEsc("0")  -> ASCIIEsc("NUL")
-  norm-char-char : DecimalEsc("1")  -> ASCIIEsc("SOH")
-  norm-char-char : DecimalEsc("2")  -> ASCIIEsc("STX")
-  norm-char-char : DecimalEsc("3")  -> ASCIIEsc("ETX")
-  norm-char-char : DecimalEsc("4")  -> ASCIIEsc("EOT")
-  norm-char-char : DecimalEsc("5")  -> ASCIIEsc("ENQ")
-  norm-char-char : DecimalEsc("6")  -> ASCIIEsc("ACK")
-  norm-char-char : DecimalEsc("7")  -> CharEsc("a")
-  norm-char-char : DecimalEsc("8")  -> CharEsc("b")
-  norm-char-char : DecimalEsc("9")  -> CharEsc("t")
-  norm-char-char : DecimalEsc("10") -> CharEsc("n")
-  norm-char-char : DecimalEsc("11") -> CharEsc("v")
-  norm-char-char : DecimalEsc("12") -> CharEsc("f")
-  norm-char-char : DecimalEsc("13") -> CharEsc("r")
-  norm-char-char : DecimalEsc("14") -> ASCIIEsc("SO")
-  norm-char-char : DecimalEsc("15") -> ASCIIEsc("SI")
-  norm-char-char : DecimalEsc("16") -> ASCIIEsc("DLE")
-  norm-char-char : DecimalEsc("17") -> ASCIIEsc("DC1")
-  norm-char-char : DecimalEsc("18") -> ASCIIEsc("DC2")
-  norm-char-char : DecimalEsc("19") -> ASCIIEsc("DC3")
-  norm-char-char : DecimalEsc("20") -> ASCIIEsc("DC4")
-  norm-char-char : DecimalEsc("21") -> ASCIIEsc("NAK")
-  norm-char-char : DecimalEsc("22") -> ASCIIEsc("SYM")
-  norm-char-char : DecimalEsc("23") -> ASCIIEsc("ETB")
-  norm-char-char : DecimalEsc("24") -> ASCIIEsc("CAN")
-  norm-char-char : DecimalEsc("25") -> ASCIIEsc("EM")
-  norm-char-char : DecimalEsc("26") -> ASCIIEsc("SUB")
-  norm-char-char : DecimalEsc("27") -> ASCIIEsc("ESC")
-  norm-char-char : DecimalEsc("28") -> ASCIIEsc("FS")
-  norm-char-char : DecimalEsc("29") -> ASCIIEsc("GS")
-  norm-char-char : DecimalEsc("30") -> ASCIIEsc("RS")
-  norm-char-char : DecimalEsc("31") -> ASCIIEsc("US")
-  norm-char-char : ASCIIEsc("^@")  -> ASCIIEsc("NUL")
-  norm-char-char : ASCIIEsc("^A")  -> ASCIIEsc("SOH")
-  norm-char-char : ASCIIEsc("^B")  -> ASCIIEsc("STX")
-  norm-char-char : ASCIIEsc("^C")  -> ASCIIEsc("ETX")
-  norm-char-char : ASCIIEsc("^D")  -> ASCIIEsc("EOT")
-  norm-char-char : ASCIIEsc("^E")  -> ASCIIEsc("ENQ")
-  norm-char-char : ASCIIEsc("^F") -> ASCIIEsc("ACK")
-  norm-char-char : ASCIIEsc("^G") -> CharEsc("a")
-  norm-char-char : ASCIIEsc("^H") -> CharEsc("b")
-  norm-char-char : ASCIIEsc("^I") -> CharEsc("t")
-  norm-char-char : ASCIIEsc("^J") -> CharEsc("n")
-  norm-char-char : ASCIIEsc("^K") -> CharEsc("v")
-  norm-char-char : ASCIIEsc("^L") -> CharEsc("f")
-  norm-char-char : ASCIIEsc("^M") -> CharEsc("r")
-  norm-char-char : ASCIIEsc("^N") -> ASCIIEsc("SO")
-  norm-char-char : ASCIIEsc("^O") -> ASCIIEsc("SI")
-  norm-char-char : ASCIIEsc("^P") -> ASCIIEsc("DLE")
-  norm-char-char : ASCIIEsc("^Q") -> ASCIIEsc("DC1")
-  norm-char-char : ASCIIEsc("^R") -> ASCIIEsc("DC2")
-  norm-char-char : ASCIIEsc("^S") -> ASCIIEsc("DC3")
-  norm-char-char : ASCIIEsc("^T") -> ASCIIEsc("DC4")
-  norm-char-char : ASCIIEsc("^U") -> ASCIIEsc("NAK")
-  norm-char-char : ASCIIEsc("^V") -> ASCIIEsc("SYM")
-  norm-char-char : ASCIIEsc("^W") -> ASCIIEsc("ETB")
-  norm-char-char : ASCIIEsc("^X") -> ASCIIEsc("CAN")
-  norm-char-char : ASCIIEsc("^Y") -> ASCIIEsc("EM")
-  norm-char-char : ASCIIEsc("^Z") -> ASCIIEsc("SUB")
-  norm-char-char : ASCIIEsc("^[") -> ASCIIEsc("ESC")
-  norm-char-char : ASCIIEsc("^\\") -> ASCIIEsc("FS")
-  norm-char-char : ASCIIEsc("^]") -> ASCIIEsc("GS")
-  norm-char-char : ASCIIEsc("^^") -> ASCIIEsc("RS")
-  norm-char-char : ASCIIEsc("^_") -> ASCIIEsc("US")
-  norm-char-char : ASCIIEsc("BEL") -> CharEsc("a")
-  norm-char-char : ASCIIEsc("BS") -> CharEsc("b")
-  norm-char-char : ASCIIEsc("HT") -> CharEsc("t")
-  norm-char-char : ASCIIEsc("LF") -> CharEsc("n")
-  norm-char-char : ASCIIEsc("VT") -> CharEsc("v")
-  norm-char-char : ASCIIEsc("FF") -> CharEsc("f")
-  norm-char-char : ASCIIEsc("CR") -> CharEsc("r")
-
-  norm-char = repeat(norm-char-char)
-
-  norm-string-char : Escape(CharEsc("'")) -> "'"
-  norm-string-char = norm-char-char
-
-  
-  norm-string : chars -> <norm-string> chars'
-   where <filter(not(?Escape(CharEsc("&"))))> chars => chars';
-         <not(equal)> (chars, chars')
-  norm-string : chars -> <map(repeat(norm-string-char))> chars
-  
   
 signature
   constructors
