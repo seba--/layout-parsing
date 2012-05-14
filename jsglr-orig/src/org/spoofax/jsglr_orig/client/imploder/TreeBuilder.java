@@ -227,9 +227,9 @@ public class TreeBuilder extends TopdownTreeBuilder {
 		  while (!nodes.isEmpty()) {
 	      AbstractParseNode current = nodes.pop();
 	      
-	      LabelInfo currentLabel = labels[current.getLabel() - labelStart];
+	      LabelInfo currentLabel = current.isAmbNode() ? null : labels[current.getLabel() - labelStart];
         
-	      if (currentLabel.isList() && (label.getSort() == null ? currentLabel.getSort() == null : label.getSort().equals(currentLabel.getSort())))
+	      if (currentLabel != null && currentLabel.isList() && (label.getSort() == null ? currentLabel.getSort() == null : label.getSort().equals(currentLabel.getSort())))
 	        for (int i = current.getChildren().length - 1; i >= 0; i--)
 	          nodes.push(current.getChildren()[i]);
 	      else {
