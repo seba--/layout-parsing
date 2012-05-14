@@ -29,7 +29,7 @@ public class HaskellOrigParser {
    */
   private static final int TIMEOUT = 10;
   
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String tableLocation = HaskellOrigParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr/tests/haskell_orig/Haskell.tbl";
   
