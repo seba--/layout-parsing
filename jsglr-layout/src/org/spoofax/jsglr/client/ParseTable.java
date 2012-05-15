@@ -271,6 +271,7 @@ public class ParseTable implements Serializable {
             boolean isIgnoreIndent = false;
             IStrategoTerm layoutConstraint = null;
             boolean isNewlineEnforced = false;
+            boolean isLongestMatch = false;
             IStrategoTerm term = null;
 
             for (IStrategoList ls = (IStrategoList) attr.getSubterm(0); !ls.isEmpty(); ls = ls.tail()) {
@@ -330,6 +331,9 @@ public class ParseTable implements Serializable {
                         else if (child.getSubtermCount() == 0 && child.getName().equals("enforce-newline")) {
                           isNewlineEnforced = true;
                         }
+                        else if (child.getSubtermCount() == 0 && child.getName().equals("longest-match")) {
+                          isLongestMatch = true;
+                        }
                     	}
                     	// TODO Support other terms that are not a constructor (custom annotations)
                     } else if (ctor.equals("id")) {
@@ -340,9 +344,9 @@ public class ParseTable implements Serializable {
                     }
                 }
             }
-            return new ProductionAttributes(term, type, isRecover, isOffsideBlock, isSameIndent, isMoreIndent, isIgnoreIndent, layoutConstraint, isNewlineEnforced);
+            return new ProductionAttributes(term, type, isRecover, isOffsideBlock, isSameIndent, isMoreIndent, isIgnoreIndent, layoutConstraint, isNewlineEnforced, isLongestMatch);
         } else if (attr.getName().equals("no-attrs")) {
-            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, false, false, false, null, false);
+            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, false, false, false, null, false, false);
         }
         throw new InvalidParseTableException("Unknown attribute type: " + attr);
     }

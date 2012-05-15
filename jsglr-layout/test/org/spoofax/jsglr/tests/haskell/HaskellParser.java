@@ -28,7 +28,9 @@ public class HaskellParser {
    * Time out for parser (in seconds).
    */
   private static final int TIMEOUT = 10;
-  
+
+  private static final boolean DEBUG = false;
+
   private static final String tableLocation = HaskellParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr/tests/haskell/Haskell.tbl";
   
   private static final ParseTable table;
@@ -90,7 +92,10 @@ public class HaskellParser {
     Object o = null;
     try {
       thread.start();
-      o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
+      if (DEBUG)
+        o = parseTask.get();
+      else
+        o = parseTask.get(TIMEOUT, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       thread.interrupt();
       try {

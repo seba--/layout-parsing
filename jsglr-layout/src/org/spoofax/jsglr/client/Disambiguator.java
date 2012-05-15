@@ -51,6 +51,8 @@ public class Disambiguator {
 
   private boolean filterInjectionCount;
 
+  private boolean filterLongestMatch;
+
   private boolean filterTopSort;
 
   private boolean filterReject;
@@ -123,6 +125,14 @@ public class Disambiguator {
 
   public boolean getFilterInjectionCount() {
     return filterInjectionCount;
+  }
+
+  public final void setFilterLongestMatch(boolean filterLongestMatch) {
+    this.filterLongestMatch = filterLongestMatch;
+  }
+
+  public boolean getLongestMatch() {
+    return filterLongestMatch;
   }
 
   public final void setFilterPreferenceCount(boolean filterPreferenceCount) {
@@ -224,6 +234,7 @@ public class Disambiguator {
     filterDirectPreference = true;
     filterPreferenceCount = false;
     filterInjectionCount = false;
+    filterLongestMatch = true;
     filterTopSort = true;
     filterReject = true;
     filterAssociativity = true;
@@ -992,11 +1003,12 @@ public class Disambiguator {
       }
     }
     
-//    AbstractParseNode longest = filterLongestMatch(left, right);
-//    if (longest == left)
-//      return FILTER_LEFT_WINS;
-//    if (longest == right)
-//      return FILTER_RIGHT_WINS;
+    if (filterLongestMatch) {
+      final int r = filterLongestMatch(left, right);
+      if (r != FILTER_DRAW) {
+        return r;
+      }
+    }
     
     return filterPermissiveLiterals(left, right);
   }
@@ -1405,125 +1417,47 @@ public class Disambiguator {
     return null;
   }
 
+  private int filterLongestMatch(AbstractParseNode left, AbstractParseNode right) {
+    LinkedList<AbstractParseNode> lefts = new LinkedList<AbstractParseNode>();
+    LinkedList<AbstractParseNode> rights = new LinkedList<AbstractParseNode>();
+    
+    lefts.push(left);
+    rights.push(right);
+    
+    while (!lefts.isEmpty() && !rights.isEmpty()) {
+      left = lefts.pop();
+      right = rights.pop();
+      
+      if (left.getLine() != right.getLine() || left.getColumn() != right.getColumn())
+        return FILTER_DRAW;
+      
+      if (left.isParseProductionNode() || right.isParseProductionNode())
+        continue;
+      
+      if (left.isAmbNode() || right.isAmbNode() || left.getLabel() != right.getLabel())
+        return FILTER_DRAW;
+      
+      if (parseTable.getLabel(left.getLabel()).getAttributes().isLongestMatch()) {
+        AbstractParseNode lastLeft = left.getLast();
+        AbstractParseNode lastRight = right.getLast();
+        
+        if (lastLeft.getLine() > lastRight.getLine())
+          return FILTER_LEFT_WINS;
+        if (lastLeft.getLine() < lastRight.getLine())
+          return FILTER_RIGHT_WINS;
+        if (lastLeft.getColumn() > lastRight.getColumn())
+          return FILTER_LEFT_WINS;
+        if (lastLeft.getColumn() < lastRight.getColumn())
+          return FILTER_RIGHT_WINS;
+      }
+      
+      for (int i = left.getChildren().length - 1; i >= 0; i--) {
+        lefts.push(left.getChildren()[i]);
+        rights.push(right.getChildren()[i]);
+      }
+    }
+    
+    return FILTER_DRAW;
+  }
   
-//  private class LongestMatchKey {
-//    private AbstractParseNode n1, n2;
-//    public LongestMatchKey(AbstractParseNode n1, AbstractParseNode n2) { this.n1 = n1; this.n2 = n2; }
-//    @Override public int hashCode() { return (9 << n1.hashCode()) + n2.hashCode(); }
-//    @Override public boolean equals(Object o) { 
-//      return o instanceof LongestMatchKey && ((LongestMatchKey) o).n1 == n1 && ((LongestMatchKey) o).n2 == n2;
-//    }
-//  }
-//  private Map<LongestMatchKey, Integer> longestMatchCache = new HashMap<LongestMatchKey, Integer>();
-//  
-//  @SuppressWarnings("null")
-//  private AbstractParseNode filterLongestMatch(AbstractParseNode t1, AbstractParseNode t2) {
-//    if (t1.isParseRejectNode() || t2.isParseRejectNode())
-//      return null;
-//    
-//    System.out.println(t1.toString());
-//    System.out.println(t2.toString());
-//    
-//    Stack<AbstractParseNode[]> stack = new Stack<AbstractParseNode[]>();
-//    stack.push(new AbstractParseNode[] {t1, t2});
-//
-//    LinkedList<LongestMatchKey> done = new LinkedList<LongestMatchKey>();
-//    
-//    AbstractParseNode res = null;
-//    
-//    while (!stack.isEmpty()) {
-//      AbstractParseNode[] ns = stack.pop();
-//      AbstractParseNode n1 = ns[0];
-//      AbstractParseNode n2 = ns[1];
-//    
-//      if (n1.equals(n2))
-//        continue;
-//      
-//      LongestMatchKey key = new LongestMatchKey(n1, n2);
-//      Integer prevRes = longestMatchCache.get(key);
-//      if (prevRes != null) {
-//        AbstractParseNode newres = prevRes == -1 ? null : (prevRes == 0 ? t1 : t2);
-//        if (res != null && res != newres) {
-//          res = null;
-//          break;
-//        }
-//        if (newres == null)
-//          continue;
-//        
-//        res = newres;
-//        break;
-//      }
-//      
-//      Label l1 = n1.isAmbNode() ? null : parseTable.getLabel(n1.getLabel());
-//      Label l2 = n2.isAmbNode() ? null : parseTable.getLabel(n2.getLabel());
-//      
-//      if (n1.isAmbNode() || n2.isAmbNode()) {
-//        AbstractParseNode[] n1Array = n1.isAmbNode() ? n1.getChildren() : new AbstractParseNode[] {n1};
-//        AbstractParseNode[] n2Array = n2.isAmbNode() ? n2.getChildren() : new AbstractParseNode[] {n2};
-//        
-//        for (int i = 0; i < n1Array.length; i++)
-//          for (int j = 0; j < n2Array.length; j++) {
-//            if (!n1Array[i].isParseRejectNode() && !n2Array[j].isParseRejectNode())
-//              stack.push(new AbstractParseNode[] {n1Array[i], n2Array[j]});
-//          }
-//        continue;
-//      }
-//
-//      else if (l1 != null && l1.getAttributes().isLongestMatch() && 
-//               (l2 == null || !l2.getAttributes().isLongestMatch())) {
-//        if (res == t2) {
-//          res = null;
-//          break;
-//        }
-//        res = t1;
-//        break;
-//      }
-//
-//      else if (l2 != null && l2.getAttributes().isLongestMatch() &&
-//               (l1 == null || !l1.getAttributes().isLongestMatch())) {
-//        if (res == t1) {
-//          res = null;
-//          break;
-//        }
-//        res = t2;
-//        break;
-//      }
-//      
-//      else if (n1.getLabel() != n2.getLabel())
-//        continue;
-//
-//      else if (l1 != null && l2 != null &&
-//          l1.equals(l2) && l1.getAttributes().isLongestMatch()) {
-//        int[] end1 = n1.getEnd();
-//        int[] end2 = n2.getEnd();
-//        if (end1[0] > end2[0] || end1[0] == end2[0] && end1[1] > end2[1]) {
-//          if (res == t2) {
-//            res = null;
-//            break;
-//          }
-//          res = t1;
-//          break;
-//        }
-//        else if (end2[0] > end1[0] || end2[0] == end1[0] && end2[1] > end1[1]) {
-//          if (res == t1) {
-//            res = null;
-//            break;
-//          }
-//          res = t2;
-//          break;
-//        }
-//      }
-//      
-//      done.add(key);
-//
-//      for (int i = n1.getChildren().length - 1; i >= 0; i--)
-//        stack.push(new AbstractParseNode[] {n1.getChildren()[i], n2.getChildren()[i]});
-//    }
-//    
-//    int val = res == t1 ? 0 : (res == t2 ? 1 : -1);
-//    for (LongestMatchKey key : done)
-//      longestMatchCache.put(key, val);
-//    
-//    return res;
-//  }
 }

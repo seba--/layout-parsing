@@ -192,4 +192,11 @@ public abstract class AbstractParseNode {
     
     return false;
   }
+
+  public AbstractParseNode getLast() {
+    AbstractParseNode n = this;
+    while (n.getChildren().length > 0)
+      n = n.getChildren()[n.getChildren().length - 1];
+    return n;
+  }
 }

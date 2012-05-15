@@ -781,45 +781,6 @@ public class SGLR {
         actorOnActiveStacksOverNewLink(nl);
       }
 		}
-		
-//			if (nl != null) {
-//				logAmbiguity(st0, prod, st1, nl);
-//				if (prod.isRejectProduction()) {
-//					nl.reject();
-//				} 
-//				if (nl.label.equals(t)) {
-//				  actorOnActiveStacksOverNewLink(nl);
-//				} 
-//				else if(numberOfRecoveries == 0 && nl.recoverCount == 0 || nl.isRejected()) {
-////				  AbstractParseNode longest = filterLongestMatch(nl.label, t);
-////				  if (longest == null)
-//					  createAmbNode(t, nl);
-////				  else {
-////				    nl.label = longest;
-////	          actorOnActiveStacksOverNewLink(nl);
-////				  }
-//				} else if (numberOfRecoveries < nl.recoverCount) {
-//					nl.label = t;
-//					nl.recoverCount = numberOfRecoveries;
-//					actorOnActiveStacksOverNewLink(nl);
-//				} else if (numberOfRecoveries == nl.recoverCount) {
-//					nl.label = t;
-//				}
-//			} else {
-//				nl = st1.addLink(st0, t, length, t.getLine(), t.getColumn());
-//				nl.recoverCount = numberOfRecoveries;
-//				if (prod.isRejectProduction()) {
-//					nl.reject();
-//					increaseRejectCount();
-//				}
-//				logAddedLink(st0, st1, nl);
-//				actorOnActiveStacksOverNewLink(nl);
-//			}
-//		}
-//		if(Tools.tracing) {
-//			TRACE_ActiveStacks();
-//			TRACE("SG_ - reducer done");
-//		}
 	}
 	
 	private void reducerRecoverProduction(Frame st0, State s, Production prod, AbstractParseNode[] kids, Path path) {

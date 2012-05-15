@@ -27,10 +27,11 @@ public class ProductionAttributes implements Serializable {
     private final boolean isIgnoreLayout;
     private final IStrategoTerm layoutConstraint;
     private final boolean isNewlineEnforced;
+    private final boolean isLongestMatch;
 
     private final transient IStrategoTerm abstractCtor;
 
-    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isOffsideBlock, boolean isSameIndent, boolean isMoreIndent, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced) {
+    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isOffsideBlock, boolean isSameIndent, boolean isMoreIndent, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced, boolean isLongestMatch) {
         this.type = type;
         this.abstractCtor = ctor;
         this.isRecover = isRecover;
@@ -40,6 +41,7 @@ public class ProductionAttributes implements Serializable {
         this.isIgnoreLayout = isIgnoreIndent;
         this.layoutConstraint = layoutConstraint;
         this.isNewlineEnforced = isNewlineEnforced;
+        this.isLongestMatch = isLongestMatch;
     }
 
     public final int getType() {
@@ -80,5 +82,9 @@ public class ProductionAttributes implements Serializable {
 
     public boolean isMoreEager(ProductionAttributes other) {
         return type != other.type && (type == PREFER || other.type == AVOID);
+    }
+
+    public boolean isLongestMatch() {
+      return isLongestMatch;
     }
 }
