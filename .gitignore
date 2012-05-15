@@ -17,5 +17,6 @@ bin/
 /test-hackage/*.log
 
 /test-hackage/hackage-data/*/
+/test-hackage/hackage-data/*.csv
 /test-hackage/all*.csv
 /test-hackage/all*/
