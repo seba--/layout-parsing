@@ -539,7 +539,7 @@ public class SGLR {
 		return st;
 	}
 
-	private void actor(Frame st) {
+	private void actor(Frame st) throws InterruptedException {
 
 		final State s = st.peek();
 		logBeforeActor(st, s);
@@ -637,13 +637,16 @@ public class SGLR {
 	}
 
 
-	private void doReductions(Frame st, Production prod) {
+	private void doReductions(Frame st, Production prod) throws InterruptedException {
 
+	  if (Thread.currentThread().isInterrupted())
+	    throw new InterruptedException();
+	  
 		if(!recoverModeOk(st, prod)) {
 			return;
 		}
-
-		PooledPathList paths = pathCache.create();
+		
+				PooledPathList paths = pathCache.create();
 		try {
 			st.findAllPaths(paths, prod.arity);
 			logBeforeDoReductions(st, prod, paths.size());
