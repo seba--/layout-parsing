@@ -104,6 +104,9 @@ public class HaskellOrigParser {
       } catch (TimeoutException e1) {
         System.err.println("does not interrupt: " + filename);
         thread.stop();
+      } catch (OutOfMemoryError e1) {
+        thread.stop();
+        System.err.println("heap overflow: " + filename);
       }
       endParse = startParse - 1;
     } catch (InterruptedException e) {
