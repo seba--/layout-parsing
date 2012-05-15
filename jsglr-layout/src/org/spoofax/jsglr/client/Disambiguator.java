@@ -1434,7 +1434,7 @@ public class Disambiguator {
       if (left.isParseProductionNode() || right.isParseProductionNode())
         continue;
       
-      if (left.isAmbNode() || right.isAmbNode() || left.getLabel() != right.getLabel())
+      if (left.isAmbNode() || right.isAmbNode())
         return FILTER_DRAW;
       
       if (parseTable.getLabel(left.getLabel()).getAttributes().isLongestMatch()) {
@@ -1451,7 +1451,7 @@ public class Disambiguator {
           return FILTER_RIGHT_WINS;
       }
       
-      for (int i = left.getChildren().length - 1; i >= 0; i--) {
+      for (int i = Math.min(left.getChildren().length, right.getChildren().length) - 1; i >= 0; i--) {
         lefts.push(left.getChildren()[i]);
         rights.push(right.getChildren()[i]);
       }
