@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
-import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr.tests.result.FileResultObserver;
 
@@ -23,7 +22,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("4Blocks", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("AERN-RnToRm", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   

@@ -6,7 +6,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.spoofax.jsglr.client.AbstractParseNode;
 import org.spoofax.jsglr.client.ParseException;
 import org.spoofax.jsglr.client.ParseTable;
 import org.spoofax.jsglr.client.SGLR;
@@ -48,18 +47,23 @@ public class HaskellParser {
   public long memoryBefore;
   public long memoryAfter;
   
-  SGLR parser;
-  public AbstractParseNode parseTree;
+//  public AbstractParseNode parseTree;
   
   public HaskellParser() {
   }
   
   private void reset() {
     timeParse = -1;
-    parser = null;
-    parseTree = null;
+//    parseTree = null;
     memoryBefore = -1;
     memoryAfter = -1;
+    ambiguities = 0;
+    layoutFilterCountParseTime = 0;
+    layoutFilteringCountParseTime = 0;
+    layoutFilterCountDisambiguationTime = 0;
+    layoutFilteringCountDisambiguationTime = 0;
+    enforcedNewlineSkips = 0;
+    
   }
   
   public Object parse(String input, String filename) throws InterruptedException, ExecutionException {
@@ -70,7 +74,7 @@ public class HaskellParser {
   public Object parse(final String input, final String filename, final String startSymbol) throws ExecutionException {
     reset();
     
-    parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
+    final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
 
     FutureTask<Object> parseTask = new FutureTask<Object>(new Callable<Object>() {
       public Object call() throws BadTokenException, TokenExpectedException, ParseException, SGLRException, InterruptedException {
@@ -112,41 +116,35 @@ public class HaskellParser {
     } catch (InterruptedException e) {
       endParse = startParse - 1;
     } finally {
-      
       if (endParse == -1)
         endParse = System.nanoTime();
       
-      parseTree = parser.getParseTree();
+//      parseTree = parser.getParseTree();
       
       timeParse = endParse - startParse;
       if (timeParse < 0)
         timeParse = -1;
+      
+      ambiguities = parser.getDisambiguator() == null ? 0 : parser.getDisambiguator().getAmbiguityCount();
+      layoutFilterCountParseTime = parser.getLayoutFilterCallCount();
+      layoutFilteringCountParseTime = parser.getLayoutFilteringCount();
+      layoutFilterCountDisambiguationTime = parser.getDisambiguator().getLayoutFilterCallCount();
+      layoutFilteringCountDisambiguationTime = parser.getDisambiguator().getLayoutFilteringCount();
+      enforcedNewlineSkips = parser.getEnforcedNewlineSkips();
+      
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
     }
-    
     return o;
   }
   
-  public int getAmbiguities() {
-    return parser == null || parser.getDisambiguator() == null ? 0 : parser.getDisambiguator().getAmbiguityCount();
-  }
-  
-  public int getLayoutFilterCountParseTime() {
-    return parser.getLayoutFilterCallCount();
-  }
-  
-  public int getLayoutFilteringCountParseTime() {
-    return parser.getLayoutFilteringCount();
-  }
-
-  public int getLayoutFilterCountDisambiguationTime() {
-    return parser.getDisambiguator().getLayoutFilterCallCount();
-  }
-
-  public int getLayoutFilteringCountDisambiguationTime() {
-    return parser.getDisambiguator().getLayoutFilteringCount();
-  }
-
-  public int getEnforcedNewlineSkips() {
-    return parser.getEnforcedNewlineSkips();
-  }
+  public int ambiguities;
+  public int layoutFilterCountParseTime;
+  public int layoutFilteringCountParseTime;
+  public int layoutFilterCountDisambiguationTime;
+  public int layoutFilteringCountDisambiguationTime;
+  public int enforcedNewlineSkips;
 }

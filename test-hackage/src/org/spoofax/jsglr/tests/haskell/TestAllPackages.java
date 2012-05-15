@@ -31,8 +31,10 @@ public class TestAllPackages extends TestCase {
         "mdo",
     };
     
+    FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { } };
+    
     for (String pkg : warmupPackages)
-      new TestPackage().testPackage(pkg, new FileResultObserver() { public void observe(FileResult result) { } });
+      new TestPackage().testPackage(pkg, observer);
   }
   
   public void testAllPackages() throws IOException {

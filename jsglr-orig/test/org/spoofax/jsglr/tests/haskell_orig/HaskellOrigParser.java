@@ -44,7 +44,7 @@ public class HaskellOrigParser {
 
   public int ambiguities;
   
-  public AbstractParseNode parseTree;
+//  public AbstractParseNode parseTree;
   
   long startParse = -1;
   long endParse = -1;
@@ -58,7 +58,7 @@ public class HaskellOrigParser {
   private void reset() {
     timeParse = -1;
     ambiguities = 0;
-    parseTree = null;
+//    parseTree = null;
     memoryBefore = -1;
     memoryAfter = -1;
   }
@@ -68,7 +68,7 @@ public class HaskellOrigParser {
   }
   
   @SuppressWarnings("deprecation")
-  public Object parse(final String input, final String filename, final String startSymbol) throws InterruptedException, ExecutionException {
+  public Object parse(final String input, final String filename, final String startSymbol) throws ExecutionException {
     reset();
     final SGLR parser = new SGLR(new TreeBuilder(new TermTreeFactory(new ParentTermFactory(table.getFactory())), true), table);
     
@@ -106,16 +106,24 @@ public class HaskellOrigParser {
         thread.stop();
       }
       endParse = startParse - 1;
+    } catch (InterruptedException e) {
+      endParse = startParse - 1;
     } finally {
       if (endParse == -1)
         endParse = System.nanoTime();
       
       ambiguities = parser.getDisambiguator().getAmbiguityCount();
-      parseTree = parser.getParseTree();
+//      parseTree = parser.getParseTree();
       
       timeParse = endParse - startParse;
       if (timeParse < 0)
         timeParse = -1;
+      
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
     }
     
     return o;

@@ -30,8 +30,8 @@ public class TestFile extends TestCase {
   private final static boolean LOGGING = true;
   
   private Context normalizeContext = normalize.init();
-  
   private Context compareContext = CompareAST.init();
+
   public HaskellParser newParserCorrectness = new HaskellParser();
   public HaskellParser newParserSpeed = new HaskellParser();
   public HaskellOrigParser oldParser = new HaskellOrigParser();
@@ -44,7 +44,11 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "c:/Users/SEBAIN~1.000/AppData/Local/Temp/4Blocks6089664383571804152/4Blocks-0.2/Interface/OnePlayerModeWindow.hs";
+    String file = "d:/tmp/test.hs";
+    testFile(new File(file), file, "main");
+    testFile(new File(file), file, "main");
+    testFile(new File(file), file, "main");
+    testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
 
     String csv = file + ".csv";
@@ -211,12 +215,12 @@ public class TestFile extends TestCase {
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t2 = e.getCause().getMessage();
     } finally {
-      result.ambiguities.t2 = newParserCorrectness.getAmbiguities();
-      result.layoutFilterCallsParseTime.t2 = newParserCorrectness.getLayoutFilterCountParseTime();
-      result.layoutFilteringParseTime.t2 = newParserCorrectness.getLayoutFilteringCountParseTime();
-      result.layoutFilterCallsDisambiguationTime.t2 = newParserCorrectness.getLayoutFilterCountDisambiguationTime();
-      result.layoutFilteringDisambiguationTime.t2 = newParserCorrectness.getLayoutFilteringCountDisambiguationTime();
-      result.enforcedNewlineSkips.t2 = newParserCorrectness.getEnforcedNewlineSkips();
+      result.ambiguities.t2 = newParserCorrectness.ambiguities;
+      result.layoutFilterCallsParseTime.t2 = newParserCorrectness.layoutFilterCountParseTime;
+      result.layoutFilteringParseTime.t2 = newParserCorrectness.layoutFilteringCountParseTime;
+      result.layoutFilterCallsDisambiguationTime.t2 = newParserCorrectness.layoutFilterCountDisambiguationTime;
+      result.layoutFilteringDisambiguationTime.t2 = newParserCorrectness.layoutFilteringCountDisambiguationTime;
+      result.enforcedNewlineSkips.t2 = newParserCorrectness.enforcedNewlineSkips;
       result.time.t2 = newParserCorrectness.timeParse;
       result.timeout.t2 = newParserCorrectness.timeParse < 0;
       result.memoryBefore.t2 = newParserCorrectness.memoryBefore;
@@ -265,12 +269,12 @@ public class TestFile extends TestCase {
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t3 = e.getCause().getMessage();
     } finally {
-      result.ambiguities.t3 = newParserSpeed.getAmbiguities();
-      result.layoutFilterCallsParseTime.t3 = newParserSpeed.getLayoutFilterCountParseTime();
-      result.layoutFilteringParseTime.t3 = newParserSpeed.getLayoutFilteringCountParseTime();
-      result.layoutFilterCallsDisambiguationTime.t3 = newParserSpeed.getLayoutFilterCountDisambiguationTime();
-      result.layoutFilteringDisambiguationTime.t3 = newParserSpeed.getLayoutFilteringCountDisambiguationTime();
-      result.enforcedNewlineSkips.t3 = newParserCorrectness.getEnforcedNewlineSkips();
+      result.ambiguities.t3 = newParserSpeed.ambiguities;
+      result.layoutFilterCallsParseTime.t3 = newParserSpeed.layoutFilterCountParseTime;
+      result.layoutFilteringParseTime.t3 = newParserSpeed.layoutFilteringCountParseTime;
+      result.layoutFilterCallsDisambiguationTime.t3 = newParserSpeed.layoutFilterCountDisambiguationTime;
+      result.layoutFilteringDisambiguationTime.t3 = newParserSpeed.layoutFilteringCountDisambiguationTime;
+      result.enforcedNewlineSkips.t3 = newParserCorrectness.enforcedNewlineSkips;
       result.time.t3 = newParserSpeed.timeParse;
       result.timeout.t3 = newParserSpeed.timeParse < 0;
       result.memoryBefore.t3 = newParserSpeed.memoryBefore;
@@ -334,7 +338,7 @@ public class TestFile extends TestCase {
       else
         result.makeImplicitLayout = messages[1].length == 0;
       
-      result.ambInfix |= messages[1].length > 0 && messages[1][0].endsWith("pp-haskell: Ambiguous infix expression");
+      result.ambInfix |= messages[1].length > 0 && messages[1][0].endsWith("Ambiguous infix expression");
     }
     
     return res.exists() ? res : null;
@@ -439,10 +443,10 @@ public class TestFile extends TestCase {
   private void checkAmbiguities(String pkg, File f) {
     if (LOGGING && oldParser.ambiguities > 0)
       System.out.println("[" + pkg + ", old] " + oldParser.ambiguities + " ambiguities");
-    if (LOGGING && newParserCorrectness.getAmbiguities() > 0)
-      System.out.println("[" + pkg + ", new corre] " + newParserCorrectness.getAmbiguities() + " ambiguities");
-    if (LOGGING && newParserSpeed.getAmbiguities() > 0)
-      System.out.println("[" + pkg + ", new speed] " + newParserSpeed.getAmbiguities() + " ambiguities");
+    if (LOGGING && newParserCorrectness.ambiguities > 0)
+      System.out.println("[" + pkg + ", new corre] " + newParserCorrectness.ambiguities + " ambiguities");
+    if (LOGGING && newParserSpeed.ambiguities > 0)
+      System.out.println("[" + pkg + ", new speed] " + newParserSpeed.ambiguities + " ambiguities");
   }
 
   
