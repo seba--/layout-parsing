@@ -17,7 +17,8 @@ exports
     Sbtype Conop Sbtype -> Constr {cons("InfixConstr")}
 
     Conid Type 			 	 -> Newconstr
-    Conid "{" Var "::" Type "}" 	 -> Newconstr
+    Conid LabeledConstr 	 -> Newconstr
+    "{" Var "::" Type "}" -> LabeledConstr {cons("LabeledConstr"), ignore-indent}
    
     AType 				 -> Satype
     "!" AType 				 -> Satype

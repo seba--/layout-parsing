@@ -29,10 +29,12 @@ exports
 
     Qop -> QopNoNeg    
     "-" -> QopNoNeg {reject}
+ 
+    "{" {Fbind ","}* "}" -> LabelBinds {cons("LabelBinds"), ignore-indent}
 
   context-free priorities
     Qvar "@" Exp 			  -> Exp  	{cons("Named")}
-  > Exp "{" {Fbind ","}* "}" 			  -> Exp  	{cons("Labeled")}
+  > Exp LabelBinds 			  -> Exp  	{cons("Labeled")}
   > Exp				  	  -> Aexp
   > Exp Exp				  -> Exp 	{cons("AppBin"),left}
   > Exp "::" Type 			  -> Exp 	{cons("Typed")}

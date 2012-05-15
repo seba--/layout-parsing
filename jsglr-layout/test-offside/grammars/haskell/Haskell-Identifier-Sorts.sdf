@@ -50,9 +50,10 @@ exports
     CONSYM 		-> Consym
     Consym        	-> Conop
     Qconsym -> Gconsym
-    ":" -> Gconsym  {cons("ConsOp")}
     Gconsym        	-> Qconop
 
+    CONSOP -> ConsOp {cons("ConsOp")}
+    ConsOp -> Qop
     Qvarop 		  -> Qop
     Qconop 		  -> Qop
 

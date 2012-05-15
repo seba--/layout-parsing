@@ -11,11 +11,14 @@ exports
     [\!\#\$\%\&\*\+\.\/]
     \/ [\<\=\>\?\@\\\^\|\-\~] -> Symbol
     Symbol (Symbol | [\:])*   -> VARSYM
-    [\:] (Symbol | [\:])*     -> CONSYM
+    [\:] (Symbol | [\:])+     -> CONSYM
     "="                -> VARSYM {reject}
     ReservedOp                -> VARSYM {reject}
     ReservedOp                -> CONSYM {reject}
+    ":" -> CONSOP
 
   lexical restrictions
     CONID VARID -/- [A-Za-z0-9\'\_]
     VARSYM      -/- [\!\#\$\%\&\*\+\.\/] \/ [\<\=\>\?\@\\\^\|\-\~]
+    CONSYM      -/- [\!\#\$\%\&\*\+\.\/] \/ [\<\=\>\?\@\\\^\|\-\~]
+    CONSOP      -/- [\:]

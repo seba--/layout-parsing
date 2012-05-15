@@ -2,8 +2,15 @@ module Haskell-Patterns
 exports
   context-free syntax
     LPat -> Pat
-    Pat Qconop LPat -> Pat {cons("BinOpApp")}
     
+  context-free priorities
+      Pat Qconop LPat -> Pat {cons("BinOpApp")}
+    > XPat ConsOp Pat -> Pat {cons("BinOpApp")}
+    
+  context-free syntax
+  	Pat Qconop LPat -> XPat {cons("BinOpApp")}
+  	LPat -> XPat
+  	
     APat -> LPat
     "-" Literal -> LPat {cons("Negation")}
     Gcon APat+ -> LPat {cons("ConstrApp")}
@@ -11,7 +18,8 @@ exports
     Var -> APat
     Var "@" APat -> APat {cons("Named")}
     Gcon -> APat {cons("Constr")}
-    Qcon "{" {FPat ","}* "}" -> APat {cons("Labeled")}
+    Qcon LabeledPat -> APat {cons("Labeled")}
+    "{" {FPat ","}* "}" -> LabeledPat {cons("Labeled")}
     Literal -> APat
     "_" -> APat {cons("Wildcard")}
     "(" Pat ")" -> APat {bracket}
