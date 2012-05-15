@@ -2,7 +2,7 @@ module Haskell-Patterns
 exports
   context-free syntax
     LPat -> Pat
-    LPat Qconop Pat -> Pat {cons("BinOpApp")}
+    Pat Qconop LPat -> Pat {cons("BinOpApp")}
     
     APat -> LPat
     "-" Literal -> LPat {cons("Negation")}
