@@ -536,6 +536,8 @@ public class Disambiguator {
             // (some cycle stuff should be done here)
             final AbstractParseNode[] ambs = t.getChildren();
             t = filterAmbiguities(ambs);
+            if (t == null)
+              return null;
             output.push(t);
           } else {
             // FIXME: hasRejectProd(Amb) can never succeed?
@@ -916,6 +918,7 @@ public class Disambiguator {
           newAmbiguities = filterAmbiguityList(newAmbiguities, amb);
         }
       }
+      System.out.print("");
     }
 
     if (newAmbiguities.isEmpty()) {
@@ -1424,18 +1427,22 @@ public class Disambiguator {
     lefts.push(left);
     rights.push(right);
     
+    System.out.println();
+    
     while (!lefts.isEmpty() && !rights.isEmpty()) {
       left = lefts.pop();
       right = rights.pop();
       
       if (left.getLine() != right.getLine() || left.getColumn() != right.getColumn())
-        return FILTER_DRAW;
+        continue;
       
       if (left.isParseProductionNode() || right.isParseProductionNode())
         continue;
       
       if (left.isAmbNode() || right.isAmbNode())
         return FILTER_DRAW;
+      
+      System.out.println((left.getLabel() == right.getLabel() ? "" : "!") + left.getLabel() + "," + right.getLabel());
       
       if (parseTable.getLabel(left.getLabel()).getAttributes().isLongestMatch()) {
         AbstractParseNode lastLeft = left.getLast();
@@ -1449,7 +1456,13 @@ public class Disambiguator {
           return FILTER_LEFT_WINS;
         if (lastLeft.getColumn() < lastRight.getColumn())
           return FILTER_RIGHT_WINS;
+        if (!parseTable.getLabel(right.getLabel()).getAttributes().isLongestMatch())
+          return FILTER_LEFT_WINS;
+        
+        System.out.println("ok " + left.getLabel());
       }
+      else if (parseTable.getLabel(right.getLabel()).getAttributes().isLongestMatch())
+        return FILTER_RIGHT_WINS;
       
       for (int i = Math.min(left.getChildren().length, right.getChildren().length) - 1; i >= 0; i--) {
         lefts.push(left.getChildren()[i]);
