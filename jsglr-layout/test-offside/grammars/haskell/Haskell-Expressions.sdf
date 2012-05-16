@@ -41,10 +41,9 @@ exports
   > "-" Exp               -> Exp  {cons("Negation")}
   > Exp Qop Exp -> Exp {cons("OpApp"), right}
 
-  context-free priorities
-   Exp Qop Exp -> Exp
-     <0> >
+  context-free syntax
    "do" StmtList -> Exp {cons("Do"), longest-match}
+   "case" AnyExp "of" AltList          -> Exp  	{cons("Case"), longest-match}
 
   context-free priorities
   	Exp Exp				  -> Exp 	{cons("AppBin"),left}
@@ -52,7 +51,6 @@ exports
         "\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
        "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
        "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
-       "case" AnyExp "of" AltList          -> Exp  	{cons("Case")}
       }
   	
 
@@ -63,7 +61,6 @@ exports
   > {"\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
      "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
      "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
-     "case" AnyExp "of" AltList          -> Exp  	{cons("Case")}
     }
  
 %%   context-free syntax

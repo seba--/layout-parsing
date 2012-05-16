@@ -19,7 +19,7 @@ exports
     Var "@" APat -> APat {cons("Named")}
     Gcon -> APat {cons("Constr")}
     Qcon LabeledPat -> APat {cons("Labeled")}
-    "{" {FPat ","}* "}" -> LabeledPat {cons("Labeled")}
+    "{" {FPat ","}* "}" -> LabeledPat {cons("Labeled"), ignore-indent}
     Literal -> APat
     "_" -> APat {cons("Wildcard")}
     "(" Pat ")" -> APat {bracket}

@@ -1,7 +1,6 @@
 module Haskell-Statements
 exports
   context-free syntax
-    "do" StmtList 	    -> Exp 	{cons("Do")}
     Pat "<-" Exp 	-> Stmt 	{cons("BindStmt")}
     Exp               	-> Stmt 	{cons("ExpStmt")}
     "let" Declbinds   	-> Stmt 	{cons("LetStmt")}
