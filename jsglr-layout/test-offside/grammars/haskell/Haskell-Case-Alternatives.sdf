@@ -1,9 +1,9 @@
 module Haskell-Case-Alternatives
 exports
   context-free syntax
-    Pat "->" Exp MaybeWhere 	-> Alt   {cons("Alt"), longest-match}
+    Pat "->" Exp MaybeWhere 	-> Alt   {cons("Alt")}
 
-    Pat Gdpat+ MaybeWhere	 	-> Alt   {cons("GdAlt"), longest-match}
+    Pat Gdpat+ MaybeWhere	 	-> Alt   {cons("GdAlt")}
     "|" Exp "->" Exp                  -> Gdpat {cons("GdPat")}
 
   context-free syntax

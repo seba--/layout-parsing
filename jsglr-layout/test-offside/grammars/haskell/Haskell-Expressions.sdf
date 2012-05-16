@@ -41,49 +41,37 @@ exports
   > "-" Exp               -> Exp  {cons("Negation")}
   > Exp Qop Exp -> Exp {cons("OpApp"), right}
 
+
   context-free syntax
-   "do" StmtList -> Exp {cons("Do"), longest-match}
-   "case" AnyExp "of" AltList          -> Exp  	{cons("Case"), longest-match}
+  	"\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
+    "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
+    "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+    "do" StmtList -> Exp {cons("Do"), longest-match}
+    "case" AnyExp "of" AltList          -> Exp  	{cons("Case"), longest-match}
 
   context-free priorities
   	Exp Exp				  -> Exp 	{cons("AppBin"),left}
   	> {
-        "\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
-       "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
-       "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+        "\\" Fargs "->" Exp -> Exp
+       "let" Declbinds "in" Exp -> Exp 
+       "if" AnyExp "then" AnyExp "else" Exp -> Exp
+       "case" AnyExp "of" AltList -> Exp
+       "do" StmtList -> Exp
       }
-  	
-
 
   context-free priorities
     Exp Qop Exp -> Exp
   <0>
-  > {"\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
-     "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
-     "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+  > {
+  	 "\\" Fargs "->" Exp -> Exp
+     "let" Declbinds "in" Exp -> Exp 
+     "if" AnyExp "then" AnyExp "else" Exp -> Exp
     }
  
-%%   context-free syntax
-%%   	NoOffsideAltList -> NOAltList {cons("AltList")}
-%%     NoOffsideStmtList -> NOStmtList {cons("StmtList")}
-%%   	"case" AnyExp "of" NOAltList          -> CaseExp  	{cons("Case")}
-%%   	"do" NOStmtList -> DoExp {cons("Do")}
-  	
   context-free priorities
   	"-" Exp               -> Exp  {cons("Negation")}
     >
-  	{right:
-  	  Exp Qop Exp -> Exp
-%%   	  CaseExp Qop Exp -> Exp {cons("OpApp")}
-%%   	  DoExp Qop Exp -> Exp {cons("OpApp")}
-  	}
-
-  %% context-free priorities
-  %% 	Exp Qop Exp -> Exp {cons("OpApp"), right}
-  %% 	> {
-  %%    "case" AnyExp "of" AltList          -> CaseExp  	{cons("Case")}
-  %%    CaseExp Qop Exp -> Exp {cons("OpApp"), right, avoid}
-  %%   }
+  	Exp Qop Exp -> Exp
   
   
   
