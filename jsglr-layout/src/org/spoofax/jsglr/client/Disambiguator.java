@@ -918,7 +918,6 @@ public class Disambiguator {
           newAmbiguities = filterAmbiguityList(newAmbiguities, amb);
         }
       }
-      System.out.print("");
     }
 
     if (newAmbiguities.isEmpty()) {
@@ -1420,55 +1419,54 @@ public class Disambiguator {
     return null;
   }
 
-  private int filterLongestMatch(AbstractParseNode left, AbstractParseNode right) {
-    LinkedList<AbstractParseNode> lefts = new LinkedList<AbstractParseNode>();
-    LinkedList<AbstractParseNode> rights = new LinkedList<AbstractParseNode>();
-    
-    lefts.push(left);
-    rights.push(right);
-    
-    System.out.println();
-    
-    while (!lefts.isEmpty() && !rights.isEmpty()) {
-      left = lefts.pop();
-      right = rights.pop();
-      
-      if (left.getLine() != right.getLine() || left.getColumn() != right.getColumn())
-        continue;
-      
-      if (left.isParseProductionNode() || right.isParseProductionNode())
-        continue;
-      
-      if (left.isAmbNode() || right.isAmbNode())
-        return FILTER_DRAW;
-      
-      System.out.println((left.getLabel() == right.getLabel() ? "" : "!") + left.getLabel() + "," + right.getLabel());
-      
-      if (parseTable.getLabel(left.getLabel()).getAttributes().isLongestMatch()) {
-        AbstractParseNode lastLeft = left.getLast();
-        AbstractParseNode lastRight = right.getLast();
-        
-        if (lastLeft.getLine() > lastRight.getLine())
-          return FILTER_LEFT_WINS;
-        if (lastLeft.getLine() < lastRight.getLine())
-          return FILTER_RIGHT_WINS;
-        if (lastLeft.getColumn() > lastRight.getColumn())
-          return FILTER_LEFT_WINS;
-        if (lastLeft.getColumn() < lastRight.getColumn())
-          return FILTER_RIGHT_WINS;
-        if (!parseTable.getLabel(right.getLabel()).getAttributes().isLongestMatch())
-          return FILTER_LEFT_WINS;
-        
-        System.out.println("ok " + left.getLabel());
-      }
-      else if (parseTable.getLabel(right.getLabel()).getAttributes().isLongestMatch())
-        return FILTER_RIGHT_WINS;
-      
-      for (int i = Math.min(left.getChildren().length, right.getChildren().length) - 1; i >= 0; i--) {
-        lefts.push(left.getChildren()[i]);
-        rights.push(right.getChildren()[i]);
-      }
+  private List<int[]> getLongestMatchPositions(AbstractParseNode n) {
+    if (n.isAmbNode()) {
+      List<int[]> pos1 = getLongestMatchPositions(n.getChildren()[0]);
+      List<int[]> pos2 = getLongestMatchPositions(n.getChildren()[1]);
+      assert pos1.size() == pos2.size();
+      return pos1;
     }
+
+    LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+    nodes.push(n);
+    
+    ArrayList<int[]> positions = new ArrayList<int[]>();
+    
+    while (!nodes.isEmpty()) {
+      n = nodes.pop();
+      
+      if (n.isParseProductionNode())
+        continue;
+            
+      if (!n.isAmbNode() && parseTable.getLabel(n.getLabel()).getAttributes().isLongestMatch())
+        positions.add(new int[]{n.getLine(), n.getColumn(), n.getLast().getLine(), n.getLast().getColumn()});
+      
+      for (int i = n.getChildren().length - 1; i >= 0; i--)
+        nodes.push(n.getChildren()[i]);
+    }
+
+    return positions;
+  }
+  
+  private int filterLongestMatch(AbstractParseNode left, AbstractParseNode right) {
+    List<int[]> leftPositions = getLongestMatchPositions(left);
+    List<int[]> rightPositions = getLongestMatchPositions(right);
+    
+    for (int i = 0; i < Math.min(leftPositions.size(), rightPositions.size()); i++) {
+      int[] leftPosition = leftPositions.get(i);
+      int[] rightPosition = rightPositions.get(i);
+
+      if (leftPosition[0] == rightPosition[0] && leftPosition[1] == rightPosition[1]) {
+        if (leftPosition[2] > rightPosition[2] || leftPosition[2] == rightPosition[2] && leftPosition[3] > rightPosition[3])
+          return FILTER_LEFT_WINS;
+        else if (leftPosition[2] < rightPosition[2] || leftPosition[2] == rightPosition[2] && leftPosition[3] < rightPosition[3])
+          return FILTER_RIGHT_WINS;
+      }
+      else
+        System.out.println("mismatching start");
+    }
+    
+    assert leftPositions.size() == rightPositions.size();
     
     return FILTER_DRAW;
   }
