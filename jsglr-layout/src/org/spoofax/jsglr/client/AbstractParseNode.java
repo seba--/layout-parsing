@@ -8,7 +8,9 @@
 package org.spoofax.jsglr.client;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Stack;
 
 import org.spoofax.jsglr.client.imploder.TopdownTreeBuilder;
@@ -25,6 +27,8 @@ public abstract class AbstractParseNode {
 
   private final int line;
   private final int column;
+  
+  private Map<String, Object> properties;
 
   public AbstractParseNode(int line, int column) {
     this.line = line;
@@ -198,5 +202,17 @@ public abstract class AbstractParseNode {
     while (n.getChildren().length > 0)
       n = n.getChildren()[n.getChildren().length - 1];
     return n;
+  }
+  
+  public void setProperty(String key, Object val) {
+    if (properties == null)
+      properties = new HashMap<String, Object>();
+    properties.put(key, val);
+  }
+  
+  public Object getProperty(String key) {
+    if (properties == null)
+      return null;
+    return properties.get(key);
   }
 }

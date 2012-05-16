@@ -17,6 +17,7 @@ import static org.spoofax.jsglr.client.AbstractParseNode.REJECT;
 import static org.spoofax.terms.Term.termAt;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -269,7 +270,7 @@ public class Disambiguator {
 
           // SG_FilterTree
           ambiguityManager.resetClustersVisitedCount();
-          t = filterTree(t, false);
+          t = filterTree(t);
         }
 
         if (t == null)
@@ -466,7 +467,7 @@ public class Disambiguator {
    *          We're inside an amb and can return null to reject this branch.
    * @throws InterruptedException 
    */
-  public AbstractParseNode filterTree(AbstractParseNode node, boolean inAmbiguityCluster) throws FilterException, InterruptedException {
+  public AbstractParseNode filterTree(AbstractParseNode node) throws FilterException, InterruptedException {
     // SG_FilterTreeRecursive
     if (Tools.debugging) {
       Tools.debug("filterTree(node)    - ", node);
@@ -509,9 +510,6 @@ public class Disambiguator {
                             t.isIgnoreLayout());
         
         if (!rejected) {
-          if (filterAssociativity)
-            t = applyAssociativityPriorityFilter(t);
-
           if (!layoutFilter.hasValidLayout((ParseNode) t)) {
             layoutFiltering++;
             rejected = true;
@@ -532,31 +530,31 @@ public class Disambiguator {
       
         switch (t.getNodeType()) {
         case AMBIGUITY:
-          if (!(inAmbiguityCluster && output.isEmpty())) {
+          if (!output.isEmpty()) {
             // (some cycle stuff should be done here)
-            final AbstractParseNode[] ambs = t.getChildren();
-            t = filterAmbiguities(ambs);
+            t = filterAmbiguities(t);
             if (t == null)
               return null;
             output.push(t);
-          } else {
-            // FIXME: hasRejectProd(Amb) can never succeed?
-            if (filterReject && parseTable.hasRejects() && hasRejectProd(t)) {
+          } 
+          // FIXME: hasRejectProd(Amb) can never succeed?
+          else if (filterReject && t.isParseRejectNode())
               output.push(t);
-            }
-            else {
-              final AbstractParseNode[] ambs = t.getChildren();
-              output.push(filterAmbiguities(ambs));
-            }
-  
-          }
+          else
+            output.push(filterAmbiguities(t));
+        
           break;
+
         case PARSENODE:
         case AVOID:
         case PREFER:
         case REJECT:
 
           boolean rejected = false;
+          
+          if (!rejected && filterReject && t.isParseRejectNode()) {
+            rejected = true;
+          }
           
           if (!layoutFilter.hasValidLayout((ParseNode) t)) {
             layoutFiltering++;
@@ -565,8 +563,9 @@ public class Disambiguator {
           else
             layoutFiltering += layoutFilter.getDisambiguationCount();
           
-          if (!rejected && filterReject && parseTable.hasRejects() && hasRejectProd(t)) {
-            rejected = true;
+          if (!rejected) {
+            t = applyAssociativityPriorityFilter(t);
+            rejected = t == null;
           }
           
           if (rejected)
@@ -597,8 +596,7 @@ public class Disambiguator {
     return output.peek();
   }
 
-  private AbstractParseNode applyAssociativityPriorityFilter(AbstractParseNode t)
-      throws FilterException {
+  private AbstractParseNode applyAssociativityPriorityFilter(AbstractParseNode t) {
     // SG_Associativity_Priority_Filter(pt, t)
     // - ok
 
@@ -606,17 +604,15 @@ public class Disambiguator {
       Tools.debug("applyAssociativityPriorityFilter() - ", t);
     }
 
-    AbstractParseNode r = t;
-
     if (t.isParseNode()) {
-      final Label prodLabel = getProductionLabel(t);
       final ParseNode n = (ParseNode) t;
+      final Label prodLabel = parseTable.getLabel(n.getLabel());
 
       if (filterAssociativity) {
         if (prodLabel.isLeftAssociative()) {
-          r = applyLeftAssociativeFilter(n, prodLabel);
+          t = applyLeftAssociativeFilter(n, prodLabel);
         } else if (prodLabel.isRightAssociative()) {
-          r = applyRightAssociativeFilter(n, prodLabel);
+          t = applyRightAssociativeFilter(n, prodLabel);
         }
 
       }
@@ -630,10 +626,7 @@ public class Disambiguator {
           if (Tools.debugging) {
             Tools.debug(" - found");
           }
-          if (r.isAmbNode()) {
-            return r;
-          }
-          return applyPriorityFilter((ParseNode) r, prodLabel);
+          return applyPriorityFilter(n, prodLabel);
         }
         if (Tools.debugging) {
           Tools.debug(" - not found");
@@ -641,11 +634,11 @@ public class Disambiguator {
       }
     }
 
-    return r;
+    return t;
   }
 
   private AbstractParseNode applyRightAssociativeFilter(ParseNode t,
-      Label prodLabel) throws FilterException {
+      Label prodLabel) {
     // SG_Right_Associativity_Filter(t, prodl)
     // - almost ok
 
@@ -671,32 +664,26 @@ public class Disambiguator {
       System.arraycopy(kids, 1, restKids, 0, kids.length - 1);
 
       // FIXME is this correct?
-      if (!newAmbiguities.isEmpty()) {
-        AbstractParseNode extraAmb;
-        if (newAmbiguities.size() > 1) {
-          extraAmb = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
-          ambiguityManager.increaseAmbiguityCount();
-        } else {
-          extraAmb = newAmbiguities.get(0);
-        }
-        restKids[restKids.length - 1] = extraAmb;
+      assert !newAmbiguities.isEmpty();
+      AbstractParseNode extraAmb;
+      if (newAmbiguities.size() > 1) {
+        extraAmb = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
+        ambiguityManager.increaseAmbiguityCount();
       } else {
-        throw new FilterException(parser);
+        extraAmb = newAmbiguities.get(0);
       }
-
+      restKids[restKids.length - 1] = extraAmb;
+    
       // FIXME is this correct?
       return new ParseNode(t.getLabel(), restKids, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
 
     } else if (firstKid.isParseNode()) {
-      if (((ParseNode) firstKid).getLabel() == prodLabel.labelNumber) {
-        throw new FilterException(parser);
-      }
+      assert ((ParseNode) firstKid).getLabel() != prodLabel.labelNumber;
     }
     return t;
   }
 
-  private AbstractParseNode applyPriorityFilter(ParseNode t, Label prodLabel)
-      throws FilterException {
+  private AbstractParseNode applyPriorityFilter(ParseNode t, Label prodLabel) {
     // SG_Priority_Filter
 
     if (Tools.debugging) {
@@ -737,18 +724,13 @@ public class Disambiguator {
           newKid = replaceUnderInjections(kid, injection, n);
         } else {
           // fishy: another filter might be borked
-          if (filterStrict) {
-            throw new FilterException(parser);
-          } else {
-            // TODO: log or whatever?
-            return t;
-          }
+          assert !filterStrict;
+          // TODO: log or whatever?
+          return t;
         }
       } else if (injection.isParseNode()) {
         final int l1 = ((ParseNode) injection).getLabel();
-        if (hasGreaterPriority(l0, l1, kidnumber)) {
-          throw new FilterException(parser);
-        }
+        assert !hasGreaterPriority(l0, l1, kidnumber);
       }
 
       newKids.add(newKid);
@@ -762,13 +744,16 @@ public class Disambiguator {
   }
 
   private AbstractParseNode replaceUnderInjections(AbstractParseNode alt,
-      AbstractParseNode injection, AbstractParseNode n) throws FilterException {
+      AbstractParseNode injection, AbstractParseNode n)  {
     // SG_Replace_Under_Injections
     // - not ok
 
-    throw new FilterException(parser,
-        "replaceUnderInjections is not implemented",
-        new NotImplementedException());
+    assert false;
+    return null;
+    
+//    throw new FilterException(parser,
+//        "replaceUnderInjections is not implemented",
+//        new NotImplementedException());
     /*
      * if (ATisEqual(t, injT)) { return newTree; } else { IStrategoList sons =
      * (IStrategoList)ATgetArgument((ATerm) t, 1); tree newSon =
@@ -830,7 +815,7 @@ public class Disambiguator {
   }
 
   private AbstractParseNode applyLeftAssociativeFilter(ParseNode t,
-      Label prodLabel) throws FilterException {
+      Label prodLabel) {
     // SG_Right_Associativity_Filter()
 
     if (Tools.debugging) {
@@ -851,29 +836,25 @@ public class Disambiguator {
         }
       }
 
-      if (!newAmbiguities.isEmpty()) {
-        final AbstractParseNode[] rest = new AbstractParseNode[kids.length];
-        for (int i = 0; i < kids.length - 1; i++) {
-          rest[i] = kids[i];
-        }
+      assert !newAmbiguities.isEmpty();
+      final AbstractParseNode[] rest = new AbstractParseNode[kids.length];
+      for (int i = 0; i < kids.length - 1; i++) {
+        rest[i] = kids[i];
+      }
 
-        if (newAmbiguities.size() > 1) {
-          last = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
-          ambiguityManager.increaseAmbiguityCount();
-        } else {
-          last = newAmbiguities.get(0);
-        }
-        rest[rest.length - 1] = last;
+      if (newAmbiguities.size() > 1) {
+        last = ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
         ambiguityManager.increaseAmbiguityCount();
-        return new ParseNode(t.getLabel(), rest, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
       } else {
-        throw new FilterException(parser);
+        last = newAmbiguities.get(0);
       }
-    } else if (last.isParseNode()) {
+      rest[rest.length - 1] = last;
+      ambiguityManager.increaseAmbiguityCount();
+      return new ParseNode(t.getLabel(), rest, AbstractParseNode.PARSENODE, t.getLine(), t.getColumn(), t.isLayout(), t.isIgnoreLayout());
+    } 
+    else if (last.isParseNode()) {
       final Label other = parseTable.getLabel(((ParseNode) last).getLabel());
-      if (prodLabel.equals(other)) {
-        throw new FilterException(parser);
-      }
+      assert !prodLabel.equals(other);
     }
 
     return t;
@@ -888,32 +869,38 @@ public class Disambiguator {
     return null;
   }
 
-  private boolean hasRejectProd(AbstractParseNode t) {
-    return t.isParseRejectNode();
-  }
-
-  private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs)
+  private AbstractParseNode filterAmbiguities(AbstractParseNode t)
       throws FilterException, InterruptedException {
     // SG_FilterAmb
 
+
+    LinkedList<AbstractParseNode> ambiguities = new LinkedList<AbstractParseNode>();
+    ambiguities.addFirst(t);
+    
+    while (true) {
+      AbstractParseNode n = ambiguities.getFirst();
+      if (!n.isAmbNode())
+        break;
+      
+      if (n.getChildren()[0].isAmbNode())
+        ambiguities.addFirst(n.getChildren()[0]);
+      else
+        ambiguities.addLast(n.getChildren()[0]);
+
+      if (n.getChildren()[1].isAmbNode())
+        ambiguities.addFirst(n.getChildren()[1]);
+      else
+        ambiguities.addLast(n.getChildren()[1]);
+    }
+    
     if (Tools.debugging) {
-      Tools.debug("filterAmbiguities() - [", ambs.length, "]");
+      Tools.debug("filterAmbiguities() - [", ambiguities.size(), "]");
     }
 
-    List<AbstractParseNode> newAmbiguities = new ArrayList<AbstractParseNode>();
-
-    for (final AbstractParseNode amb : ambs) {
-      final AbstractParseNode newAmb = filterTree(amb, true);
-      if (newAmb != null) {
-        newAmbiguities.add(newAmb);
-      }
-    }
-
-    if (newAmbiguities.size() > 1) {
+    List<AbstractParseNode> newAmbiguities = new LinkedList<AbstractParseNode>(ambiguities);
+    if (ambiguities.size() > 1) {
       /* Handle ambiguities inside this ambiguity cluster */
-      final List<AbstractParseNode> oldAmbiguities = new ArrayList<AbstractParseNode>(
-          newAmbiguities);
-      for (final AbstractParseNode amb : oldAmbiguities) {
+      for (final AbstractParseNode amb : ambiguities) {
         if (newAmbiguities.remove(amb)) {
           newAmbiguities = filterAmbiguityList(newAmbiguities, amb);
         }
@@ -1448,13 +1435,74 @@ public class Disambiguator {
     return positions;
   }
   
-  private int filterLongestMatch(AbstractParseNode left, AbstractParseNode right) {
-    List<int[]> leftPositions = getLongestMatchPositions(left);
-    List<int[]> rightPositions = getLongestMatchPositions(right);
+  private class LongestMatchIterator implements Iterator<int[]> {
+    private int[] next = null;
+    private boolean computedNext = false;
+    private LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
     
-    for (int i = 0; i < Math.min(leftPositions.size(), rightPositions.size()); i++) {
-      int[] leftPosition = leftPositions.get(i);
-      int[] rightPosition = rightPositions.get(i);
+    public LongestMatchIterator(AbstractParseNode n) {
+      nodes.push(n);
+    }
+    
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public int[] next() {
+      if (!computedNext)
+        computeNext();
+      int[] res = next;
+      computedNext = false;
+      next = null;
+      return res;
+    }
+    
+    @Override
+    public boolean hasNext() {
+      if (!computedNext)
+        computeNext();
+      return next != null;
+    }
+    
+    private void computeNext() {
+      while (!computedNext && !nodes.isEmpty()) {
+        AbstractParseNode n = nodes.pop();
+        
+        if (n.isParseProductionNode())
+          continue;
+              
+        if (!n.isLayout())
+          for (int i = n.getChildren().length - 1; i >= 0; i--)
+            nodes.push(n.getChildren()[i]);
+
+        if (!n.isAmbNode() && parseTable.getLabel(n.getLabel()).getAttributes().isLongestMatch()) {
+          next = new int[]{n.getLine(), n.getColumn(), n.getLast().getLine(), n.getLast().getColumn()};
+          computedNext = true;
+        }
+      }
+    }
+  }
+  
+  private Iterator<int[]> getLongestMatchIterator(AbstractParseNode n) {
+    if (n.isAmbNode()) {
+      List<int[]> pos1 = getLongestMatchPositions(n.getChildren()[0]);
+      List<int[]> pos2 = getLongestMatchPositions(n.getChildren()[1]);
+      assert pos1.size() == pos2.size();
+      return pos1.iterator();
+    }
+
+    return new LongestMatchIterator(n); 
+  }
+  
+  private int filterLongestMatch(AbstractParseNode left, AbstractParseNode right) {
+    Iterator<int[]> leftPositions = getLongestMatchIterator(left);
+    Iterator<int[]> rightPositions = getLongestMatchIterator(right);
+    
+    while (leftPositions.hasNext() && rightPositions.hasNext()) {
+      int[] leftPosition = leftPositions.next();
+      int[] rightPosition = rightPositions.next();
 
       if (leftPosition[0] == rightPosition[0] && leftPosition[1] == rightPosition[1]) {
         if (leftPosition[2] > rightPosition[2] || leftPosition[2] == rightPosition[2] && leftPosition[3] > rightPosition[3])
@@ -1466,7 +1514,7 @@ public class Disambiguator {
         System.out.println("mismatching start");
     }
     
-    assert leftPositions.size() == rightPositions.size();
+    assert !leftPositions.hasNext() && !rightPositions.hasNext();
     
     return FILTER_DRAW;
   }
