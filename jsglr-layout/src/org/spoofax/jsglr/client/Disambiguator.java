@@ -532,7 +532,7 @@ public class Disambiguator {
         case AMBIGUITY:
           if (!output.isEmpty()) {
             // (some cycle stuff should be done here)
-            t = filterAmbiguities(t);
+            t = filterAmbiguities(t.getChildren()[0], t.getChildren()[1]);
             if (t == null)
               return null;
             output.push(t);
@@ -541,7 +541,7 @@ public class Disambiguator {
           else if (filterReject && t.isParseRejectNode())
               output.push(t);
           else
-            output.push(filterAmbiguities(t));
+            output.push(filterAmbiguities(t.getChildren()[0], t.getChildren()[1]));
         
           break;
 
@@ -869,87 +869,33 @@ public class Disambiguator {
     return null;
   }
 
-  private AbstractParseNode filterAmbiguities(AbstractParseNode t)
+  private AbstractParseNode filterAmbiguities(AbstractParseNode amb1, AbstractParseNode amb2)
       throws FilterException, InterruptedException {
     // SG_FilterAmb
 
-
-    LinkedList<AbstractParseNode> ambiguities = new LinkedList<AbstractParseNode>();
-    ambiguities.addFirst(t);
-    
-    while (true) {
-      AbstractParseNode n = ambiguities.getFirst();
-      if (!n.isAmbNode())
-        break;
-      
-      if (n.getChildren()[0].isAmbNode())
-        ambiguities.addFirst(n.getChildren()[0]);
-      else
-        ambiguities.addLast(n.getChildren()[0]);
-
-      if (n.getChildren()[1].isAmbNode())
-        ambiguities.addFirst(n.getChildren()[1]);
-      else
-        ambiguities.addLast(n.getChildren()[1]);
-    }
-    
     if (Tools.debugging) {
-      Tools.debug("filterAmbiguities() - [", ambiguities.size(), "]");
+      Tools.debug("filterAmbiguities() - [", 2, "]");
     }
 
-    List<AbstractParseNode> newAmbiguities = new LinkedList<AbstractParseNode>(ambiguities);
-    if (ambiguities.size() > 1) {
-      /* Handle ambiguities inside this ambiguity cluster */
-      for (final AbstractParseNode amb : ambiguities) {
-        if (newAmbiguities.remove(amb)) {
-          newAmbiguities = filterAmbiguityList(newAmbiguities, amb);
-        }
-      }
-    }
-
-    if (newAmbiguities.isEmpty()) {
-      // All alternatives were rejected;
-      // the outer context should be rejected as well
+    amb1 = filterTree(amb1);
+    amb2 = filterTree(amb2);
+    
+    if (amb1 == null)
+      return amb2;
+    if (amb2 == null)
+      return amb1;
+    
+    switch (filter(amb1, amb2)) {
+    case FILTER_DRAW:
+      ambiguityManager.increaseAmbiguityCount();
+      return ParseNode.createAmbNode(amb1, amb2);
+    case FILTER_LEFT_WINS:
+      return amb1;
+    case FILTER_RIGHT_WINS:
+      return amb2;
+    default:
       return null;
     }
-
-    if (newAmbiguities.size() == 1) {
-      return newAmbiguities.get(0);
-    }
-    
-    ambiguityManager.increaseAmbiguityCount();
-    return ParseNode.createAmbNode(newAmbiguities.toArray(new AbstractParseNode[newAmbiguities.size()]));
-  }
-
-  private List<AbstractParseNode> filterAmbiguityList(
-      List<AbstractParseNode> ambs, AbstractParseNode t) {
-    // SG_FilterAmbList
-
-    boolean keepT = true;
-    final List<AbstractParseNode> r = new ArrayList<AbstractParseNode>();
-
-    if (ambs.isEmpty()) {
-      r.add(t);
-      return r;
-    }
-
-    for (int i = 0, max = ambs.size(); i < max; i++) {
-      final AbstractParseNode amb = ambs.get(i);
-      switch (filter(t, amb)) {
-      case FILTER_DRAW:
-        r.add(amb);
-        break;
-      case FILTER_RIGHT_WINS:
-        r.add(amb);
-        keepT = false;
-      }
-    }
-
-    if (keepT) {
-      r.add(t);
-    }
-
-    return r;
   }
 
   private int filter(AbstractParseNode left, AbstractParseNode right) {
@@ -1011,9 +957,15 @@ public class Disambiguator {
       final AbstractParseNode[] leftKids = ((ParseNode) left).kids;
       final AbstractParseNode[] rightKids = ((ParseNode) right).kids;
       if (leftKids.length > 0 && rightKids.length == 1) {
-        if (leftKids[0] instanceof ParseProductionNode
+        if (leftKids[0].isParseProductionNode()
             && rightKids[0].equals(left)) {
           return FILTER_LEFT_WINS;
+        }
+      }
+      if (rightKids.length > 0 && leftKids.length == 1) {
+        if (rightKids[0].isParseProductionNode()
+            && leftKids[0].equals(right)) {
+          return FILTER_RIGHT_WINS;
         }
       }
     }

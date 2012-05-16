@@ -73,7 +73,7 @@ public class TestDisambiguation extends TestCase {
     Disambiguator disamb = new Disambiguator();
     disamb.setFilterAssociativity(false);
     disamb.initializeFromParser(parser);
-    AbstractParseNode t = disamb.filterTree(tree1, false);
+    AbstractParseNode t = disamb.filterTree(tree1);
     assertEquals(tree1, t);
   }
 }
