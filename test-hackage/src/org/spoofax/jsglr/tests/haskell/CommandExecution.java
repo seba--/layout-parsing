@@ -64,7 +64,7 @@ public class CommandExecution {
       try {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = null;
-        while ((line = reader.readLine()) != null)
+        while (!isInterrupted() && (line = reader.readLine()) != null)
           if (!SILENT_EXECUTION && !SUB_SILENT_EXECUTION)
             out.write((prefix + line + "\n").getBytes());
           else
@@ -128,11 +128,11 @@ public class CommandExecution {
    * @throws IOException
    *           when something goes wrong
    */
-  public static String[][] execute(OutputStream out, OutputStream err, String logPrefix, String... cmds) {
+  public static Object[] execute(OutputStream out, OutputStream err, String logPrefix, String... cmds) {
     return executeWithPrefix(out, err, logPrefix, cmds[0], cmds);
   }
   
-  public static String[][] execute(String logPrefix, String... cmds) {
+  public static Object[] execute(String logPrefix, String... cmds) {
     return executeWithPrefix(System.out, System.err, logPrefix, cmds[0], cmds);
   }
 
@@ -152,10 +152,11 @@ public class CommandExecution {
    * @throws IOException
    *           when something goes wrong
    */
-  public static String[][] executeWithPrefix(OutputStream out, OutputStream err, String logPrefix, String prefix, String... cmds) {
+  public static Object[] executeWithPrefix(OutputStream out, OutputStream err, String logPrefix, String prefix, String... cmds) {
     int exitValue;
     StreamLogger errStreamLogger = null;
     StreamLogger outStreamLogger = null;
+    long time = -1;
 
     try {
       Runtime rt = Runtime.getRuntime();
@@ -164,6 +165,8 @@ public class CommandExecution {
       // log.beginExecution(prefix, cmds);
       // }
 
+      long start = System.nanoTime();
+      
       Process p = rt.exec(cmds);
 
       errStreamLogger = new StreamLogger(p.getErrorStream(), err, logPrefix);
@@ -178,6 +181,12 @@ public class CommandExecution {
 
       // Wait for the process to finish
       exitValue = p.waitFor();
+      
+      long end = System.nanoTime();
+      time = end - start;
+      
+      errStreamLogger.interrupt();
+      outStreamLogger.interrupt();
 
       // log.endExecution(exitValue, errStreamLogger.getUnloggedMsg());
     } catch (Throwable t) {
@@ -188,7 +197,7 @@ public class CommandExecution {
     if (exitValue != 0)
       throw new ExecutionError("problems while executing", cmds, exitValue, new String[][] {outStreamLogger.getUnloggedMsg(), errStreamLogger.getUnloggedMsg()});
     
-    return new String[][] {outStreamLogger.getUnloggedMsg(), errStreamLogger.getUnloggedMsg()};
+    return new Object[] {time, outStreamLogger.getUnloggedMsg(), errStreamLogger.getUnloggedMsg()};
 
   }
 

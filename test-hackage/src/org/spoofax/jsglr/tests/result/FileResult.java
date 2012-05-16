@@ -24,6 +24,7 @@ public class FileResult {
   public boolean makeExplicitLayout;
   public boolean makeImplicitLayout;
   public boolean ambInfix;
+  public long referenceTime;
 
   public DataPoint<Integer> linesOfCode = new DataPoint<Integer>(-1);
   public DataPoint<Integer> byteSize = new DataPoint<Integer>(-1);
@@ -156,6 +157,7 @@ public class FileResult {
     write(builder, makeExplicitLayout); writeSem(builder);
     write(builder, makeImplicitLayout); writeSem(builder);
     write(builder, ambInfix); writeSem(builder);
+    write(builder, referenceTime); writeSem(builder);
     
     write(builder, linesOfCode, run); writeSem(builder);
     write(builder, byteSize, run); writeSem(builder);
@@ -196,6 +198,7 @@ public class FileResult {
     write(builder, "explicit layout OK"); writeSem(builder);
     write(builder, "implicit layout OK"); writeSem(builder);
     write(builder, "ambInfix error"); writeSem(builder);
+    write(builder, "reference time"); writeSem(builder);
     
     write(builder, "lines of code"); writeSem(builder);
     write(builder, "byte size"); writeSem(builder);

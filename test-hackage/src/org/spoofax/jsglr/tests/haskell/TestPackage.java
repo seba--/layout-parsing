@@ -22,7 +22,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("AERN-RnToRm", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("Cabal", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   
@@ -34,7 +34,11 @@ public class TestPackage extends TestCase {
     
     File dir = new File("hackage-data/" + pkg);
     csvFile = new File(dir + ".csv");
-    new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
+    try {
+      new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
+    } catch (IOException e) {
+      ;
+    }
     
     testFiles(dir, "", pkg);
     
@@ -45,15 +49,20 @@ public class TestPackage extends TestCase {
   
   private void logResult(FileResult result) throws IOException {
     observer.observe(result);
-    result.appendAsCSV(csvFile.getAbsolutePath());
+    try {
+      result.appendAsCSV(csvFile.getAbsolutePath());
+    } catch (IOException e) {
+      ;
+    }
   }
   
   public void testFiles(File dir, String path, String pkg) throws IOException {
-    for (File f : dir.listFiles())
-      if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
-        logResult(new TestFile().testFile(f, Utilities.extendPath(path, f.getName()), pkg));
-      else if (f.isDirectory())
-        testFiles(f, Utilities.extendPath(path, f.getName()), pkg);
+    if (dir != null && dir.listFiles() != null)
+      for (File f : dir.listFiles())
+        if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
+          logResult(new TestFile().testFile(f, Utilities.extendPath(path, f.getName()), pkg));
+        else if (f.isDirectory())
+          testFiles(f, Utilities.extendPath(path, f.getName()), pkg);
   }
   
   private File cabalUnpack(String pkg) throws IOException {

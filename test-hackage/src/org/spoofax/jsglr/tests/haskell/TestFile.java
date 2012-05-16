@@ -44,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "d:/tmp/test.hs";
+    String file = "d:/layout-parsing/test-hackage/hackage-data/HaRe/HaRe-0.6.0.2/tools/base/parse/extras/HsParser.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -326,13 +326,20 @@ public class TestFile extends TestCase {
     CommandExecution.SUB_SILENT_EXECUTION = true;
     
     String[][] messages = new String[][] {new String[] {}, new String[] {}};
+    long time = -1;
     
     try {
-      messages = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds.toArray(new String[cmds.size()]));
+      Object[] result = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds.toArray(new String[cmds.size()]));
+      time = (long) result[0];
+      messages[0] = (String[]) result[1];
+      messages[1] = (String[]) result[2];
     } catch (ExecutionError e) {
       messages = e.getMessages();
       return null;
     } finally {
+      if (result.referenceTime <= 0)
+        result.referenceTime = time;
+      
       if (explicit)
         result.makeExplicitLayout = messages[1].length == 0; 
       else
@@ -424,7 +431,7 @@ public class TestFile extends TestCase {
       }
     }
     
-    return diff == null ? 0 : diff.size();
+    return diff == null ? 1 : diff.size();
   }
   
   private IStrategoList compare(IStrategoTerm term1, IStrategoTerm term2) {
