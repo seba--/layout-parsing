@@ -62,12 +62,15 @@ public class Frame implements Serializable {
         return state;
     }
 
-    public void findAllPaths(PooledPathList pool, int arity) {
+    public void findAllPaths(PooledPathList pool, int arity) throws InterruptedException {
     	doComputePathsToRoot(pool, null, arity, 0, 0);
     }
 
-    private void doComputePathsToRoot(PooledPathList pool, Path node, int arity, int parentCount, int length) {
+    private void doComputePathsToRoot(PooledPathList pool, Path node, int arity, int parentCount, int length) throws InterruptedException {
         
+      if (Thread.currentThread().isInterrupted())
+        throw new InterruptedException();
+      
     	if(Tools.tracing) {
             SGLR.TRACE("SG_FindAllPaths() - " + arity + ", " + length);
         }
@@ -218,7 +221,7 @@ public class Frame implements Serializable {
         return sb.toString();
     }
 
-    public void findLimitedPaths(PooledPathList pool, int arity, Link l) {
+    public void findLimitedPaths(PooledPathList pool, int arity, Link l) throws InterruptedException {
         if(Tools.tracing) {
             SGLR.TRACE("SG_FindLimitedPaths() - " + arity + ", " + l.getLength() + ", " + l.parent.state.stateNumber);
             TRACE_DumpLinks(steps);
@@ -263,7 +266,11 @@ public class Frame implements Serializable {
     }
 
     private void doComputePathsToRoot(PooledPathList pool, Path node, Link l,
-      boolean seen, int arity, int parentCount, int length) {
+      boolean seen, int arity, int parentCount, int length) throws InterruptedException {
+      
+        if (Thread.currentThread().isInterrupted())
+          throw new InterruptedException();
+
         if(Tools.tracing) {
             SGLR.TRACE("SG_FindPaths() - " + arity);
         }

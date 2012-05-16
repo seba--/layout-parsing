@@ -731,7 +731,7 @@ public class SGLR {
 		return !prod.isRecoverProduction() || fineGrainedOnRegion;
 	}
 
-	private void doLimitedReductions(Frame st, Production prod, Link l) { //Todo: Look add sharing code with doReductions
+	private void doLimitedReductions(Frame st, Production prod, Link l) throws InterruptedException { //Todo: Look add sharing code with doReductions
 		if(!recoverModeOk(st, prod)) {
 			return;
 		}
@@ -745,7 +745,7 @@ public class SGLR {
 		}
 	}
 
-	private void reduceAllPaths(Production prod, PooledPathList paths) {
+	private void reduceAllPaths(Production prod, PooledPathList paths) throws InterruptedException {
 
 		for(int i = 0; i < paths.size(); i++) {
 			final Path path = paths.get(i);
@@ -766,7 +766,7 @@ public class SGLR {
 	}
 
 	
-	private void reducer(Frame st0, State s, Production prod, AbstractParseNode[] kids, Path path) {
+	private void reducer(Frame st0, State s, Production prod, AbstractParseNode[] kids, Path path) throws InterruptedException {
 		assert(!prod.isRecoverProduction());
 		logBeforeReducer(s, prod, path.getLength());
 		increaseReductionCount();
@@ -890,7 +890,7 @@ public class SGLR {
 		recoverStacks.addFirst(st1);
 	}
 
-	private void actorOnActiveStacksOverNewLink(Link nl) {
+	private void actorOnActiveStacksOverNewLink(Link nl) throws InterruptedException {
 		// Note: ActiveStacks can be modified inside doLimitedReductions
 		// new elements may be inserted at the beginning
 		final int sz = activeStacks.size();

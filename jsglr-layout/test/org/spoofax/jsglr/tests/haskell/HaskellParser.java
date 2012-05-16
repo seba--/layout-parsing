@@ -109,8 +109,8 @@ public class HaskellParser {
       } catch (ExecutionException e1) {
         // do nothing
       } catch (TimeoutException e1) {
-        System.err.println("does not interrupt: " + filename);
         thread.stop();
+        System.err.println("does not interrupt: " + filename);
       } catch (OutOfMemoryError e1) {
         thread.stop();
         System.err.println("heap overflow: " + filename);

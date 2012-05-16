@@ -62,7 +62,7 @@ public class IndentInfo {
      */
     private PooledPathList indentPathCache = new PooledPathList(512, false);
     
-    public int maxReduceLength() {
+    public int maxReduceLength() throws InterruptedException {
         int maxPathLength = 0;
         for (Frame activeStack : stackNodes) {
         	indentPathCache.start();
@@ -83,12 +83,12 @@ public class IndentInfo {
     }    
     
     //Calculates the start position of the biggest reduce
-    public int structureStartPosition()
+    public int structureStartPosition() throws InterruptedException
     {
         return tokensSeen - maxReduceLength();        
     }
     
-    public Link getReductionLink() {
+    public Link getReductionLink() throws InterruptedException {
         int maxPathLength = -1;
         Link result=null;
         for (Frame activeStack : stackNodes) {
