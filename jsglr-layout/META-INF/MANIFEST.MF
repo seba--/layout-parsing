@@ -9,7 +9,8 @@ Export-Package: org.spoofax.jsglr.io,
  org.spoofax.jsglr.client.incremental,
  org.spoofax.jsglr.shared
 Bundle-Vendor: Spoofax.org
-Require-Bundle: org.junit
+Require-Bundle: org.junit,
+ org.spoofax.terms;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: gwt-api-checker.jar,
  gwt-dev.jar,

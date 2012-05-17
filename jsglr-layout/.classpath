@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
@@ -12,8 +11,5 @@
 	<classpathentry kind="lib" path="gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="gwt-soyc-vis.jar"/>
 	<classpathentry kind="lib" path="gwt-user.jar"/>
-	<classpathentry kind="lib" path="org.spoofax.terms_1.0.0.201105211714.jar"/>
-	<classpathentry kind="lib" path="strategoxt.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/haskell-parsetree-normalize"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
