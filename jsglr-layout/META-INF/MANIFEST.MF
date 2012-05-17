@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Scannerless Generalized LR parser
-Bundle-SymbolicName: org.spoofax.jsglr
+Bundle-Name: Layout-sensitive Scannerless Generalized LR parser
+Bundle-SymbolicName: org.spoofax.jsglr_layout
 Bundle-Version: 0.3.0.qualifier
 Export-Package: org.spoofax.jsglr.io,
  org.spoofax.jsglr.client,
  org.spoofax.jsglr.client.imploder,
  org.spoofax.jsglr.client.incremental,
  org.spoofax.jsglr.shared
-Bundle-Vendor: Spoofax.org
+Bundle-Vendor: Spoofax.org, sugarj.org
 Require-Bundle: org.junit,
  org.spoofax.terms;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
