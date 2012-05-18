@@ -12,6 +12,8 @@ rules
 
   compare : (Int(s1), Int(s2)) -> [] where <peq(hs-string-to-int)> (s1, s2)
   compare : (Float(s1), Float(s2)) -> [] where <peq(hs-string-to-float)> (s1, s2)
+  compare : (IntHash(s1), IntHash(s2)) -> [] where <peq(hs-string-to-int)> (s1, s2)
+  compare : (FloatHash(s1), FloatHash(s2)) -> [] where <peq(hs-string-to-float)> (s1, s2)
   
   compare : ([x|xs],[y|ys]) -> <conc> (head-diff, <compare> (xs, ys))
     where <compare> (x, y) => head-diff
@@ -319,6 +321,11 @@ signature
                      : String -> CONSYM
                      : String -> VARSYM
                      : String -> CONID
+    FloatHash            : RATIONAL -> Literal
+    FloatHash            : FLOAT -> Literal
+    StringHash           : List(StringChar) -> String
+    CharHash             : CharChar -> Char
+    IntHash              : INTEGER -> Literal
 
 
 signature

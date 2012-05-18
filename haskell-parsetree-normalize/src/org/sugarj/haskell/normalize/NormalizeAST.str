@@ -115,11 +115,13 @@ rules
   norm-string-char = norm-char-char
 
   norm = Char(repeat(norm-char-char))
+  norm = CharHash(repeat(norm-char-char))
   
 //  norm-string : chars -> <norm-string> chars'
 //   where <filter(not(?Escape(CharEsc("&"))))> chars => chars';
 //         <not(equal)> (chars, chars')
   norm = String(map(repeat(norm-string-char)))
+  norm = StringHash(map(repeat(norm-string-char)))
   
   
   
@@ -369,3 +371,8 @@ rules
                      : String -> CONSYM
                      : String -> VARSYM
                      : String -> CONID
+    FloatHash            : RATIONAL -> Literal
+    FloatHash            : FLOAT -> Literal
+    StringHash           : List(StringChar) -> String
+    CharHash             : CharChar -> Char
+    IntHash              : INTEGER -> Literal
