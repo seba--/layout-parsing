@@ -10,12 +10,12 @@ import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
-import org.spoofax.jsglr.tests.haskell_orig.HaskellOrigParser;
 import org.spoofax.jsglr.tests.result.FileResult;
+import org.spoofax.jsglr_layout.shared.SGLRException;
+import org.spoofax.jsglr_layout.tests.haskell.HaskellParser;
 import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
 import org.strategoxt.lang.Context;
@@ -34,7 +34,7 @@ public class TestFile extends TestCase {
 
   public HaskellParser newParserCorrectness = new HaskellParser();
   public HaskellParser newParserSpeed = new HaskellParser();
-  public HaskellOrigParser oldParser = new HaskellOrigParser();
+  public org.spoofax.jsglr_orig.tests.haskell.HaskellParser oldParser = new org.spoofax.jsglr_orig.tests.haskell.HaskellParser();
   
   private IStrategoTerm newResultCorrectness;
   private IStrategoTerm newResultSpeed;
@@ -54,51 +54,7 @@ public class TestFile extends TestCase {
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
+    
     String csv = file + ".csv";
     result.writeCSVHeader(csv);
     result.appendAsCSV(csv);
@@ -378,7 +334,7 @@ public class TestFile extends TestCase {
     
     try {
       Object[] result = CommandExecution.execute(System.out, System.out, "[" + pkg + ", old]", cmds.toArray(new String[cmds.size()]));
-      time = (long) result[0];
+      time = (Long) result[0];
       messages[0] = (String[]) result[1];
       messages[1] = (String[]) result[2];
     } catch (ExecutionError e) {
