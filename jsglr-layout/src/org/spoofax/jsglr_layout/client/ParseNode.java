@@ -116,10 +116,12 @@ public class ParseNode extends AbstractParseNode {
     assert getColumn() == pn.getColumn();
 
     ParseNode left = new ParseNode(this.label, this.kids, this.nodeType, getLine(), getColumn(), isLayout, isIgnoreLayout);
+
+    if (pn instanceof ParseNode)
+      ((ParseNode) pn).replaceCycle(this, left);
+
     setFields(AMB_LABEL, new AbstractParseNode[] { left, pn }, AbstractParseNode.AMBIGUITY);
 
-//    if (pn instanceof ParseNode)
-//      ((ParseNode) pn).replaceCycle(this, left);
 
     assert (this.cachedHashCode == NO_HASH_CODE) : "Hashcode should not be cached during parsing because descendant nodes may change";
     assert (!this.isParseProductionChain) : "PPC is not set to true during parsing because descendents may change";
@@ -152,6 +154,8 @@ public class ParseNode extends AbstractParseNode {
   }
 
   private void replaceCycle(ParseNode before, ParseNode after) {
+    assert after != null;
+
     // only reductions for current char (right chain) are inspected
     // XXX: is that assumption correct? what about epsylon productions that
     // consume no chars?
@@ -166,9 +170,9 @@ public class ParseNode extends AbstractParseNode {
   private void replaceDescendantAt(ParseNode before, ParseNode after, int index) {
     AbstractParseNode kid = kids[index];
     if (kid == before) {
-      kids[index] = after == null ? new CycleParseNode(before) : after;
+      kids[index] = after;
       return; // no further inspection needed since cycles should not occur
-    } else if (kid instanceof ParseNode) {
+    } else if (kid instanceof ParseNode && kid.getLine() == getLine() && kid.getColumn() == getColumn()) {
       ((ParseNode) kid).replaceCycle(before, after);
     }
   }
@@ -181,6 +185,7 @@ public class ParseNode extends AbstractParseNode {
     if (!isSetPPC)
       initParseProductionChain();
     return isParseProductionChain;
+//    return false;
   }
 
   /**
