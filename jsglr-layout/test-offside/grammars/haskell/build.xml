@@ -8,8 +8,8 @@
 	
 	<target name="compile">
 		<compile-grammar module="Haskell" />
-		<copy file="Haskell.tbl" tofile="../../../test/org/spoofax/jsglr/tests/haskell/Haskell.tbl" />
-		<copy file="Haskell.tbl" tofile="../../../../jsglr-orig/test/org/spoofax/jsglr/tests/haskell_orig/Haskell.tbl" />
+		<copy file="Haskell.tbl" tofile="../../../test/org/spoofax/jsglr_layout/tests/haskell/Haskell.tbl" />
+		<copy file="Haskell.tbl" tofile="../../../../jsglr-orig/test/org/spoofax/jsglr_orig/tests/haskell/Haskell.tbl" />
 	</target>
 	
 	<target name="gen-signature">
