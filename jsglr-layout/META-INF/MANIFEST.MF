@@ -12,7 +12,8 @@ Export-Package:
  org.spoofax.jsglr_layout.shared
 Bundle-Vendor: sugarj.org, Spoofax.org
 Require-Bundle: org.junit,
- org.spoofax.terms
+ org.spoofax.terms,
+ org.spoofax.jsglr
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: gwt-api-checker.jar,
  gwt-dev.jar,

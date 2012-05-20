@@ -1,5 +1,7 @@
 package org.spoofax.jsglr_layout.client.imploder;
 
+import java.util.Map;
+
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr_layout.client.KeywordRecognizer;
 

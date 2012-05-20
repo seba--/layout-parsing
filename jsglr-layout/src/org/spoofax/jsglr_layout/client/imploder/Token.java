@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spoofax.interpreter.terms.ISimpleTerm;
+import org.spoofax.jsglr.client.imploder.Tokenizer;
 
 /**
  * @author Lennart Kats <lennart add lclnet.nl>
@@ -45,6 +46,8 @@ public class Token implements IToken, Cloneable {
 		this.startOffset = startOffset;
 		this.endOffset = endOffset;
 		this.kind = kind;
+		this.errorMessage = errorMessage;
+		this.astNode = astNode;
 	}
 	
 	public ITokenizer getTokenizer() {
@@ -221,4 +224,18 @@ public class Token implements IToken, Cloneable {
 		}
 	}
 
+	public org.spoofax.jsglr.client.imploder.Token makeStdToken(Tokenizer tokenizer) {
+	  org.spoofax.jsglr.client.imploder.Token tok = new org.spoofax.jsglr.client.imploder.Token(
+	      tokenizer, 
+	      index, 
+	      line,
+	      column, 
+	      startOffset,
+	      endOffset,
+	      kind, 
+	      null, 
+	      null);
+	  tok.setError(errorMessage);
+	  return tok;
+	}
 }

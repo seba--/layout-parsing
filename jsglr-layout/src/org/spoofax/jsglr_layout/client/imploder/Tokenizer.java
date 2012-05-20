@@ -11,7 +11,9 @@ import static org.spoofax.jsglr_layout.client.imploder.ImploderAttachment.getTok
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr_layout.client.KeywordRecognizer;
@@ -306,4 +308,20 @@ public class Tokenizer extends AbstractTokenizer {
 		}
 	}
 
+	public org.spoofax.jsglr.client.imploder.Tokenizer makeStdTokenizer() {
+	  org.spoofax.jsglr.client.imploder.Tokenizer tokenizer = 
+	      new org.spoofax.jsglr.client.imploder.Tokenizer(getInput(), getFilename(), keywords.makeStdKeywordRecognizer());
+	  
+	  return tokenizer;
+	}
+	
+	public Map<Token, org.spoofax.jsglr.client.imploder.Token> reassignTokens(org.spoofax.jsglr.client.imploder.Tokenizer tokenizer) {
+	  HashMap<Token, org.spoofax.jsglr.client.imploder.Token> map = new HashMap<Token, org.spoofax.jsglr.client.imploder.Token>();
+	  for (Token tok : tokens) {
+	    org.spoofax.jsglr.client.imploder.Token other = tok.makeStdToken(null);
+	    map.put(tok, other);
+      tokenizer.reassignToken(other);
+	  }
+    return map;
+	}
 }
