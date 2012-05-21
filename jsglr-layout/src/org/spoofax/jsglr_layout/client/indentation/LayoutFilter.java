@@ -271,7 +271,7 @@ public class LayoutFilter {
       return noValue();
     
     if (comp.equals("eq"))
-      return i1 == i2;
+      return i1.equals(i2);
     if (comp.equals("gt"))
       return i1 > i2;
     if (comp.equals("ge"))

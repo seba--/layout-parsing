@@ -83,8 +83,8 @@ public class ParseNode extends AbstractParseNode {
 			ParseNode left = new ParseNode(this.label, this.kids, this.nodeType); 
 			setFields(AMB_LABEL, new AbstractParseNode[] { left, pn }, AbstractParseNode.AMBIGUITY);
 
-//			if(pn instanceof ParseNode)
-//				((ParseNode) pn).replaceCycle(this, left);
+			if(pn instanceof ParseNode)
+				((ParseNode) pn).replaceCycle(this, left);
 		
 		assert(this.cachedHashCode == NO_HASH_CODE) : "Hashcode should not be cached during parsing because descendant nodes may change";
 		assert(!this.isParseProductionChain) : "PPC is not set to true during parsing because descendents may change";

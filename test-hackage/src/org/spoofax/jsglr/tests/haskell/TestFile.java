@@ -44,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "d:/tmp/test.hs";
+    String file = "d:/layout-parsing/test-hackage/hackage-data/Agda/Agda-2.3.0.1/src/full/Agda/TypeChecking/Polarity.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -317,9 +317,10 @@ public class TestFile extends TestCase {
     cmds.add("-i"); cmds.add(f.getAbsolutePath());
     cmds.add("-o"); cmds.add(res.getAbsolutePath());
     cmds.add("--ignore-language-pragmas");
+    cmds.add("--line-length=500");
+    cmds.add("--ribbons-per-line=10");
     cmds.add(explicit ? "--explicit-layout" : "--implicit-layout");
-    if (explicit)
-      cmds.add("--one-line-per-decl");
+
     
     for (String ext : TestConfiguration.HASKELL_EXTENSIONS)
       cmds.add("-X" + ext);
