@@ -44,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "d:/layout-parsing/test-hackage/hackage-data/Agda/Agda-2.3.0.1/src/full/Agda/TypeChecking/Polarity.hs";
+    String file = "d:/layout-parsing/test-hackage/hackage-data/mvclient/mvclient-0.4/dist/build/Network/Metaverse/PacketTypes.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -138,7 +138,14 @@ public class TestFile extends TestCase {
     if (f == null)
       return null;
     
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    String input;
+    try {
+      input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t1 = true;
+      return null;
+    }
+    
     result.linesOfCode.t1 = input.split("\n").length;
     result.byteSize.t1 = input.getBytes().length;
 
@@ -195,7 +202,15 @@ public class TestFile extends TestCase {
 
     if (f == null)
       return null;
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    
+    String input;
+    try {
+      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t2 = true;
+      return null;
+    }
+
     result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
     
@@ -248,7 +263,15 @@ public class TestFile extends TestCase {
 
     if (f == null)
       return null;
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    
+    String input;
+    try {
+      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t3 = true;
+      return null;
+    }
+
     result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
 
