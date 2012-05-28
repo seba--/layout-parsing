@@ -265,10 +265,7 @@ public class ParseTable implements Serializable {
       if (attr.getName().equals("attrs")) {
             int type = 0;
             boolean isRecover = false;
-            boolean isOffsideBlock = false;
-            boolean isSameIndent = false;
-            boolean isMoreIndent = false;
-            boolean isIgnoreIndent = false;
+            boolean isIgnoreLayout = false;
             IStrategoTerm layoutConstraint = null;
             boolean isNewlineEnforced = false;
             boolean isLongestMatch = false;
@@ -313,17 +310,8 @@ public class ParseTable implements Serializable {
                     		} else if (child.getSubtermCount() == 0 && child.getName().equals("recover")) {
                     		    hasRecovers = isRecover = true;
                     		}
-                    		else if (child.getSubtermCount() == 0 && child.getName().equals("offside-block")) {
-                    		  isOffsideBlock = true;
-                    		}
-                        else if (child.getSubtermCount() == 0 && child.getName().equals("same-indent")) {
-                          isSameIndent = true;
-                        }
-                        else if (child.getSubtermCount() == 0 && child.getName().equals("more-indent")) {
-                          isMoreIndent = true;
-                        }
-                        else if (child.getSubtermCount() == 0 && child.getName().equals("ignore-indent")) {
-                          isIgnoreIndent = true;
+                        else if (child.getSubtermCount() == 0 && (child.getName().equals("ignore-layout") || child.getName().equals("ignore-indent"))) {
+                          isIgnoreLayout = true;
                         }
                         else if (child.getSubtermCount() == 1 && child.getName().equals("layout")) {
                           layoutConstraint = child.getSubterm(0);
@@ -344,9 +332,9 @@ public class ParseTable implements Serializable {
                     }
                 }
             }
-            return new ProductionAttributes(term, type, isRecover, isOffsideBlock, isSameIndent, isMoreIndent, isIgnoreIndent, layoutConstraint, isNewlineEnforced, isLongestMatch);
+            return new ProductionAttributes(term, type, isRecover, isIgnoreLayout, layoutConstraint, isNewlineEnforced, isLongestMatch);
         } else if (attr.getName().equals("no-attrs")) {
-            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, false, false, false, null, false, false);
+            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, null, false, false);
         }
         throw new InvalidParseTableException("Unknown attribute type: " + attr);
     }
