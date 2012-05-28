@@ -21,9 +21,6 @@ public class ProductionAttributes implements Serializable {
     private final int type;
 
     private final boolean isRecover;
-    private final boolean isOffsideBlock;
-    private final boolean isSameIndent;
-    private final boolean isMoreIndent;
     private final boolean isIgnoreLayout;
     private final IStrategoTerm layoutConstraint;
     private final boolean isNewlineEnforced;
@@ -31,13 +28,10 @@ public class ProductionAttributes implements Serializable {
 
     private final transient IStrategoTerm abstractCtor;
 
-    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isOffsideBlock, boolean isSameIndent, boolean isMoreIndent, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced, boolean isLongestMatch) {
+    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced, boolean isLongestMatch) {
         this.type = type;
         this.abstractCtor = ctor;
         this.isRecover = isRecover;
-        this.isOffsideBlock = isOffsideBlock;
-        this.isSameIndent = isSameIndent;
-        this.isMoreIndent = isMoreIndent;
         this.isIgnoreLayout = isIgnoreIndent;
         this.layoutConstraint = layoutConstraint;
         this.isNewlineEnforced = isNewlineEnforced;
@@ -54,18 +48,6 @@ public class ProductionAttributes implements Serializable {
 
     public boolean isRecoverProduction() {
         return isRecover;
-    }
-    
-    public boolean isOffsideBlock() {
-      return isOffsideBlock;
-    }
-
-    public boolean isSameIndent() {
-      return isSameIndent;
-    }
-    
-    public boolean isMoreIndent() {
-      return isMoreIndent;
     }
     
     public boolean isIgnoreLayout() {
