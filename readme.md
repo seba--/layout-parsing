@@ -70,3 +70,6 @@ our parser to applying a traditional generalized parser to the same Haskell
 files where block structure has been made explicit through curly braces. Our
 study empirically verifies the correctness of our parser and shows that it is
 comparably fast.
+
+
+(c) 2012, Sebastian Erdweg
