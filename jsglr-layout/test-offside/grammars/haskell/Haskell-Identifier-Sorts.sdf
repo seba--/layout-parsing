@@ -38,25 +38,37 @@ exports
 
     %% variable operators
 
-    Varsym        	-> Varop
-    Qvarsym        	-> Qvarop
     Varsym  		-> Qvarsym
     Qvarsym1 		-> Qvarsym
 
     %% constructor operators
 
-    Consym  		-> Qconsym
-    QCONSYM 		-> Qconsym
-    CONSYM 		-> Consym
-    Consym        	-> Conop
-    Qconsym -> Gconsym
-    Gconsym        	-> Qconop
+    Varsym        	-> Varop
+    "`" Varid "`" 	-> Varop 	{cons("PrefOp")}
 
-    CONSOP -> ConsOp {cons("ConsOp")}
-    ConsOp -> Qop
+    Qvarsym        	-> Qvarop
+    "`" Qvarid "`" 	-> Qvarop 	{cons("PrefOp")}
+
+    Consym        	-> Conop
+    "`" Conid "`" 	-> Conop 	{cons("PrefCon")}
+
+    Gconsym        	-> Qconop
+    "`" Qconid "`" 	-> Qconop 	{cons("PrefCon")}
+
     Qvarop 		  -> Qop
     Qconop 		  -> Qop
 
+    Qconsym -> Gconsym
+    ConsOp  -> Gconsym
+    CONSOP -> ConsOp {cons("ConsOp")}
+
+
+
+
+
+    Consym  		-> Qconsym
+    QCONSYM 		-> Qconsym
+    CONSYM 		-> Consym
 
     %% make prefix symbols from infix symbols
 
@@ -64,13 +76,6 @@ exports
     "(" Qvarsym ")" 	-> Qvar 	{cons("BinOp")}
     "(" Consym ")" 	-> Con 		{cons("BinCon")}
     "(" Qconsym ")" 	-> Qcon 	{cons("BinCon")}
-
-    %% make infix symbols from prefix symbols
-
-    "`" Varid "`" 	-> Varop 	{cons("PrefOp")}
-    "`" Qvarid "`" 	-> Qvarop 	{cons("PrefOp")}
-    "`" Conid "`" 	-> Conop 	{cons("PrefCon")}
-    "`" Qconid "`" 	-> Qconop 	{cons("PrefCon")}
     
 
   context-free syntax
