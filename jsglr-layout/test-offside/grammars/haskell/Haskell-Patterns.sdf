@@ -2,15 +2,7 @@ module Haskell-Patterns
 exports
   context-free syntax
     LPat -> Pat
-    
-  context-free priorities
-      Pat Qconop LPat -> Pat {cons("BinOpApp")}
-    > XPat ConsOp Pat -> Pat {cons("BinOpApp")}
-    
-  context-free syntax
-  	Pat Qconop LPat -> XPat {cons("BinOpApp")}
-  	LPat -> XPat
-  	
+    Pat Qconop LPat -> Pat {cons("BinOpApp")}
     APat -> LPat
     "-" Literal -> LPat {cons("Negation")}
     Gcon APat+ -> LPat {cons("ConstrApp")}
@@ -28,4 +20,3 @@ exports
     "~" APat -> APat {cons("Irrefutable")}
     
     Qvar "=" Pat -> FPat {cons("PatBind")}
-    
