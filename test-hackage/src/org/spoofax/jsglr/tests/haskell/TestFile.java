@@ -44,7 +44,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "d:/layout-parsing/test-hackage/hackage-data/mvclient/mvclient-0.4/dist/build/Network/Metaverse/PacketTypes.hs";
+    String file = "d:/tmp/test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
