@@ -73,6 +73,8 @@ public class TestAllPackages extends TestCase {
       if (in != null)
         in.close();
     }
+    
+    System.out.println(csvFile.getAbsolutePath());
   }
 
   private class MyFileResultObserver implements FileResultObserver {
@@ -85,7 +87,7 @@ public class TestAllPackages extends TestCase {
       packageResult.appendAsCSV(csvFile.getAbsolutePath());
       packageResult.appendAsCSV(pkgCsv.getAbsolutePath());
       
-      System.out.println(csvFile.getAbsolutePath());
+//      System.out.println(csvFile.getAbsolutePath());
     }
   }
 }
