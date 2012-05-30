@@ -114,10 +114,15 @@ public class HaskellParser {
       } catch (OutOfMemoryError e1) {
         thread.stop();
         System.err.println("heap overflow: " + filename);
+        throw e1;
       }
       endParse = startParse - 1;
     } catch (InterruptedException e) {
       endParse = startParse - 1;
+    } catch (OutOfMemoryError e) {
+      thread.stop();
+      System.err.println("heap overflow: " + filename);
+      throw e;
     } finally {
       if (endParse == -1)
         endParse = System.nanoTime();

@@ -19,6 +19,8 @@ public class TestAllPackages extends TestCase {
   private File csvDir;
   private File csvFile;
   
+  private int warmupCount = 0;
+  
   public void warmup() throws IOException {
     String[] warmupPackages = new String[] {
         "matlab",
@@ -31,10 +33,13 @@ public class TestAllPackages extends TestCase {
         "mdo",
     };
     
-    FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { } };
+    
+    FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { warmupCount++; } };
     
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
+    
+    System.out.println("Warmed up with " + warmupCount + " files.");
   }
   
   public void testAllPackages() throws IOException {

@@ -159,6 +159,8 @@ public class TestFile extends TestCase {
       
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t1 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
         result.parseExceptions.t1 = e.getCause().getMessage();
@@ -222,6 +224,8 @@ public class TestFile extends TestCase {
       result.stackOverflow.t2 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t2 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof SGLRException) {
         result.parseExceptions.t2 = e.getCause().getMessage();
@@ -284,6 +288,8 @@ public class TestFile extends TestCase {
       result.stackOverflow.t3 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t3 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof SGLRException) {
         result.parseExceptions.t3 = e.getCause().getMessage();
