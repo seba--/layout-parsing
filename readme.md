@@ -71,5 +71,7 @@ files where block structure has been made explicit through curly braces. Our
 study empirically verifies the correctness of our parser and shows that it is
 comparably fast.
 
+Raw evaluation results can be found in this git repository in folder
+    test-hackage/evaluation-data
 
 (c) 2012, Sebastian Erdweg
