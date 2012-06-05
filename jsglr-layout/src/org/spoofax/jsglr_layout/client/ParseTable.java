@@ -437,6 +437,9 @@ public class ParseTable implements Serializable {
             //        (and should work for both 2.4 and 2.6 tables)
 
             ret.add(parseRanges(l));
+            
+            if (n.getSubtermCount() > 0) 
+              throw new InvalidParseTableException("Multiple lookahead not fully supported"); 
             for (IStrategoTerm nt : n.getAllSubterms())
               ret.add(parseRanges((IStrategoList) nt.getSubterm(0)));
         }

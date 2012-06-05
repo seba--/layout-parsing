@@ -532,7 +532,7 @@ public class Disambiguator {
         case AMBIGUITY:
           if (!output.isEmpty()) {
             // (some cycle stuff should be done here)
-            t = filterAmbiguities(t.getChildren()[0], t.getChildren()[1]);
+            t = filterAmbiguities(t.getChildren());
             if (t == null)
               return null;
             output.push(t);
@@ -541,7 +541,7 @@ public class Disambiguator {
           else if (filterReject && t.isParseRejectNode())
               output.push(t);
           else
-            output.push(filterAmbiguities(t.getChildren()[0], t.getChildren()[1]));
+            output.push(filterAmbiguities(t.getChildren()));
         
           break;
 
@@ -869,6 +869,16 @@ public class Disambiguator {
     return null;
   }
 
+  private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs) throws FilterException, InterruptedException {
+    if (ambs.length == 0)
+      return null;
+    AbstractParseNode current = ambs[0];
+    for (int i = 1; i < ambs.length; i++)
+      current = filterAmbiguities(current, ambs[i]);
+    
+    return current;
+  }
+  
   private AbstractParseNode filterAmbiguities(AbstractParseNode amb1, AbstractParseNode amb2)
       throws FilterException, InterruptedException {
     // SG_FilterAmb
