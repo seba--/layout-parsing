@@ -35,8 +35,8 @@ exports
     Decl -> NoOffsideDecl
   >
     NoOffsideDecl ";" -> NoOffsideDecl {prefer}
-%%  >
-%%    ";" NoOffsideStmt -> NoOffsideStmt
+  >
+    ";" NoOffsideDecl -> NoOffsideDecl
 
   context-free syntax
     NoOffsideDecl -> NoOffsideDeclList

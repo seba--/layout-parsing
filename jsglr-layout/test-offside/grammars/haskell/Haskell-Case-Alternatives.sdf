@@ -16,8 +16,8 @@ exports
     Alt -> NoOffsideAlt
   >
     NoOffsideAlt ";" -> NoOffsideAlt {prefer}
-%%  >
-%%    ";" NoOffsideStmt -> NoOffsideStmt
+  >
+    ";" NoOffsideAlt -> NoOffsideAlt
 
   context-free syntax
     NoOffsideAlt -> NoOffsideAltList

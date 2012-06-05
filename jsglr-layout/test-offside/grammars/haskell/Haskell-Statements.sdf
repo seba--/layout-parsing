@@ -16,8 +16,8 @@ exports
     Stmt -> NoOffsideStmt
   >
     NoOffsideStmt ";" -> NoOffsideStmt {prefer}
-%%  >
-%%    ";" NoOffsideStmt -> NoOffsideStmt
+  >
+    ";" NoOffsideStmt -> NoOffsideStmt
 
   context-free syntax
     NoOffsideStmt -> NoOffsideStmtList
