@@ -28,7 +28,7 @@ public class HaskellParser {
    */
   private static final int TIMEOUT = 30;
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String tableLocation = HaskellParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr_layout/tests/haskell/Haskell.tbl";
   

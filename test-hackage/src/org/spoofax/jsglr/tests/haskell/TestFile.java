@@ -27,7 +27,7 @@ import org.sugarj.haskell.normalize.normalize_0_0;
  */
 public class TestFile extends TestCase {
   
-  private final static boolean LOGGING = true;
+  private final static boolean LOGGING = false;
   
   private Context normalizeContext = normalize.init();
   private Context compareContext = CompareAST.init();
@@ -95,7 +95,7 @@ public class TestFile extends TestCase {
     File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
 
     oldParse(explicitLayoutInput, pkg);
-    newParseOrig(preparedInput, pkg);
+    newParseOrig(f, pkg);
     newParseImpl(implicitLayoutInput, pkg);
 
     Utilities.writeToFile(newResultOrig, f.getAbsolutePath() + ".new.orig");
@@ -169,6 +169,8 @@ public class TestFile extends TestCase {
       }
       
       result.stackOverflow.t1 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
 
       if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
         result.otherExceptions.t1 = e.getCause().getMessage();
@@ -234,6 +236,9 @@ public class TestFile extends TestCase {
       }
 
       result.stackOverflow.t2 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
+
 
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t2 = e.getCause().getMessage();
@@ -298,6 +303,9 @@ public class TestFile extends TestCase {
       }
       
       result.stackOverflow.t3 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
+
 
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t3 = e.getCause().getMessage();
