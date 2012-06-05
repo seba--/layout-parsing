@@ -8,14 +8,10 @@
 package org.spoofax.jsglr_orig.client;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 
 import org.spoofax.PushbackStringIterator;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -541,153 +537,44 @@ public class SGLR {
 	}
 
 	private boolean checkLookahead(ReduceLookahead red) {
-		return doCheckLookahead(red, red.getCharRanges(), 0);
+	  return doCheckLookahead(red, red.getCharRanges());
 	}
-	
-	private class LongestMatchKey {
-    private AbstractParseNode n1, n2;
-    public LongestMatchKey(AbstractParseNode n1, AbstractParseNode n2) { this.n1 = n1; this.n2 = n2; }
-    @Override public int hashCode() { return (9 << n1.hashCode()) + n2.hashCode(); }
-    @Override public boolean equals(Object o) { 
-      return o instanceof LongestMatchKey && ((LongestMatchKey) o).n1 == n1 && ((LongestMatchKey) o).n2 == n2;
+
+  private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass) {
+    if(Tools.tracing) {
+      TRACE("SG_CheckLookAhead() - ");
     }
-  }
-  private Map<LongestMatchKey, Integer> longestMatchCache = new HashMap<LongestMatchKey, Integer>();
+
+    if (charClass.length == 0)
+      return true;
+    
+    boolean permit = false;
+    int offset = -1;
+    int[] readChars = new int[charClass.length];
+    
+    int i;
+    for (i = 0; i < charClass.length; i++) {
+      int c = currentInputStream.read();
+      offset++;
+      readChars[offset] = c; 
   
-  @SuppressWarnings("null")
-  private AbstractParseNode filterLongestMatch(AbstractParseNode t1, AbstractParseNode t2) {
-    if (t1.isParseRejectNode() || t2.isParseRejectNode())
-      return null;
-    
-    System.out.println(t1.toString());
-    System.out.println(t2.toString());
-    
-    Stack<AbstractParseNode[]> stack = new Stack<AbstractParseNode[]>();
-    stack.push(new AbstractParseNode[] {t1, t2});
-
-    LinkedList<LongestMatchKey> done = new LinkedList<LongestMatchKey>();
-    
-    AbstractParseNode res = null;
-    
-    while (!stack.isEmpty()) {
-      AbstractParseNode[] ns = stack.pop();
-      AbstractParseNode n1 = ns[0];
-      AbstractParseNode n2 = ns[1];
-    
-      if (n1.equals(n2))
-        continue;
-      
-      LongestMatchKey key = new LongestMatchKey(n1, n2);
-      Integer prevRes = longestMatchCache.get(key);
-      if (prevRes != null) {
-        AbstractParseNode newres = prevRes == -1 ? null : (prevRes == 0 ? t1 : t2);
-        if (res != null && res != newres) {
-          res = null;
-          break;
-        }
-        if (newres == null)
-          continue;
-        
-        res = newres;
+      // EOF
+      if(c == -1) {
+        permit = true;
         break;
       }
-      
-      Label l1 = n1.isAmbNode() ? null : parseTable.getLabel(n1.getLabel());
-      Label l2 = n2.isAmbNode() ? null : parseTable.getLabel(n2.getLabel());
-      
-      if (n1.isAmbNode() || n2.isAmbNode()) {
-        AbstractParseNode[] n1Array = n1.isAmbNode() ? n1.getChildren() : new AbstractParseNode[] {n1};
-        AbstractParseNode[] n2Array = n2.isAmbNode() ? n2.getChildren() : new AbstractParseNode[] {n2};
-        
-        for (int i = 0; i < n1Array.length; i++)
-          for (int j = 0; j < n2Array.length; j++) {
-            if (!n1Array[i].isParseRejectNode() && !n2Array[j].isParseRejectNode())
-              stack.push(new AbstractParseNode[] {n1Array[i], n2Array[j]});
-          }
-        continue;
-      }
-
-      else if (l1 != null && l1.getAttributes().isLongestMatch() && 
-               (l2 == null || !l2.getAttributes().isLongestMatch())) {
-        if (res == t2) {
-          res = null;
-          break;
-        }
-        res = t1;
+  
+      if (!charClass[i].within(c)) {
+        permit = true;
         break;
       }
-
-      else if (l2 != null && l2.getAttributes().isLongestMatch() &&
-               (l1 == null || !l1.getAttributes().isLongestMatch())) {
-        if (res == t1) {
-          res = null;
-          break;
-        }
-        res = t2;
-        break;
-      }
-      
-      else if (n1.getLabel() != n2.getLabel())
-        continue;
-
-      else if (l1 != null && l2 != null &&
-          l1.equals(l2) && l1.getAttributes().isLongestMatch()) {
-        int[] end1 = n1.getEnd();
-        int[] end2 = n2.getEnd();
-        if (end1[0] > end2[0] || end1[0] == end2[0] && end1[1] > end2[1]) {
-          if (res == t2) {
-            res = null;
-            break;
-          }
-          res = t1;
-          break;
-        }
-        else if (end2[0] > end1[0] || end2[0] == end1[0] && end2[1] > end1[1]) {
-          if (res == t1) {
-            res = null;
-            break;
-          }
-          res = t2;
-          break;
-        }
-      }
-      
-      done.add(key);
-
-      for (int i = n1.getChildren().length - 1; i >= 0; i--)
-        stack.push(new AbstractParseNode[] {n1.getChildren()[i], n2.getChildren()[i]});
     }
-    
-    int val = res == t1 ? 0 : (res == t2 ? 1 : -1);
-    for (LongestMatchKey key : done)
-      longestMatchCache.put(key, val);
-    
-    return res;
+
+    for (int j = offset; j >= 0; j--)
+      currentInputStream.unread(readChars[j]);
+
+    return permit;
   }
-	  
-
-	private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass, int pos) {
-		if(Tools.tracing) {
-			TRACE("SG_CheckLookAhead() - ");
-		}
-
-		final int c = currentInputStream.read();
-
-		// EOF
-		if(c == -1) {
-			return true;
-		}
-
-		boolean permit = true;
-
-		if(pos < charClass.length) {
-			permit = charClass[pos].within(c) ? false : doCheckLookahead(red, charClass, pos + 1);
-		}
-
-		currentInputStream.unread(c);
-
-		return permit;
-	}
 
 	private void addShiftPair(ActionState state) {
 		if(Tools.tracing) {

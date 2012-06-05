@@ -593,28 +593,41 @@ public class SGLR {
 	}
 
 	private boolean checkLookahead(ReduceLookahead red) {
-		return doCheckLookahead(red, red.getCharRanges(), 0);
+		return doCheckLookahead(red, red.getCharRanges());
 	}
 
-	private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass, int pos) {
+	private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass) {
 		if(Tools.tracing) {
 			TRACE("SG_CheckLookAhead() - ");
 		}
 
-		final int c = currentInputStream.read();
-
-		// EOF
-		if(c == -1) {
-			return true;
+		if (charClass.length == 0)
+		  return true;
+		
+    boolean permit = false;
+    int offset = -1;
+    int[] readChars = new int[charClass.length];
+		
+    int i;
+		for (i = 0; i < charClass.length; i++) {
+  		int c = currentInputStream.read();
+  		offset++;
+  		readChars[offset] = c; 
+  
+  		// EOF
+  		if(c == -1) {
+  			permit = true;
+  			break;
+  		}
+  
+  		if (!charClass[i].within(c)) {
+  		  permit = true;
+  		  break;
+  		}
 		}
 
-		boolean permit = true;
-
-		if(pos < charClass.length) {
-			permit = charClass[pos].within(c) ? false : doCheckLookahead(red, charClass, pos + 1);
-		}
-
-		currentInputStream.unread(c);
+		for (int j = offset; j >= 0; j--)
+		  currentInputStream.unread(readChars[j]);
 
 		return permit;
 	}
