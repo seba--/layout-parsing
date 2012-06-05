@@ -15,14 +15,14 @@ exports
   context-free priorities
     Alt -> NoOffsideAlt
   >
-    NoOffsideAlt ";" -> NoOffsideAlt {prefer}
-  >
-    ";" NoOffsideAlt -> NoOffsideAlt
+    NoOffsideAlt ";" -> NoOffsideAlt
 
   context-free syntax
     NoOffsideAlt -> NoOffsideAltList
     NoOffsideAlt ";" NoOffsideAltList -> NoOffsideAltList {cons("AltSeq")}
 
+    NoOffsideAltList  -> NoOffsideAltListSem
+    ";" NoOffsideAltListSem -> NoOffsideAltListSem 
 
   context-free priorities
     Alt -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}

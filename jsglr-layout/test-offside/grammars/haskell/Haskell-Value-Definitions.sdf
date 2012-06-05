@@ -29,18 +29,19 @@ exports
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
   	OffsideDeclList | Empty   -> DeclList {cons("DeclList")}
   	
-    "{" NoOffsideDeclList | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
+    "{" NoOffsideDeclListSem | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
     
   context-free priorities
     Decl -> NoOffsideDecl
   >
-    NoOffsideDecl ";" -> NoOffsideDecl {prefer}
-  >
-    ";" NoOffsideDecl -> NoOffsideDecl
+    NoOffsideDecl ";" -> NoOffsideDecl
 
   context-free syntax
     NoOffsideDecl -> NoOffsideDeclList
     NoOffsideDecl ";" NoOffsideDeclList -> NoOffsideDeclList {cons("DeclSeq")}
+    
+    NoOffsideDeclList  -> NoOffsideDeclListSem
+    ";" NoOffsideDeclListSem -> NoOffsideDeclListSem 
 
 
   context-free priorities

@@ -10,18 +10,19 @@ exports
   	NoOffsideStmtBlock -> StmtList {cons("StmtList")}
   	OffsideStmtList   -> StmtList {cons("StmtList")}
   	
-    "{" NoOffsideStmtList "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
+    "{" NoOffsideStmtListSem "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
 
   context-free priorities
     Stmt -> NoOffsideStmt
   >
-    NoOffsideStmt ";" -> NoOffsideStmt {prefer}
-  >
-    ";" NoOffsideStmt -> NoOffsideStmt
+    NoOffsideStmt ";" -> NoOffsideStmt
 
   context-free syntax
     NoOffsideStmt -> NoOffsideStmtList
     NoOffsideStmt ";" NoOffsideStmtList -> NoOffsideStmtList {cons("StmtSeq")}
+
+    NoOffsideStmtList  -> NoOffsideStmtListSem
+    ";" NoOffsideStmtListSem -> NoOffsideStmtListSem 
 
 
   context-free priorities
