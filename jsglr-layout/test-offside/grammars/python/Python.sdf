@@ -6,7 +6,7 @@ exports
     FileInput
     
   lexical syntax
-  	[\#] ~[\n\r]* [\n\r] -> LAYOUT
+    [\#] ~[\n\r]* [\n\r] -> LAYOUT
     [\ \n\r\t] -> LAYOUT
     [a-zA-Z\_][a-zA-Z0-9\_]* -> Identifier
     
@@ -22,7 +22,7 @@ exports
     DecimalInteger | OctInteger | HexInteger -> IntegerLiteral
   
   lexical syntax
-  	"if" | "else" | "while" | "for" | "def" | "return" | "print" -> Identifier {reject}
+    "if" | "else" | "while" | "for" | "def" | "return" | "print" -> Identifier {reject}
   
   lexical restrictions
     Identifier -/- [a-zA-Z0-9\_]
@@ -81,16 +81,12 @@ exports
   
   %% Offside statements
   context-free syntax
-    %% StmtList -> Suite {cons("ExplicitSuite"), avoid}
-    %% OffsideStatements -> Suite {cons("ImplicitSuite"), more-indent}
+    OffsideStmtList -> Suite {cons("Suite")}
     
     StmtList -> OffsideStmtList {reject}
-    OffsideStatement+ -> OffsideStmtList {cons("OffsideStmtList"),layout(all(1, "x", eq(col(first(1)), col(first("x")))))}
+    OffsideStatement+ -> OffsideStmtList {cons("OffsideStmtList"),layout(all("x", 1, eq(col(first(1)), col(first("x")))))}
     
-    OffsideStatement -> OffsideStatements {flatten}
-    OffsideStatement OffsideStatements -> OffsideStatements {flatten, same-indent}
-    
-    Statement -> OffsideStatement {offside-block, layout(ge(col(left(1)), col(first(1))))}
+    Statement -> OffsideStatement {ignore-layout, layout(ge(col(left(1)), col(first(1))))}
   
   %% Expression
   context-free syntax
@@ -102,13 +98,13 @@ exports
     "return" ExpressionList -> Expression {cons("ReturnExpr")}
   
   context-free priorities
-  	{ right:
+    { right:
       Expression "*" Expression -> Expression {cons("MultExpr"), right}
       Expression "//" Expression -> Expression {cons("Div2Expr"), right}
       Expression "/" Expression -> Expression {cons("DivExpr"), right}
       Expression "%" Expression -> Expression {cons("DivExpr"), right}
     }
-  	>
+    >
     { right:
       Expression "+" Expression -> Expression {cons("PlusExpr"), right}
       Expression "-" Expression -> Expression {cons("MinusExpr"), right}
@@ -123,8 +119,8 @@ exports
   
   %%Parameter
   context-free syntax
-  	{DefParameter ","}+ -> ParameterList {cons("ParameterList")}
-  	
+    {DefParameter ","}+ -> ParameterList {cons("ParameterList")}
+    
     Identifier -> Parameter {cons("VarParam")}
     "(" Sublist ")" -> Parameter {cons("SublistParam")}
     
@@ -141,6 +137,3 @@ exports
     "[" TargetList "]" -> Target {cons("BracketTarget")}
     
     {Target ","}+ -> TargetList {cons("TargetList")}
-  
-    
-    

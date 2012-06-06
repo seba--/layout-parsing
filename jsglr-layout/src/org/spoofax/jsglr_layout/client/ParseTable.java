@@ -15,6 +15,8 @@ import static org.spoofax.terms.Term.isTermInt;
 import static org.spoofax.terms.Term.javaInt;
 import static org.spoofax.terms.Term.termAt;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +32,11 @@ import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoNamed;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
+import org.spoofax.jsglr_layout.client.imploder.TreeBuilder;
+import org.spoofax.jsglr_layout.io.ParseTableManager;
+import org.spoofax.jsglr_layout.io.SGLR;
+import org.spoofax.jsglr_layout.shared.SGLRException;
+import org.spoofax.terms.ParseError;
 import org.spoofax.terms.Term;
 import org.spoofax.terms.TermFactory;
 
@@ -49,6 +56,8 @@ public class ParseTable implements Serializable {
     public static final int LABEL_BASE = NUM_CHARS + 1;
     
     private static final long serialVersionUID = -3372429249660900093L;
+    
+    private static SGLR layoutParser;
 
     private State[] states;
 
@@ -316,6 +325,25 @@ public class ParseTable implements Serializable {
                         }
                         else if (child.getSubtermCount() == 1 && child.getName().equals("layout")) {
                           layoutConstraint = child.getSubterm(0);
+                          if (Term.isTermString(layoutConstraint))
+                            try {
+                              if (layoutParser == null) {
+                                try {
+                                  InputStream in = getClass().getResourceAsStream("indentation/LayoutConstraint.tbl");
+                                  ParseTable pt = new ParseTableManager(factory).loadFromStream(in);
+                                  layoutParser =  new SGLR(new TreeBuilder(), pt);
+                                } catch (ParseError e) {
+                                  e.printStackTrace();
+                                } catch (IOException e) {
+                                  e.printStackTrace();
+                                }
+                              }
+                              layoutConstraint = (IStrategoTerm) layoutParser.parse(Term.asJavaString(layoutConstraint), "", "Constraint");
+                            } catch (SGLRException e) {
+                              e.printStackTrace();
+                            } catch (InterruptedException e) {
+                              e.printStackTrace();
+                            }
                         }
                         else if (child.getSubtermCount() == 0 && child.getName().equals("enforce-newline")) {
                           isNewlineEnforced = true;

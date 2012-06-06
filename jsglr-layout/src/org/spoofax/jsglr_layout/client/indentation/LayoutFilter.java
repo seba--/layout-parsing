@@ -6,7 +6,6 @@ import java.util.Stack;
 
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoConstructor;
-import org.spoofax.interpreter.terms.IStrategoInt;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr_layout.client.AbstractParseNode;
@@ -81,9 +80,10 @@ public class LayoutFilter {
   
   private Object evalConstraint(IStrategoTerm constraint, AbstractParseNode[] kids, Map<String, Object> env) {
     switch (constraint.getTermType()) {
-    case IStrategoTerm.INT:
+    case IStrategoTerm.INT: {
       int i = Term.asJavaInt(constraint);
       return getSubtree(i, kids);
+    }
       
     case IStrategoTerm.STRING:
       String v = Term.asJavaString(constraint);
@@ -96,6 +96,11 @@ public class LayoutFilter {
       IStrategoConstructor cons = Term.tryGetConstructor(constraint);
       String consName = cons.getName();
       
+      if (consName.equals("num")) {
+        String num = Term.asJavaString(constraint);
+        int i = Integer.parseInt(num);
+        return getSubtree(i, kids);
+      }
       if (consName.equals("eq") ||
           consName.equals("gt") ||
           consName.equals("ge") ||
@@ -107,8 +112,8 @@ public class LayoutFilter {
         return binArithComp(consName, i1, i2);
       }
       if (consName.equals("add") ||
-          consName.equals("subb") ||
-          consName.equals("mult") ||
+          consName.equals("sub") ||
+          consName.equals("mul") ||
           consName.equals("div")) {
         ensureChildCount(constraint, 2, consName);
         Integer i1 = evalConstraint(constraint.getSubterm(0), kids, env, Integer.class);
@@ -146,12 +151,12 @@ public class LayoutFilter {
       }
       if (consName.equals("all")) {
         ensureChildCount(constraint, 3, consName);
-        ensureType(constraint.getSubterm(0), IStrategoInt.class, constraint.getSubterm(0));
-        i = Term.asJavaInt(constraint.getSubterm(0));
-        ensureType(constraint.getSubterm(1), IStrategoString.class, constraint.getSubterm(1));
-        v = Term.asJavaString(constraint.getSubterm(1));
         
-        AbstractParseNode n = getSubtree(i, kids);
+        ensureType(constraint.getSubterm(0), IStrategoString.class, constraint.getSubterm(0));
+        v = Term.asJavaString(constraint.getSubterm(0));
+        
+        AbstractParseNode n = evalConstraint(constraint.getSubterm(1), kids, env, AbstractParseNode.class);
+        
         return checkAll(n, v, constraint, kids, env);
       }
       if (consName.equals("col")) {
@@ -302,7 +307,7 @@ public class LayoutFilter {
   
   private void ensureType(Object o, Class<?> cl, IStrategoTerm term) {
     if (o != null && !cl.isInstance(o))
-      throw new IllegalStateException("ill typed term " + term + ". Expected type " + cl.getName() + ", was " + o.getClass().getName());
+      throw new IllegalStateException("ill-typed term " + term + ". Expected type " + cl.getName() + ", was " + o.getClass().getName());
   }
   
   private void ensureChildCount(IStrategoTerm t, int count, String what) {
