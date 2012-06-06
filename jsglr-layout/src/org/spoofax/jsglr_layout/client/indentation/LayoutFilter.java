@@ -97,7 +97,7 @@ public class LayoutFilter {
       String consName = cons.getName();
       
       if (consName.equals("num")) {
-        String num = Term.asJavaString(constraint);
+        String num = Term.asJavaString(constraint.getSubterm(0));
         int i = Integer.parseInt(num);
         return getSubtree(i, kids);
       }
