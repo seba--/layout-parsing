@@ -143,13 +143,13 @@ context-free syntax %% compound stmts
 %% # NB compile.c makes sure that the default except clause is last
 
   SimpleStmt -> Suite {cons("SimpleSuite")}
-  Stmt+ -> Suite {cons("StmtListSuite), layout("all(x, 1, 1.first.col == x.first.col)")}
+  Stmt+ -> Suite {cons("StmtListSuite"), layout("all(x, 1, 1.first.col == x.first.col)")}
   
  
   OrTest -> Test
   OrTest "if" OrTest "else" Test -> Test {cons("OrIfTest")} 
-  lambdef -> Test {cons("LambDefTest")}
-  OrTest | lambdef_nocond -> TestNocond
+  Lambdef -> Test {cons("LambDefTest")}
+  OrTest | LambdefNocond -> TestNocond
   "lambda" Varargslist? ":" Test -> Lambdef {cons("Lambdef")}
   "lambda" Varargslist? ":" TestNocond -> LambdefNocond
   {AndTest "or"}* -> OrTest {cons("OrTest")}
