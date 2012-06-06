@@ -10,7 +10,7 @@ exports
   	NoOffsideAltBlock -> AltList {cons("AltList")}
   	OffsideAltList   -> AltList {cons("AltList")}
   	
-    "{" NoOffsideAltList "}"  -> NoOffsideAltBlock {bracket, ignore-block}
+    "{" NoOffsideAltList "}"  -> NoOffsideAltBlock {bracket, ignore-layout}
     
   context-free priorities
     Alt -> NoOffsideAlt

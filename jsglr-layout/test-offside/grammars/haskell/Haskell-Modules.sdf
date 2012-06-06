@@ -7,7 +7,7 @@ exports
     Decl 		   	-> Topdecl
 
   context-free syntax
-  	"{" NoOffsideBody "}" -> Body {ignore-indent, bracket}
+  	"{" NoOffsideBody "}" -> Body {ignore-layout, bracket}
     OffsideBody           -> Body
   	
   	"" -> Empty {cons("Empty")}

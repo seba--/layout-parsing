@@ -29,7 +29,7 @@ exports
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
   	OffsideDeclList | Empty   -> DeclList {cons("DeclList")}
   	
-    "{" NoOffsideDeclListSem | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
+    "{" NoOffsideDeclListSem | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-layout}
     
   context-free priorities
     Decl -> NoOffsideDecl

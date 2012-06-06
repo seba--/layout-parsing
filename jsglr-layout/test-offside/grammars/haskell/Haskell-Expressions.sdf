@@ -30,7 +30,7 @@ exports
     Qop -> QopNoNeg    
     "-" -> QopNoNeg {reject}
  
-    "{" {Fbind ","}* "}" -> LabelBinds {cons("LabelBinds"), ignore-indent}
+    "{" {Fbind ","}* "}" -> LabelBinds {cons("LabelBinds"), ignore-layout}
 
   context-free priorities
     Qvar "@" Exp 			  -> Exp  	{cons("Named")}

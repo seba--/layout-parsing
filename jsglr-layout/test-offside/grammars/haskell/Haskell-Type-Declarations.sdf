@@ -18,7 +18,7 @@ exports
 
     Conid Type 			 	 -> Newconstr
     Conid LabeledConstr 	 -> Newconstr
-    "{" Var "::" Type "}" -> LabeledConstr {cons("LabeledConstr"), ignore-indent}
+    "{" Var "::" Type "}" -> LabeledConstr {cons("LabeledConstr"), ignore-layout}
    
     AType 				 -> Satype
     "!" AType 				 -> Satype

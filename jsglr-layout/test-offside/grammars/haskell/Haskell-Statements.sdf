@@ -10,7 +10,7 @@ exports
   	NoOffsideStmtBlock -> StmtList {cons("StmtList")}
   	OffsideStmtList   -> StmtList {cons("StmtList")}
   	
-    "{" NoOffsideStmtListSem "}"  -> NoOffsideStmtBlock {bracket, ignore-indent}
+    "{" NoOffsideStmtListSem "}"  -> NoOffsideStmtBlock {bracket, ignore-layout}
 
   context-free priorities
     Stmt -> NoOffsideStmt
