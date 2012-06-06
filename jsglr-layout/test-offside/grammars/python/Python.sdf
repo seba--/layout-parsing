@@ -25,40 +25,38 @@ exports
 %% # NB: compoundStmt in single_input is followed by extra NEWLINE!
 
 context-free start-symbols
-  SingleInput
   FileInput
-  EvalInput
 
 context-free syntax
-  NEWLINE -> SingleInput {cons("EmptyLine")}
-  SimpleStmt -> SingleInput {cons("SimpleStmtLine")}
-  CompoundStmt NEWLINE -> SingleInput {cons("CompoundStmtLine")}
-
-  NEWLINE -> FileLine {cons("EmptyLine")}
-  Stmt -> FileLine {cons("StmtLine")}
-  FileLine* -> FileInput {cons("File")}
+  NEWLINE -> FileLine {cons("EmptyLine"), ignore-layout}
+  Stmt -> FileLine
+  FileLine* -> FileInput {layout("all(x,1,1.first.col == x.first.col)")}
   
-  Testlist NEWLINE* -> EvalInput {cons("EvalInput")}
- 
 %% decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
 %% decorators: decorator+
 %% decorated: decorators (classdef | funcdef)
-%% funcdef: "def" NAME parameters ["->" Test] ":" NEWLINE Suite
-%% parameters: "(" [typedargslist] ")"
-%% typedargslist: (tfpdef ["=" Test] ("," tfpdef ["=" Test])* [","
-%%        ["*" [tfpdef] ("," tfpdef ["=" Test])* ["," "**" tfpdef] | "**" tfpdef]]
-%%      |  "*" [tfpdef] ("," tfpdef ["=" Test])* ["," "**" tfpdef] | "**" tfpdef)
-%% tfpdef: NAME [":" Test]
- Vfpdef ("=" Test)? ("," Vfpdef ("=" Test)?)* (","
+  "def" Name Parameters ResSpec? ":" SimpleStmt -> Funcdef {cons("Funcdef")}
+  "def" Name Parameters ResSpec? ":" NEWLINE Suite -> Funcdef {cons("Funcdef"), layout("1.first.col < 7.first.col")}
+  
+  "->" Test -> ResSpec
+  
+  "(" Typedargslist? ")" -> Parameters
+  (Tfpdef ("=" Test)? ("," Tfpdef ("=" Test)?)* (","
+        ("*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef)?)?
+      |  "*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef) -> Typedargslist
+  Name -> Tfpdef
+  Name ":" Test -> Tfpdef
+ 
+  Vfpdef ("=" Test)? ("," Vfpdef ("=" Test)?)* (","
         ("*" (Vfpdef)? ("," Vfpdef ("=" Test)?)* ("," "**" Vfpdef)? | "**" Vfpdef)?)?
       |  "*" (Vfpdef)? ("," Vfpdef ("=" Test)?)* ("," "**" Vfpdef)? | "**" Vfpdef -> Varargslist
- Name -> Vfpdef
+  Name -> Vfpdef
  
-  SimpleStmt -> Stmt {cons("SimpleStmt")}
-  CompoundStmt -> Stmt {cons("CompoundStmt")}
+  SimpleStmt -> Stmt
+  CompoundStmt -> Stmt
 
-  {SmallStmt ";"}* NEWLINE -> SimpleStmt
-  {SmallStmt ";"}* ";" NEWLINE -> SimpleStmt
+  {SmallStmt ";"}+ NEWLINE -> SimpleStmt {cons("SimpleStmt")}
+  {SmallStmt ";"}+ ";" NEWLINE -> SimpleStmt {cons("SimpleStmt")}
 
   ExprStmt | DelStmt | PassStmt | FlowStmt | ImportStmt | GlobalStmt | NonlocalStmt | AssertStmt -> SmallStmt
 
@@ -71,8 +69,8 @@ context-free syntax
 
   Test -> TestStarExpr
   StarExpr -> TestStarExpr
-  {TestStarExpr ";"}* -> TestlistStarExpr {cons("TestlistStarExpr")}
-  {TestStarExpr ";"}* "," -> TestlistStarExpr {cons("TestlistStarExpr")}
+  {TestStarExpr ";"}+ -> TestlistStarExpr {cons("TestlistStarExpr")}
+  {TestStarExpr ";"}+ "," -> TestlistStarExpr {cons("TestlistStarExpr")}
 
 %% # For normal assignments, additional restrictions enforced by the interpreter
   "del" Exprlist -> DelStmt {cons("DelStmt")}
@@ -97,14 +95,14 @@ context-free syntax %% import stuff
   Name "as" Name -> ImportAsName {cons("ImportAsName2")}
   DottedName -> DottedAsName {cons("DottedAsName1")}
   DottedName "as" Name -> DottedAsName {cons("DottedAsName2")}
-  {ImportAsName ","}* -> ImportAsNames {cons("ImportAsNames")}
-  {ImportAsName ","}* "," -> ImportAsNames {cons("ImportAsNames")}
-  {DottedAsName ","}* -> DottedAsNames {cons("DottedAsNames")}
-  {Name "."}* -> DottedName {cons("DottedName")}
+  {ImportAsName ","}+ -> ImportAsNames {cons("ImportAsNames")}
+  {ImportAsName ","}+ "," -> ImportAsNames {cons("ImportAsNames")}
+  {DottedAsName ","}+ -> DottedAsNames {cons("DottedAsNames")}
+  {Name "."}+ -> DottedName {cons("DottedName")}
   
 context-free syntax
-  "global" {Name ","}* -> GlobalStmt {cons("GlobalStmt")}
-  "nonlocal" {Name ","}* -> NonlocalStmt {cons("NonlocalStmt")}
+  "global" {Name ","}+ -> GlobalStmt {cons("GlobalStmt")}
+  "nonlocal" {Name ","}+ -> NonlocalStmt {cons("NonlocalStmt")}
   "assert" Test -> AssertStmt {cons("AssertStmt1")}
   "assert" Test "," Test -> AssertStmt {cons("AssertStmt2")}
 
@@ -136,24 +134,24 @@ context-free syntax %% compound stmts
   "except" Test -> ExceptClause {cons("Except1")}
   "except" Test "as" Name -> ExceptClause {cons("Except2")}
   
-  "with" {WithItem ","}* ":" NEWLINE Suite -> WithStmt {cons("WithStmt"), layout("1.first.col < 5.first.col")}
+  "with" {WithItem ","}+ ":" NEWLINE Suite -> WithStmt {cons("WithStmt"), layout("1.first.col < 5.first.col")}
   Test -> WithItem {cons("WithItem")}
   Test "as" Expr -> WithItem {cons("WithItemAs")}
   
 %% # NB compile.c makes sure that the default except clause is last
 
-  SimpleStmt -> Suite {cons("SimpleSuite")}
   Stmt+ -> Suite {cons("StmtListSuite"), layout("all(x, 1, 1.first.col == x.first.col)")}
-  
+ 
  
   OrTest -> Test
+  "---" -> OrTest
   OrTest "if" OrTest "else" Test -> Test {cons("OrIfTest")} 
   Lambdef -> Test {cons("LambDefTest")}
   OrTest | LambdefNocond -> TestNocond
   "lambda" Varargslist? ":" Test -> Lambdef {cons("Lambdef")}
   "lambda" Varargslist? ":" TestNocond -> LambdefNocond
-  {AndTest "or"}* -> OrTest {cons("OrTest")}
-  {NotTest "and"}* -> AndTest {cons("AndTest")}
+  {AndTest "or"}+ -> OrTest {cons("OrTest")}
+  {NotTest "and"}+ -> AndTest {cons("AndTest")}
   "not" NotTest -> NotTest {cons("NotTest")}
   Comparison -> NotTest
   Expr CompOp Comparison -> Comparison {cons("Comparison")}
@@ -206,29 +204,29 @@ context-free syntax
   "{" DictSetmaker "}" -> Atom {cons("DictSetmakerBlock")}
 
   TestStarExpr CompFor -> TestlistComp {cons("TestlistComp1")}
-  TestStarExpr "," {TestStarExpr ","}* -> TestlistComp {cons("TestlistComp2")} 
-  TestStarExpr "," {TestStarExpr ","}* "," -> TestlistComp {cons("TestlistComp2")}
+  {TestStarExpr ","}+ -> TestlistComp {cons("TestlistComp2")} 
+  {TestStarExpr ","}+ "," -> TestlistComp {cons("TestlistComp2")}
 
   "(" Arglist? ")" -> Trailer {cons("ArglistTrailer")}
   "(" Subscriptlist ")?" -> Trailer {cons("SubscriptlistTrailer")}
   "." Name -> Trailer {cons("FieldTrailer")}
   
-  {Subscript ","}* -> Subscriptlist
-  {Subscript ","}* "," -> Subscriptlist
+  {Subscript ","}+ -> Subscriptlist
+  {Subscript ","}+ "," -> Subscriptlist
   
   Test -> Subscript
   Test? ":" Test? Sliceop? -> Subscript {cons("Subscript")}
   ":" Test? -> Sliceop {cons("Sliceop")}
 
-  {ExprStarExpr ","}* -> Exprlist
-  {ExprStarExpr ","}* "," -> Exprlist
+  {ExprStarExpr ","}+ -> Exprlist
+  {ExprStarExpr ","}+ "," -> Exprlist
 
-  {Test ","}* -> Testlist
-  {Test ","}* "," -> Testlist
+  {Test ","}+ -> Testlist
+  {Test ","}+ "," -> Testlist
   
   Test CompFor -> DictSetmaker {cons("DictSetmaker1")}
-  {Test ","}* -> DictSetmaker {cons("DictSetmaker2")}
-  {Test ","}* "," -> DictSetmaker {cons("DictSetmaker3")}
+  {Test ","}+ -> DictSetmaker {cons("DictSetmaker2")}
+  {Test ","}+ "," -> DictSetmaker {cons("DictSetmaker3")}
   Test ":" Test CompFor -> DictSetmaker {cons("DictSetmaker4")}
   Test ":" Test ("," Test ":" Test)* -> DictSetmaker {cons("DictSetmaker5")}
   Test ":" Test ("," Test ":" Test)* "," -> DictSetmaker {cons("DictSetmaker6")}
@@ -236,8 +234,8 @@ context-free syntax
   "class" Name ArglistP? ":" NEWLINE Suite -> Classdef {cons("Classdef"), layout("1.first.col < 6.first.col")}
   "(" Arglist? ")" -> ArglistP {bracket}
   
-  {Argument ","}* -> Arglist {cons("Arglist")}
-  {Argument ","}* "," -> Arglist {cons("Arglist")}
+  {Argument ","}+ -> Arglist {cons("Arglist")}
+  {Argument ","}+ "," -> Arglist {cons("Arglist")}
   (Argument ',')* '**' Test -> Arglist {cons("Arglist1")}
   (Argument ',')* '*' Test (',' Argument)* -> Arglist {cons("Arglist2")}
   (Argument ',')* '*' Test (',' Argument)* "," "**" Test -> Arglist {cons("Arglist3")}
@@ -277,6 +275,13 @@ lexical syntax
   DecimalInteger | OctInteger | HexInteger -> Number  
   
   [\n\r] -> NEWLINE
+  
+  [\ \t] -> LAYOUT
   [\#] ~[\n\r]* [\n\r] -> LAYOUT
+
+context-free restrictions
+	LAYOUT? -/- [\ \t]
   
-  
+lexical syntax
+  "if" | "elif" | "else" | "while" | "for" | "def" | "return" | "print" | "pass" | "yield"
+  | "break" | "continue" | "raise" -> Name {reject}
