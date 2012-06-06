@@ -27,7 +27,7 @@ exports
 
   context-free syntax
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
-  	OffsideDeclList | Empty   -> DeclList {cons("DeclList")}
+  	OffsideDeclList | Empty   -> DeclList {cons("DeclList"), longest-match} 
   	
     "{" NoOffsideDeclListSem | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-layout}
     

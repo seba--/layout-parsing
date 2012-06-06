@@ -37,9 +37,9 @@ exports
   > Exp LabelBinds 			  -> Exp  	{cons("Labeled")}
   > Exp				  	  -> Aexp
   > Exp Exp				  -> Exp 	{cons("AppBin"),left}
-  > Exp "::" Type 			  -> Exp 	{cons("Typed")}
   > "-" Exp               -> Exp  {cons("Negation")}
   > Exp Qop Exp -> Exp {cons("OpApp"), right}
+  > Exp "::" Context? Type 			  -> Exp 	{cons("Typed")}
 
 
   context-free syntax

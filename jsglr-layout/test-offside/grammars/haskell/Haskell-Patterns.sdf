@@ -20,3 +20,6 @@ exports
     "~" APat -> APat {cons("Irrefutable")}
     
     Qvar "=" Pat -> FPat {cons("PatBind")}
+
+  lexical restrictions
+    "~" -/- [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
