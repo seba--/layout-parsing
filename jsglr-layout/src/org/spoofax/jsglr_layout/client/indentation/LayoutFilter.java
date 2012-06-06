@@ -97,7 +97,7 @@ public class LayoutFilter {
       String consName = cons.getName();
       
       if (consName.equals("num")) {
-        String num = Term.asJavaString(constraint);
+        String num = Term.asJavaString(constraint.getSubterm(0));
         int i = Integer.parseInt(num);
         return getSubtree(i, kids);
       }
@@ -121,7 +121,8 @@ public class LayoutFilter {
         return binArithOp(consName, i1, i2);
       }
       if (consName.equals("first") ||
-          consName.equals("left")) {
+          consName.equals("left") ||
+          consName.equals("last")) {
         ensureChildCount(constraint, 1, consName);
         AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids, env, AbstractParseNode.class);
         return nodeSelector(consName, n);
@@ -302,6 +303,12 @@ public class LayoutFilter {
       else
         return t.getLeft();
     
+    if (sel.equals("last"))
+      if (isNothing(t))
+        return noValue();
+      else
+        return t.getLast();
+    
     throw new IllegalStateException("unknown selector " + sel);
   }
   
@@ -324,6 +331,6 @@ public class LayoutFilter {
     if (n.isAmbNode())
       return isNothing(n.getChildren()[0]) && isNothing(n.getChildren()[1]);
     
-    return n.isLayout() || n.isEmpty();
+    return n.isLayout() || n.isEmpty() || n.isIgnoreLayout();
   }
 }

@@ -26,6 +26,7 @@ context-free priorities
   {
     Constraint "." "first" -> Constraint {cons("first")}
     Constraint "." "left" -> Constraint {cons("left")}
+    Constraint "." "last" -> Constraint {cons("last")}
     Constraint "." "line" -> Constraint {cons("line")}
     Constraint "." "col" -> Constraint {cons("col")}
     "!" Constraint -> Constraint {cons("not")}
