@@ -9,7 +9,7 @@ exports
 
     ~[\n\r] -> AnyNoSymbol
     Symbol -> AnyNoSymbol {reject}
-    "--" "-"* -> Dashes
+    "--" [\-]* -> Dashes
 
     Dashes (AnyNoSymbol ~[\n\r]*)? ([\r\n] | EOF)    -> Comment
     -> EOF
