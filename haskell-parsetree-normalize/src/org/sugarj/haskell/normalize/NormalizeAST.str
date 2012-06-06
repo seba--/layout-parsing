@@ -37,6 +37,9 @@ rules
   norm-char-char : DecimalEsc(int) -> c
    where <string-to-int; is-ascii> int => int';
          <implode-string> [int'] => c
+  norm-char-char : DecimalEsc(int) -> DecimalEsc(int')
+   where <string-to-int; int-to-string> int => int';
+         <not(equal)> (int,int')
   
   norm-char-char : DecimalEsc("0")  -> ASCIIEsc("NUL")
   norm-char-char : DecimalEsc("1")  -> ASCIIEsc("SOH")
