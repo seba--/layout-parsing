@@ -10,10 +10,12 @@ lexical syntax
 
 lexical syntax
   [0-9]+ -> Nat
-  [a-zA-Z][a-zA-Z0-9]+ -> Var
+  [a-zA-Z][a-zA-Z0-9]* -> Var
+  "all" -> Var {reject}
 lexical restrictions
   Nat -/- [0-9]
   Var -/- [a-zA-Z0-9]
+  "all" -/- [a-zA-Z0-9]
 
 context-free syntax
   Nat -> Constraint {cons("num")}
@@ -24,6 +26,7 @@ context-free priorities
   {
     Constraint "." "first" -> Constraint {cons("first")}
     Constraint "." "left" -> Constraint {cons("left")}
+    Constraint "." "last" -> Constraint {cons("last")}
     Constraint "." "line" -> Constraint {cons("line")}
     Constraint "." "col" -> Constraint {cons("col")}
     "!" Constraint -> Constraint {cons("not")}

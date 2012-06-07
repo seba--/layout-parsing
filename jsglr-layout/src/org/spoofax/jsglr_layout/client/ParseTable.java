@@ -340,7 +340,7 @@ public class ParseTable implements Serializable {
                               }
                               layoutConstraint = (IStrategoTerm) layoutParser.parse(Term.asJavaString(layoutConstraint), "", "Constraint");
                             } catch (SGLRException e) {
-                              e.printStackTrace();
+                              throw new InvalidParseTableException("invalid layout constraint " + Term.asJavaString(layoutConstraint) + ": " + e.getMessage());
                             } catch (InterruptedException e) {
                               e.printStackTrace();
                             }

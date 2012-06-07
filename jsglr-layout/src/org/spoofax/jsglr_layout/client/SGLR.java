@@ -67,7 +67,11 @@ public class SGLR {
 
 	protected int columnNumber;
 
-	private int startOffset;
+  protected int lastLineNumber;
+
+  protected int lastColumnNumber;
+
+  private int startOffset;
 
 	private final ArrayDeque<ActionState> forShifter;
 
@@ -461,7 +465,7 @@ public class SGLR {
 	private void shifter() {
 		logBeforeShifter();
 		activeStacks.clear();
-		final AbstractParseNode prod = new ParseProductionNode(currentToken, lineNumber, columnNumber);
+		final AbstractParseNode prod = new ParseProductionNode(currentToken, lastLineNumber, lastColumnNumber);
 
 		while (forShifter.size() > 0) {
 			final ActionState as = forShifter.remove();
@@ -471,7 +475,7 @@ public class SGLR {
 					st1 = newStack(as.s);
 					addStack(st1);
 				}
-				st1.addLink(as.st, prod, 1, lineNumber, columnNumber);
+				st1.addLink(as.st, prod, 1, lastLineNumber, lastColumnNumber);
 			} else {
 				if (Tools.logging) {
 					Tools.logger("Shifter: skipping rejected stack with state ",
@@ -1120,6 +1124,9 @@ public class SGLR {
 		if (Tools.debugging) {
 			Tools.debug("getNextToken() - ", ch, "(", (char) ch, ")");
 		}
+		
+		lastLineNumber = lineNumber;
+		lastColumnNumber = columnNumber;
 
 		switch (ch) {
 		case '\n':

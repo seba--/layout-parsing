@@ -22,6 +22,10 @@ public class TestPython extends ParseTestCase {
 //    super.sglr.getDisambiguator().setHeuristicFilters(true);
   }
 
+  public void testPython_0() throws FileNotFoundException, IOException {
+    doParseTest("Python_0");
+  }
+
   public void testPython_1() throws FileNotFoundException, IOException {
     doParseTest("Python_1");
   }
