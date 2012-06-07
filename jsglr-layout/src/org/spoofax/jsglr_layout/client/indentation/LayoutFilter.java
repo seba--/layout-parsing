@@ -99,6 +99,11 @@ public class LayoutFilter {
       if (consName.equals("num")) {
         String num = Term.asJavaString(constraint.getSubterm(0));
         int i = Integer.parseInt(num);
+        return i;
+      }
+      if (consName.equals("tree")) {
+        String num = Term.asJavaString(constraint.getSubterm(0));
+        int i = Integer.parseInt(num);
         return getSubtree(i, kids);
       }
       if (consName.equals("eq") ||

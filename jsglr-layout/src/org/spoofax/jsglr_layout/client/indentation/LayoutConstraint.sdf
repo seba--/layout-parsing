@@ -18,7 +18,8 @@ lexical restrictions
   "all" -/- [a-zA-Z0-9]
 
 context-free syntax
-  Nat -> Constraint {cons("num")}
+  Nat -> Constraint {cons("tree")}
+  "num" "(" Nat ")" -> Constraint {cons("num")}
   Var -> Constraint
   "all" "(" Var "," Constraint "," Constraint ")" -> Constraint {cons("all")}
   
