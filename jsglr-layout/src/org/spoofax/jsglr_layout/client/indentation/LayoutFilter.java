@@ -182,7 +182,10 @@ public class LayoutFilter {
     }
   }
   
-  private boolean checkAll(AbstractParseNode n, String v, IStrategoTerm constraint, AbstractParseNode[] kids, Map<String, Object> env) {
+  private Boolean checkAll(AbstractParseNode n, String v, IStrategoTerm constraint, AbstractParseNode[] kids, Map<String, Object> env) {
+    if (atParseTime)
+      return noValue();
+    
     Stack<AbstractParseNode> all = new Stack<AbstractParseNode>();
     all.push(n);
     
