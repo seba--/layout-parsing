@@ -122,6 +122,7 @@ public class LayoutFilter {
       }
       if (consName.equals("first") ||
           consName.equals("left") ||
+          consName.equals("right") ||
           consName.equals("last")) {
         ensureChildCount(constraint, 1, consName);
         AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids, env, AbstractParseNode.class);
@@ -294,23 +295,22 @@ public class LayoutFilter {
   }
 
   private AbstractParseNode nodeSelector(String sel, AbstractParseNode t) {
+    if (isNothing(t))
+      return noValue();
+    
     if (sel.equals("first"))
-      if (isNothing(t))
-        return noValue();
-      else
-        return t;
-    
-    if (sel.equals("left"))
-      if (atParseTime)
-        return noValue();
-      else
-        return t.getLeft();
-    
+      return t;
     if (sel.equals("last"))
-      if (isNothing(t))
-        return noValue();
-      else
-        return t.getLast();
+      return t.getLast();
+    
+    if (atParseTime)
+      return noValue();
+    else
+      if (sel.equals("left"))
+        return t.getLeft();
+      else if (sel.equals("right"))
+        return t.getRight();
+    
     
     throw new IllegalStateException("unknown selector " + sel);
   }

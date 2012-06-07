@@ -1,13 +1,3 @@
-# http://en.wikipedia.org/wiki/Euclidean_algorithm
-
-def gcd(a, b):
-  if a == 0:
-    return b
-  while b != 0:
-    if a > b:
-      print ("first branch")
-      a = a - b
-    else:
-      print ("second branch")
-      b = b - a
+def f():
+  return aa
   return a
