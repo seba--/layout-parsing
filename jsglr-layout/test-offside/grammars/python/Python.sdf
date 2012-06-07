@@ -28,12 +28,15 @@ context-free start-symbols
   FileInput
 
 context-free syntax
+  NEWLINE -> FileLine {cons("EmptyLine"), ignore-layout}
   Stmt -> FileLine
   FileLine* -> FileInput {layout("all(x,1,1.first.col == x.first.col)")}
   
 %% decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
 %% decorators: decorator+
 %% decorated: decorators (classdef | funcdef)
+  "def" Name Parameters ResSpec? ":" SimpleStmt -> Funcdef {cons("Funcdef")}
+  "def" Name Parameters ResSpec? ":" NEWLINE Suite -> Funcdef {cons("Funcdef"), layout("1.first.col < 7.first.col")}
   
   "->" Test -> ResSpec
   
@@ -42,7 +45,7 @@ context-free syntax
         ("*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef)?)?
       |  "*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef) -> Typedargslist
   Name -> Tfpdef
-%%  Name ":" Test -> Tfpdef
+  Name ":" Test -> Tfpdef
  
   Vfpdef ("=" Test)? ("," Vfpdef ("=" Test)?)* (","
         ("*" (Vfpdef)? ("," Vfpdef ("=" Test)?)* ("," "**" Vfpdef)? | "**" Vfpdef)?)?
@@ -52,8 +55,8 @@ context-free syntax
   SimpleStmt -> Stmt
   CompoundStmt -> Stmt
 
-  {SmallStmt ";"}+ -> SimpleStmt {cons("SimpleStmt")}
-  {SmallStmt ";"}+ ";" -> SimpleStmt {cons("SimpleStmt")}
+  {SmallStmt ";"}+ NEWLINE -> SimpleStmt {cons("SimpleStmt")}
+  {SmallStmt ";"}+ ";" NEWLINE -> SimpleStmt {cons("SimpleStmt")}
 
   ExprStmt | DelStmt | PassStmt | FlowStmt | ImportStmt | GlobalStmt | NonlocalStmt | AssertStmt -> SmallStmt
 
@@ -109,19 +112,15 @@ context-free syntax %% compound stmts
   IfStmt | WhileStmt | ForStmt | TryStmt | WithStmt | Funcdef | Classdef -> CompoundStmt
   %% Decorated -> CompoundStmt
 
-  "def" Name Parameters ResSpec? ":" SimpleStmt -> Funcdef {cons("Funcdef"), layout("1.first.line == 6.last.line")}
-  "def" Name Parameters ResSpec? ":" Suite -> Funcdef {cons("Funcdef"), 
-    layout("1.first.line == 5.first.line && 1.first.line < 6.first.line && 1.first.col < 6.first.col")}
-
   "if" Test ":" SimpleStmt Elif* Else? -> IfStmt {cons("IfStmt"), 
-    layout("1.first.line == 4.last.line && all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
-  "if" Test ":" Suite Elif* Else? -> IfStmt {cons("IfStmt"), 
-    layout("1.first.line == 3.first.line && 1.first.line < 4.first.line && 1.first.col < 4.first.col && all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
+    layout("all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
+  "if" Test ":" NEWLINE Suite Elif* Else? -> IfStmt {cons("IfStmt"), 
+    layout("1.first.col < 5.first.col && all(x,6,1.first.col==x.first.col) && 1.first.col == 7.first.col")}
   
-  "elif" Test ":" SimpleStmt -> Elif {cons("Elif"), layout("1.first.line == 4.last.line")}
-  "elif" Test ":" Suite -> Elif {cons("Elif"), layout("1.first.line == 3.last.line && 1.first.col < 5.first.col")}
-  "else" ":" SimpleStmt -> Else {cons("Else"), layout("1.first.line == 3.last.line")}
-  "else" ":" Suite -> Else {cons("Else"), layout("1.first.line == 2.last.line && 1.first.col < 3.first.col")}
+  "elif" Test ":" SimpleStmt -> Elif {cons("Elif")}
+  "elif" Test ":" NEWLINE Suite -> Elif {cons("Elif"), layout("1.first.col < 5.first.col")}
+  "else" ":" SimpleStmt -> Else {cons("Else")}
+  "else" ":" NEWLINE Suite -> Else {cons("Else"), layout("1.first.col < 4.first.col")}
   
   "while" Test ":" SimpleStmt Else? -> WhileStmt {cons("WhileStmt"), layout("1.first.col == 5.first.col")}
   "while" Test ":" NEWLINE Suite Else? -> WhileStmt {cons("WhileStmt"), 
@@ -286,7 +285,9 @@ lexical syntax
     
   DecimalInteger | OctInteger | HexInteger -> Number  
   
-  [\ \t\n\r] -> LAYOUT
+  [\n\r] -> NEWLINE
+  
+  [\ \t] -> LAYOUT
   [\#] ~[\n\r]* [\n\r] -> LAYOUT
 
 lexical restrictions
@@ -296,7 +297,7 @@ lexical restrictions
   HexInteger -/- [0-9a-fA-F]
 
 context-free restrictions
-	LAYOUT? -/- [\ \t\n\r] | [\#].~[\n\r]
+	LAYOUT? -/- [\ \t] | [\#].~[\n\r]
   
 lexical syntax
   "if" | "elif" | "else" | "while" | "for" | "def" | "return" | "pass" | "yield"
