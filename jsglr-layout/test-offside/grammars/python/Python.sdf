@@ -112,28 +112,41 @@ context-free syntax %% compound stmts
   IfStmt | WhileStmt | ForStmt | TryStmt | WithStmt | Funcdef | Classdef -> CompoundStmt
   %% Decorated -> CompoundStmt
 
+  "if" Test ":" SimpleStmt Elif* Else? -> IfStmt {cons("IfStmt"), 
+    layout("all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
   "if" Test ":" NEWLINE Suite Elif* Else? -> IfStmt {cons("IfStmt"), 
     layout("1.first.col < 5.first.col && all(x,6,1.first.col==x.first.col) && 1.first.col == 7.first.col")}
   
+  "elif" Test ":" SimpleStmt -> Elif {cons("Elif")}
   "elif" Test ":" NEWLINE Suite -> Elif {cons("Elif"), layout("1.first.col < 5.first.col")}
+  "else" ":" SimpleStmt -> Else {cons("Else")}
   "else" ":" NEWLINE Suite -> Else {cons("Else"), layout("1.first.col < 4.first.col")}
   
+  "while" Test ":" SimpleStmt Else? -> WhileStmt {cons("WhileStmt"), layout("1.first.col == 5.first.col")}
   "while" Test ":" NEWLINE Suite Else? -> WhileStmt {cons("WhileStmt"), 
     layout("1.first.col < 5.first.col && 1.first.col == 6.first.col")}
   
+  "for" Exprlist "in" Testlist ":" SimpleStmt Else? -> ForStmt {cons("ForStmt"), layout("1.first.col == 8.first.col")} 
   "for" Exprlist "in" Testlist ":" NEWLINE Suite Else? -> ForStmt {cons("ForStmt"),
     layout("1.first.col < 7.first.col && 1.first.col == 8.first.col")} 
   
+  "try" ":" SimpleStmt Finally? -> TryStmt {cons("TryFinallyStmt"), layout("1.first.col == 4.first.col")}
   "try" ":" NEWLINE Suite Finally? -> TryStmt {cons("TryFinallyStmt"), 
     layout("1.first.col < 4.first.col && 1.first.col == 5.first.col")}
+  "try" ":" SimpleStmt Except+ Else? Finally? -> TryStmt {cons("TryExceptStmt"), 
+    layout("all(x,4,1.first.col==x.first.col) && 1.first.col == 5.first.col && 1.first.col == 7.first.col")}
   "try" ":" NEWLINE Suite Except+ Else? Finally? -> TryStmt {cons("TryExceptStmt"), 
     layout("1.first.col < 4.first.col && all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col && 1.first.col == 7.first.col")}
+  
+  "finally" ":" SimpleStmt -> Finally {cons("Finally")}          
   "finally" ":" NEWLINE Suite -> Finally {cons("Finally"), layout("1.first.col < 4.first.col")}          
+  ExceptClause ":" SimpleStmt -> Except {cons("Except")}
   ExceptClause ":" NEWLINE Suite -> Except {cons("Except"), layout("1.first.col < 4.first.col")}
   "except" -> ExceptClause {cons("Except0")}
   "except" Test -> ExceptClause {cons("Except1")}
   "except" Test "as" Name -> ExceptClause {cons("Except2")}
   
+  "with" {WithItem ","}+ ":" SimpleStmt -> WithStmt {cons("WithStmt")}
   "with" {WithItem ","}+ ":" NEWLINE Suite -> WithStmt {cons("WithStmt"), layout("1.first.col < 5.first.col")}
   Test -> WithItem {cons("WithItem")}
   Test "as" Expr -> WithItem {cons("WithItemAs")}
@@ -153,9 +166,7 @@ context-free syntax %% compound stmts
   {AndTest "or"}+ -> OrTest {cons("OrTest")}
   {NotTest "and"}+ -> AndTest {cons("AndTest")}
   "not" NotTest -> NotTest {cons("NotTest")}
-  Comparison -> NotTest
-  Expr CompOp Comparison -> Comparison {cons("Comparison")}
-  Expr -> Comparison
+  Expr -> NotTest
 
   "*" Expr -> StarExpr {cons("StarExpr")}
   Expr -> ExprStarExpr
@@ -259,7 +270,7 @@ lexical syntax
 
 %% # <> isn"t actually a valid comparison operator in Python. It"s here for the
 %% # sake of a __future__ import described in PEP 401
- "<"|">"|"=="|">="|"<="|"<>"|"!="|"in"|"not" LAYOUT "in"|"is"|"is" LAYOUT "not" -> CompOp
+ "<"|">"|"=="|">="|"<="|"<>"|"!="|"in"|("not" LAYOUT "in")|"is"|("is" LAYOUT "not") -> CompOp
 
   [a-zA-Z\_][a-zA-Z0-9\_]* -> Name
   
@@ -279,9 +290,15 @@ lexical syntax
   [\ \t] -> LAYOUT
   [\#] ~[\n\r]* [\n\r] -> LAYOUT
 
+lexical restrictions
+  Name -/- [a-zA-Z0-9\_]
+  DecimalInteger -/- [0-9]
+  OctInteger -/- [0-7]
+  HexInteger -/- [0-9a-fA-F]
+
 context-free restrictions
-	LAYOUT? -/- [\ \t]
+	LAYOUT? -/- [\ \t] | [\#].~[\n\r]
   
 lexical syntax
-  "if" | "elif" | "else" | "while" | "for" | "def" | "return" | "print" | "pass" | "yield"
+  "if" | "elif" | "else" | "while" | "for" | "def" | "return" | "pass" | "yield"
   | "break" | "continue" | "raise" -> Name {reject}
