@@ -95,7 +95,7 @@ public class TestFile extends TestCase {
     File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
 
     oldParse(explicitLayoutInput, pkg);
-    newParseOrig(f, pkg);
+    newParseOrig(preparedInput, pkg);
     newParseImpl(implicitLayoutInput, pkg);
 
     Utilities.writeToFile(newResultOrig, f.getAbsolutePath() + ".new.orig");
