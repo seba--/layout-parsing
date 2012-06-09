@@ -35,6 +35,7 @@ import org.spoofax.jsglr_layout.shared.Tools;
  * @author Lennart Kats <lennart add lclnet.nl>
  */
 public class Disambiguator {
+  private static final boolean LAYOUT_FITERING = true;
 
   private static final int FILTER_DRAW = 1;
 
@@ -509,16 +510,17 @@ public class Disambiguator {
                             t.isLayout(),
                             t.isIgnoreLayout());
         
-        if (!rejected) {
-          if (!layoutFilter.hasValidLayout((ParseNode) t)) {
-            layoutFiltering++;
-            rejected = true;
+        if (!rejected) 
+          if (LAYOUT_FITERING) {
+            if (!layoutFilter.hasValidLayout((ParseNode) t)) {
+              layoutFiltering++;
+              rejected = true;
+            }
+            else
+              layoutFiltering += layoutFilter.getDisambiguationCount();
+  
+            ambiguityManager.decreaseAmbiguityCount(layoutFilter.getDisambiguationCount());
           }
-          else
-            layoutFiltering += layoutFilter.getDisambiguationCount();
-
-          ambiguityManager.decreaseAmbiguityCount(layoutFilter.getDisambiguationCount());
-        }
         
         if (rejected)
           return null;
@@ -556,12 +558,14 @@ public class Disambiguator {
             rejected = true;
           }
           
-          if (!layoutFilter.hasValidLayout((ParseNode) t)) {
-            layoutFiltering++;
-            rejected = true;
+          if (LAYOUT_FITERING) {
+            if (!layoutFilter.hasValidLayout((ParseNode) t)) {
+              layoutFiltering++;
+              rejected = true;
+            }
+            else
+              layoutFiltering += layoutFilter.getDisambiguationCount();
           }
-          else
-            layoutFiltering += layoutFilter.getDisambiguationCount();
           
           if (!rejected) {
             t = applyAssociativityPriorityFilter(t);
