@@ -1,4 +1,4 @@
-package CompareAST_str;
+package NormalizeAST_str;
 
 import org.strategoxt.stratego_lib.*;
 import org.strategoxt.imp.debug.stratego.runtime.trans.*;
@@ -9,22 +9,17 @@ import org.spoofax.interpreter.library.AbstractPrimitive;
 import java.util.ArrayList;
 import java.lang.ref.WeakReference;
 
-@SuppressWarnings("all") final class lifted10 extends Strategy 
+@SuppressWarnings("all") final class lifted13 extends Strategy 
 { 
-  TermReference b_4064;
+  public static final lifted13 instance = new lifted13();
 
   @Override public IStrategoTerm invoke(Context context, IStrategoTerm term)
   { 
-    Fail116:
+    Fail139:
     { 
-      if(b_4064.value == null)
-        break Fail116;
-      term = oct_string_to_int_0_0.instance.invoke(context, b_4064.value);
+      term = repeat_1_0.instance.invoke(context, term, norm_char_char_0_0.instance);
       if(term == null)
-        break Fail116;
-      term = int_to_string_0_0.instance.invoke(context, term);
-      if(term == null)
-        break Fail116;
+        break Fail139;
       if(true)
         return term;
     }

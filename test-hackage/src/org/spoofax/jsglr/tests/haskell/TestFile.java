@@ -12,6 +12,7 @@ import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
+import org.spoofax.jsglr.tests.haskell.compare.CompareLibrary;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr_layout.shared.SGLRException;
@@ -29,8 +30,12 @@ public class TestFile extends TestCase {
   
   private final static boolean LOGGING = false;
   
-  private Context normalizeContext = normalize.init();
-  private Context compareContext = CompareAST.init();
+  private static Context normalizeContext = normalize.init();
+  private static Context compareContext = CompareAST.init();
+  static {
+    normalizeContext.addOperatorRegistry(new CompareLibrary());
+    compareContext.addOperatorRegistry(new CompareLibrary());
+  }
 
   public HaskellParser newParserOrig = new HaskellParser();
   public HaskellParser newParserImpl = new HaskellParser();
@@ -44,13 +49,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "D:/tmp/test.hs";
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
+    String file = "/Users/seba/tmp/test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");

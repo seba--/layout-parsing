@@ -200,7 +200,7 @@ public abstract class AbstractParseNode {
   public AbstractParseNode getLast() {
     AbstractParseNode n = this;
     while (n.getChildren().length > 0)
-      for (int i = getChildren().length - 1; i >= 0; i--) {
+      for (int i = n.getChildren().length - 1; i >= 0; i--) {
         AbstractParseNode kid = n.getChildren()[i];
         if (kid.isEmpty() || kid.isLayout())
           continue;

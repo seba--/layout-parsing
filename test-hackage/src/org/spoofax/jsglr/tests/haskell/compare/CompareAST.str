@@ -37,13 +37,15 @@ rules
   compare-term : (Context(c1), Context([c2])) -> <compare> (c1, c2)
   compare-term : (SContext(c1), SContext([c2])) -> <compare> (c1, c2)
   
+  convert-int(|from,to) = prim("COMPARE_convert_int", from, to)
+  
   // string escapes
   compare-term : (Escape(esc), c) -> <compare> (esc, c)
     where <is-string> c
-  compare-term : (HexadecimalEsc(hex), c) -> <compare> (esc, c)
-    where !DecimalEsc(<hex-string-to-int; int-to-string> hex) => esc
-  compare-term : (OctalEsc(oct), c) -> <compare> (esc, c)
-    where !DecimalEsc(<oct-string-to-int; int-to-string> oct) => esc
+  compare-term : (HexadecimalEsc(hex), c) -> <compare> (dec, c)
+    where !DecimalEsc(<convert-int(|16,10)> hex) => dec
+  compare-term : (OctalEsc(oct), c) -> <compare> (dec, c)
+    where !DecimalEsc(<convert-int(|8,10)> oct) => dec
   compare-term : (DecimalEsc(int), c2) -> <compare> (c1, c2)
    where <string-to-int; is-ascii> int => int';
          <implode-string> [int'] => c1
@@ -53,19 +55,19 @@ rules
 
 
 rules
-  peq(s) : (x, y) -> <equal> (<s> x, <s> y)
+  peq(s) : (x, y) -> <equal> (<try(s)> x, <try(s)> y)
 
   hs-string-to-int : hex -> int
     where <is-string> hex;
           <explode-string> hex => ['0', second | rest];
           <?'x' + ?'X'> second;
-          <hex-chars-to-int> rest => int
+          <implode-string; convert-int(|16,10)> rest => int
 
   hs-string-to-int : oct -> int
     where <is-string> oct;
           <explode-string> oct => ['0', second | rest];
           <?'o' + ?'O'> second;
-          <oct-chars-to-int> rest => int
+          <implode-string; convert-int(|8,10)> rest => int
 
   hs-string-to-int : dec -> int
     where <is-string> dec;

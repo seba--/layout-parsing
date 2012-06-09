@@ -204,7 +204,6 @@ public class LayoutFilter {
         sort = sortOfNode(next);
       
       if (next.isAmbNode()) {
-        
         boolean left = checkAll(next.getChildren()[0], v, constraint, kids, env);
         boolean right = checkAll(next.getChildren()[1], v, constraint, kids, env);
         

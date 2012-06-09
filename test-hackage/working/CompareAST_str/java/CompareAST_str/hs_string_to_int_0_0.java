@@ -16,110 +16,110 @@ import java.lang.ref.WeakReference;
   @Override public IStrategoTerm invoke(Context context, IStrategoTerm term)
   { 
     context.push("hs_string_to_int_0_0");
-    Fail23:
+    Fail25:
     { 
-      IStrategoTerm term19 = term;
-      Success19:
+      IStrategoTerm term21 = term;
+      Success21:
       { 
-        Fail24:
+        Fail26:
         { 
-          IStrategoTerm y_4065 = null;
-          IStrategoTerm z_4065 = null;
-          IStrategoTerm a_4066 = null;
-          y_4065 = term;
-          term = is_string_0_0.instance.invoke(context, y_4065);
+          IStrategoTerm k_199 = null;
+          IStrategoTerm l_199 = null;
+          IStrategoTerm m_199 = null;
+          k_199 = term;
+          term = is_string_0_0.instance.invoke(context, k_199);
           if(term == null)
-            break Fail24;
-          term = explode_string_0_0.instance.invoke(context, y_4065);
+            break Fail26;
+          term = explode_string_0_0.instance.invoke(context, k_199);
           if(term == null)
-            break Fail24;
+            break Fail26;
           if(term.getTermType() != IStrategoTerm.LIST || ((IStrategoList)term).isEmpty())
-            break Fail24;
-          IStrategoTerm arg52 = ((IStrategoList)term).head();
-          if(arg52.getTermType() != IStrategoTerm.INT || 48 != ((IStrategoInt)arg52).intValue())
-            break Fail24;
-          IStrategoTerm arg53 = ((IStrategoList)term).tail();
-          if(arg53.getTermType() != IStrategoTerm.LIST || ((IStrategoList)arg53).isEmpty())
-            break Fail24;
-          z_4065 = ((IStrategoList)arg53).head();
-          a_4066 = ((IStrategoList)arg53).tail();
-          term = z_4065;
-          IStrategoTerm term20 = term;
-          Success20:
+            break Fail26;
+          IStrategoTerm arg55 = ((IStrategoList)term).head();
+          if(arg55.getTermType() != IStrategoTerm.INT || 48 != ((IStrategoInt)arg55).intValue())
+            break Fail26;
+          IStrategoTerm arg56 = ((IStrategoList)term).tail();
+          if(arg56.getTermType() != IStrategoTerm.LIST || ((IStrategoList)arg56).isEmpty())
+            break Fail26;
+          l_199 = ((IStrategoList)arg56).head();
+          m_199 = ((IStrategoList)arg56).tail();
+          term = l_199;
+          IStrategoTerm term22 = term;
+          Success22:
           { 
-            Fail25:
+            Fail27:
             { 
               if(term.getTermType() != IStrategoTerm.INT || 120 != ((IStrategoInt)term).intValue())
-                break Fail25;
+                break Fail27;
               if(true)
-                break Success20;
+                break Success22;
             }
-            term = term20;
+            term = term22;
             if(term.getTermType() != IStrategoTerm.INT || 88 != ((IStrategoInt)term).intValue())
-              break Fail24;
+              break Fail26;
           }
-          term = hex_chars_to_int_0_0.instance.invoke(context, a_4066);
+          term = hex_chars_to_int_0_0.instance.invoke(context, m_199);
           if(term == null)
-            break Fail24;
+            break Fail26;
           if(true)
-            break Success19;
+            break Success21;
         }
-        term = term19;
-        IStrategoTerm term21 = term;
-        Success21:
+        term = term21;
+        IStrategoTerm term23 = term;
+        Success23:
         { 
-          Fail26:
+          Fail28:
           { 
-            IStrategoTerm t_4065 = null;
-            IStrategoTerm u_4065 = null;
-            IStrategoTerm v_4065 = null;
-            t_4065 = term;
-            term = is_string_0_0.instance.invoke(context, t_4065);
+            IStrategoTerm d_199 = null;
+            IStrategoTerm e_199 = null;
+            IStrategoTerm h_199 = null;
+            d_199 = term;
+            term = is_string_0_0.instance.invoke(context, d_199);
             if(term == null)
-              break Fail26;
-            term = explode_string_0_0.instance.invoke(context, t_4065);
+              break Fail28;
+            term = explode_string_0_0.instance.invoke(context, d_199);
             if(term == null)
-              break Fail26;
+              break Fail28;
             if(term.getTermType() != IStrategoTerm.LIST || ((IStrategoList)term).isEmpty())
-              break Fail26;
-            IStrategoTerm arg54 = ((IStrategoList)term).head();
-            if(arg54.getTermType() != IStrategoTerm.INT || 48 != ((IStrategoInt)arg54).intValue())
-              break Fail26;
-            IStrategoTerm arg55 = ((IStrategoList)term).tail();
-            if(arg55.getTermType() != IStrategoTerm.LIST || ((IStrategoList)arg55).isEmpty())
-              break Fail26;
-            u_4065 = ((IStrategoList)arg55).head();
-            v_4065 = ((IStrategoList)arg55).tail();
-            term = u_4065;
-            IStrategoTerm term22 = term;
-            Success22:
+              break Fail28;
+            IStrategoTerm arg57 = ((IStrategoList)term).head();
+            if(arg57.getTermType() != IStrategoTerm.INT || 48 != ((IStrategoInt)arg57).intValue())
+              break Fail28;
+            IStrategoTerm arg58 = ((IStrategoList)term).tail();
+            if(arg58.getTermType() != IStrategoTerm.LIST || ((IStrategoList)arg58).isEmpty())
+              break Fail28;
+            e_199 = ((IStrategoList)arg58).head();
+            h_199 = ((IStrategoList)arg58).tail();
+            term = e_199;
+            IStrategoTerm term24 = term;
+            Success24:
             { 
-              Fail27:
+              Fail29:
               { 
                 if(term.getTermType() != IStrategoTerm.INT || 111 != ((IStrategoInt)term).intValue())
-                  break Fail27;
+                  break Fail29;
                 if(true)
-                  break Success22;
+                  break Success24;
               }
-              term = term22;
+              term = term24;
               if(term.getTermType() != IStrategoTerm.INT || 79 != ((IStrategoInt)term).intValue())
-                break Fail26;
+                break Fail28;
             }
-            term = oct_chars_to_int_0_0.instance.invoke(context, v_4065);
+            term = oct_chars_to_int_0_0.instance.invoke(context, h_199);
             if(term == null)
-              break Fail26;
+              break Fail28;
             if(true)
-              break Success21;
+              break Success23;
           }
-          term = term21;
-          IStrategoTerm q_4065 = null;
-          q_4065 = term;
-          term = is_string_0_0.instance.invoke(context, q_4065);
+          term = term23;
+          IStrategoTerm a_199 = null;
+          a_199 = term;
+          term = is_string_0_0.instance.invoke(context, a_199);
           if(term == null)
-            break Fail23;
-          term = string_to_int_0_0.instance.invoke(context, q_4065);
+            break Fail25;
+          term = string_to_int_0_0.instance.invoke(context, a_199);
           if(term == null)
-            break Fail23;
+            break Fail25;
         }
       }
       context.popOnSuccess();
