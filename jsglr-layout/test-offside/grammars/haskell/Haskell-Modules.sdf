@@ -15,7 +15,7 @@ exports
   	Empty                          Empty                   -> NoOffsideBody {cons("Body")}
   	Empty                          NoOffsideTopdeclListSem -> NoOffsideBody {cons("Body")}
   	NoOffsideImportdeclListSem     Empty                   -> NoOffsideBody {cons("Body")}
-    NoOffsideImportdeclListSem ";" NoOffsideTopdeclListSem -> NoOffsideBody {cons("Body")}
+    NoOffsideImportdeclListSem ";" NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
 
     Empty                 Empty              -> OffsideBody {cons("Body")}
     Empty                 OffsideTopdeclList -> OffsideBody {cons("Body")}
