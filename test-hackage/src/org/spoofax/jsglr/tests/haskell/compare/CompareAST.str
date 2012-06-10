@@ -71,7 +71,7 @@ rules
 
   hs-string-to-int : dec -> int
     where <is-string> dec;
-          <string-to-int> dec => int
+          <convert-int(|10,10)> dec => int
 
   hs-string-to-float = not(?"");string-to-real
 
