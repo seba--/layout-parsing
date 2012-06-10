@@ -145,6 +145,11 @@ public class TestFile extends TestCase {
       return null;
     }
     
+    if (input == null) {
+      result.otherExceptions.t1 = "input is null";
+      return null;
+    }
+    
     result.linesOfCode.t1 = input.split("\n").length;
     result.byteSize.t1 = input.getBytes().length;
 
@@ -213,7 +218,12 @@ public class TestFile extends TestCase {
       result.outOfMemory.t2 = true;
       return null;
     }
-
+    
+    if (input == null) {
+      result.otherExceptions.t2 = "input is null";
+      return null;
+    }
+    
     result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
     
@@ -279,6 +289,12 @@ public class TestFile extends TestCase {
       result.outOfMemory.t3 = true;
       return null;
     }
+    
+    if (input == null) {
+      result.otherExceptions.t3 = "input is null";
+      return null;
+    }
+
 
     result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
