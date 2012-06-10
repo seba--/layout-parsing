@@ -31,6 +31,18 @@ public class TestAllPackages extends TestCase {
         "maybench",
         "mbox",
         "mdo",
+        "dbf", 
+        "dbjava",
+        "dbmigrations",
+        "hakismet",
+        "hakyll",
+        "halfs",
+        "halipeto",
+        "haltavista",
+        "hamlet",
+        "hamtmap",
+        "zenc",
+        "zeno"
     };
     
     
@@ -39,7 +51,7 @@ public class TestAllPackages extends TestCase {
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
     
-    System.out.println("Warmed up with " + warmupCount + " files.");
+    System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }
   
   public void testAllPackages() throws IOException {
