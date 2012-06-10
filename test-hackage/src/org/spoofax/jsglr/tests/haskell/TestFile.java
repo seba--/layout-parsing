@@ -49,7 +49,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "/Users/seba/tmp/test.hs";
+    String file = "d:/tmp/test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -173,7 +173,7 @@ public class TestFile extends TestCase {
 
       if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
         result.otherExceptions.t1 = e.getCause().getMessage();
-        e.getCause().printStackTrace();
+//        e.getCause().printStackTrace();
       }
     } finally {
       result.ambiguities.t1 = oldParser.ambiguities;
