@@ -105,7 +105,7 @@ public class TestFile extends TestCase {
     checkDiff(pkg, f);
     
     result.allNull = oldResult == null && newResultOrig == null && newResultImpl == null;
-    result.allSuccess = oldResult != null && newResultOrig != null && newResultImpl != null &&
+    result.allSuccess = result.parseOk.t1 && result.parseOk.t2 && result.parseOk.t3 &&
                         result.differencesToReferenceParser.t2 == 0 && result.differencesToReferenceParser.t3 == 0;
     
     if (LOGGING)
