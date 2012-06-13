@@ -185,8 +185,8 @@ public class CommandExecution {
       long end = System.nanoTime();
       time = end - start;
       
-      errStreamLogger.interrupt();
-      outStreamLogger.interrupt();
+      errStreamLogger.join();
+      outStreamLogger.join();
 
       // log.endExecution(exitValue, errStreamLogger.getUnloggedMsg());
     } catch (Throwable t) {

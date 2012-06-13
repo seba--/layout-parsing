@@ -105,7 +105,7 @@ public class TestFile extends TestCase {
     checkDiff(pkg, f);
     
     result.allNull = oldResult == null && newResultOrig == null && newResultImpl == null;
-    result.allSuccess = oldResult != null && newResultOrig != null && newResultImpl != null &&
+    result.allSuccess = result.parseOk.t1 && result.parseOk.t2 && result.parseOk.t3 &&
                         result.differencesToReferenceParser.t2 == 0 && result.differencesToReferenceParser.t3 == 0;
     
     if (LOGGING)
@@ -142,6 +142,11 @@ public class TestFile extends TestCase {
       input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t1 = true;
+      return null;
+    }
+    
+    if (input == null) {
+      result.otherExceptions.t1 = "input is null";
       return null;
     }
     
@@ -213,7 +218,12 @@ public class TestFile extends TestCase {
       result.outOfMemory.t2 = true;
       return null;
     }
-
+    
+    if (input == null) {
+      result.otherExceptions.t2 = "input is null";
+      return null;
+    }
+    
     result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
     
@@ -279,6 +289,12 @@ public class TestFile extends TestCase {
       result.outOfMemory.t3 = true;
       return null;
     }
+    
+    if (input == null) {
+      result.otherExceptions.t3 = "input is null";
+      return null;
+    }
+
 
     result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
