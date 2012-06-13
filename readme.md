@@ -35,9 +35,9 @@ generalized parsing is available
 Navigation
 ----------
 
-* [Layout-sensitive scannerless generalized parser](http://github.com/seba--/layout-parsing/tree/master/jsglr-layout/src)
+* [Layout-sensitive scannerless generalized parser](http://github.com/seba--/layout-parsing/tree/master/jsglr-layout)
 * [Haskell grammar](http://github.com/seba--/layout-parsing/tree/master/jsglr-layout/test-offside/grammars/haskell)
 * [Python grammar](http://github.com/seba--/layout-parsing/tree/master/jsglr-layout/test-offside/grammars/python)
-* [Evaluation tool](http://github.com/seba--/layout-parsing/tree/master/test-hackage/src)
+* [Evaluation tool](http://github.com/seba--/layout-parsing/tree/master/test-hackage)
 * [Evaluation subjects from Hackage](http://github.com/seba--/layout-parsing/tree/master/test-hackage/hackage-data)
 * [Evaluation results (raw)](http://github.com/seba--/layout-parsing/tree/master/test-hackage/evaluation-data)
