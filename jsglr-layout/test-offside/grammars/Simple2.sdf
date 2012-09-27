@@ -4,7 +4,16 @@ exports
     St
     
   context-free syntax
-  	LAYOUT? -> St {cons("Start")}
+  	L -> St
+  	
+  	A -> E
+  	E -> L
+  	AE L -> L {cons("ALC")}
+  	E L -> L {cons("ELC"), layout("1.first.col == 2.first.col")}
+  	
+  	AE -> A
+  	%% AE A -> A {cons("AC")}
+  	"a" -> AE {cons("a")} 
 	
   lexical syntax
     WhiteChar                     -> LAYOUT
