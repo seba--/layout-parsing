@@ -28,19 +28,22 @@ context-free start-symbols
   FileInput
 
 context-free syntax
-  NEWLINE -> FileLine {cons("EmptyLine"), ignore-layout}
+  -> NEWLINE
+  
   Stmt -> FileLine
   FileLine* -> FileInput {layout("all(x,1,1.first.col == x.first.col)")}
   
 %% decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
 %% decorators: decorator+
 %% decorated: decorators (classdef | funcdef)
-  "def" Name Parameters ResSpec? ":" SimpleStmt -> Funcdef {cons("Funcdef")}
-  "def" Name Parameters ResSpec? ":" NEWLINE Suite -> Funcdef {cons("Funcdef"), layout("1.first.col < 7.first.col")}
+  "def" Name Parameters ResSpec? ":" SimpleStmt -> Funcdef {cons("Funcdef"),
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line == 4.first.line && 4.last.line == 5.first.line && 5.first.line == 6.first.line")}
+  "def" Name Parameters ResSpec? ":" Suite -> Funcdef {cons("Funcdef"),
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line == 4.first.line && 4.last.line == 5.first.line && 5.first.line < 6.first.line && 1.first.col < 6.first.col")}
   
   "->" Test -> ResSpec
   
-  "(" Typedargslist? ")" -> Parameters
+  "(" Typedargslist? ")" -> Parameters {ignore-layout}
   (Tfpdef ("=" Test)? ("," Tfpdef ("=" Test)?)* (","
         ("*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef)?)?
       |  "*" (Tfpdef)? ("," Tfpdef ("=" Test)?)* ("," "**" Tfpdef)? | "**" Tfpdef) -> Typedargslist
@@ -55,14 +58,17 @@ context-free syntax
   SimpleStmt -> Stmt
   CompoundStmt -> Stmt
 
-  {SmallStmt ";"}+ NEWLINE -> SimpleStmt {cons("SimpleStmt")}
-  {SmallStmt ";"}+ ";" NEWLINE -> SimpleStmt {cons("SimpleStmt")}
+  {SmallStmt ";"}+ -> SimpleStmt {cons("SimpleStmt")}
+  {SmallStmt ";"}+ ";" -> SimpleStmt {cons("SimpleStmt")}
 
   ExprStmt | DelStmt | PassStmt | FlowStmt | ImportStmt | GlobalStmt | NonlocalStmt | AssertStmt -> SmallStmt
+    {layout("1.first.line == 1.last.line")}
 
   TestlistStarExpr Augassign YieldExpr -> ExprStmt {cons("AssignAugYieldStmt")}
   TestlistStarExpr Augassign Testlist -> ExprStmt {cons("AssignAugTestlistStmt")}
-  TestlistStarExpr Assign* -> ExprStmt {cons("AssignEqStmt")}
+  TestlistStarExpr Assign+ -> ExprStmt {cons("AssignEqStmt")}
+  TestlistStarExpr -> ExprStmt
+
 
   "=" YieldExpr -> Assign {cons("AssignYield")}
   "=" TestlistStarExpr -> Assign {cons("AssignTestlist")}
@@ -113,14 +119,18 @@ context-free syntax %% compound stmts
   %% Decorated -> CompoundStmt
 
   "if" Test ":" SimpleStmt Elif* Else? -> IfStmt {cons("IfStmt"), 
-    layout("all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
-  "if" Test ":" NEWLINE Suite Elif* Else? -> IfStmt {cons("IfStmt"), 
-    layout("1.first.col < 5.first.col && all(x,6,1.first.col==x.first.col) && 1.first.col == 7.first.col")}
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line == 4.first.line && all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
+  "if" Test ":" Suite Elif* Else? -> IfStmt {cons("IfStmt"), 
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line < 4.first.line && 1.first.col < 4.first.col && all(x,5,1.first.col==x.first.col) && 1.first.col == 6.first.col")}
   
-  "elif" Test ":" SimpleStmt -> Elif {cons("Elif")}
-  "elif" Test ":" NEWLINE Suite -> Elif {cons("Elif"), layout("1.first.col < 5.first.col")}
-  "else" ":" SimpleStmt -> Else {cons("Else")}
-  "else" ":" NEWLINE Suite -> Else {cons("Else"), layout("1.first.col < 4.first.col")}
+  "elif" Test ":" SimpleStmt -> Elif {cons("Elif"),
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line == 4.first.line")}
+  "elif" Test ":" Suite -> Elif {cons("Elif"), 
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line && 3.last.line < 4.first.line && 1.first.col < 4.first.col")}
+  "else" ":" SimpleStmt -> Else {cons("Else"),
+    layout("1.last.line == 2.first.line && 2.last.line == 3.first.line")}
+  "else" ":" Suite -> Else {cons("Else"), layout("1.first.col < 4.first.col"),
+    layout("1.last.line == 2.first.line && 2.last.line < 3.first.line && 1.first.col < 3.first.col")}
   
   "while" Test ":" SimpleStmt Else? -> WhileStmt {cons("WhileStmt"), layout("1.first.col == 5.first.col")}
   "while" Test ":" NEWLINE Suite Else? -> WhileStmt {cons("WhileStmt"), 
@@ -156,7 +166,7 @@ context-free syntax %% compound stmts
   Stmt+ -> Suite {cons("StmtListSuite"), layout("all(x, 1, 1.first.col == x.first.col)")}
  
  
-  OrTest -> Test
+  OrTest -> Test {layout("1.first.line == 1.last.line")}
   "---" -> OrTest
   OrTest "if" OrTest "else" Test -> Test {cons("OrIfTest")} 
   Lambdef -> Test {cons("LambDefTest")}
@@ -208,18 +218,18 @@ context-free syntax
   "False" -> Atom {cons("False")}
   
   "(" ")" -> Atom {cons("EmptyParen")}
-  "(" YieldExpr ")" -> Atom {cons("YieldParen")}
-  "(" TestlistComp ")" -> Atom {cons("TestlistCompParen")}
-  "(" TestlistComp ")?" -> Atom {cons("TestlistCompParenQuestion")}
+  "(" YieldExpr ")" -> Atom {cons("YieldParen"), ignore-layout}
+  "(" TestlistComp ")" -> Atom {cons("TestlistCompParen"), ignore-layout}
+  "[" TestlistComp "]" -> Atom {cons("TestlistCompParenQuestion"), ignore-layout}
   "{" "}" -> Atom {cons("EmptyBlock")}
-  "{" DictSetmaker "}" -> Atom {cons("DictSetmakerBlock")}
+  "{" DictSetmaker "}" -> Atom {cons("DictSetmakerBlock"), ignore-layout}
 
   TestStarExpr CompFor -> TestlistComp {cons("TestlistComp1")}
   {TestStarExpr ","}+ -> TestlistComp {cons("TestlistComp2")} 
   {TestStarExpr ","}+ "," -> TestlistComp {cons("TestlistComp2")}
 
-  "(" Arglist? ")" -> Trailer {cons("ArglistTrailer")}
-  "(" Subscriptlist ")?" -> Trailer {cons("SubscriptlistTrailer")}
+  "(" Arglist? ")" -> Trailer {cons("ArglistTrailer"), ignore-layout}
+  "[" Subscriptlist "]" -> Trailer {cons("SubscriptlistTrailer"), ignore-layout}
   "." Name -> Trailer {cons("FieldTrailer")}
   
   {Subscript ","}+ -> Subscriptlist
@@ -243,7 +253,7 @@ context-free syntax
   Test ":" Test ("," Test ":" Test)* "," -> DictSetmaker {cons("DictSetmaker6")}
 
   "class" Name ArglistP? ":" NEWLINE Suite -> Classdef {cons("Classdef"), layout("1.first.col < 6.first.col")}
-  "(" Arglist? ")" -> ArglistP {bracket}
+  "(" Arglist? ")" -> ArglistP {bracket, ignore-layout}
   
   {Argument ","}+ -> Arglist {cons("Arglist")}
   {Argument ","}+ "," -> Arglist {cons("Arglist")}
@@ -285,9 +295,7 @@ lexical syntax
     
   DecimalInteger | OctInteger | HexInteger -> Number  
   
-  [\n\r] -> NEWLINE
-  
-  [\ \t] -> LAYOUT
+  [\n\r\ \t] -> LAYOUT
   [\#] ~[\n\r]* [\n\r] -> LAYOUT
 
 lexical restrictions
@@ -297,7 +305,7 @@ lexical restrictions
   HexInteger -/- [0-9a-fA-F]
 
 context-free restrictions
-	LAYOUT? -/- [\ \t] | [\#].~[\n\r]
+	LAYOUT? -/- [\ \t\n\r] | [\#].~[\n\r]
   
 lexical syntax
   "if" | "elif" | "else" | "while" | "for" | "def" | "return" | "pass" | "yield"
