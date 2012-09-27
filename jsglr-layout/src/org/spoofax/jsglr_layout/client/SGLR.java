@@ -701,15 +701,15 @@ public class SGLR {
 			final State next = parseTable.go(st0.state, prod.label);
 			logReductionPath(prod, path, st0, next);
 			
-			if (SGLR.PARSE_TIME_LAYOUT_FITER &&
+			if (PARSE_TIME_LAYOUT_FITER &&
 			    !layoutFilter.hasValidLayout(prod.label, kids)) {
 			  layoutFiltering++;
 			  continue;
 			}
-			else
+			else if (PARSE_TIME_LAYOUT_FITER)
 			  layoutFiltering += layoutFilter.getDisambiguationCount();
 			
-			if (SGLR.ENFORCE_NEWLINE_FITER && 
+			if (ENFORCE_NEWLINE_FITER && 
           parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
         boolean hasNewline = false;
         for (int j = kids.length - 1; j >= 0; j--) {
