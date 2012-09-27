@@ -24,7 +24,7 @@ import org.spoofax.jsglr.shared.Tools;
 
 public class SGLR {
 
-  private static final boolean ENFORCE_NEWLINE_FITER = true;
+  private static final boolean ENFORCE_NEWLINE_FILTER = true;
   private static final boolean PARSE_TIME_LAYOUT_FITER = true;
   
   private int layoutFiltering;
@@ -709,7 +709,7 @@ public class SGLR {
 			else if (PARSE_TIME_LAYOUT_FITER)
 			  layoutFiltering += layoutFilter.getDisambiguationCount();
 			
-			if (ENFORCE_NEWLINE_FITER && 
+			if (ENFORCE_NEWLINE_FILTER && 
           parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
         boolean hasNewline = false;
         for (int j = kids.length - 1; j >= 0; j--) {
