@@ -10,8 +10,8 @@ package org.spoofax.jsglr_layout.tests.offset;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.spoofax.jsglr_layout.client.InvalidParseTableException;
-import org.spoofax.jsglr_layout.client.ParserException;
+import org.spoofax.jsglr.client.InvalidParseTableException;
+import org.spoofax.jsglr.client.ParserException;
 
 public class TestHaskellDoaitse extends ParseTestCase {
 

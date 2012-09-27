@@ -10,12 +10,12 @@ import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.CompareLibrary;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.result.FileResult;
-import org.spoofax.jsglr_layout.shared.SGLRException;
 import org.spoofax.jsglr_layout.tests.haskell.HaskellParser;
 import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
@@ -213,7 +213,7 @@ public class TestFile extends TestCase {
     
     String input;
     try {
-      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+      input = org.spoofax.jsglr.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t2 = true;
       return null;
@@ -284,7 +284,7 @@ public class TestFile extends TestCase {
     
     String input;
     try {
-      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+      input = org.spoofax.jsglr.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t3 = true;
       return null;

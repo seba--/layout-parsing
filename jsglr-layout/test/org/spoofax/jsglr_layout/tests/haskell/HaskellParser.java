@@ -6,15 +6,15 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.spoofax.jsglr_layout.client.ParseException;
-import org.spoofax.jsglr_layout.client.ParseTable;
-import org.spoofax.jsglr_layout.client.SGLR;
-import org.spoofax.jsglr_layout.client.imploder.TermTreeFactory;
-import org.spoofax.jsglr_layout.client.imploder.TreeBuilder;
-import org.spoofax.jsglr_layout.io.ParseTableManager;
-import org.spoofax.jsglr_layout.shared.BadTokenException;
-import org.spoofax.jsglr_layout.shared.SGLRException;
-import org.spoofax.jsglr_layout.shared.TokenExpectedException;
+import org.spoofax.jsglr.client.ParseException;
+import org.spoofax.jsglr.client.ParseTable;
+import org.spoofax.jsglr.client.SGLR;
+import org.spoofax.jsglr.client.imploder.TermTreeFactory;
+import org.spoofax.jsglr.client.imploder.TreeBuilder;
+import org.spoofax.jsglr.io.ParseTableManager;
+import org.spoofax.jsglr.shared.BadTokenException;
+import org.spoofax.jsglr.shared.SGLRException;
+import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.terms.attachments.ParentTermFactory;
 
 /**
