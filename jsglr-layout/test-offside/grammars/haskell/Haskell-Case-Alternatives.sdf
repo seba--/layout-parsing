@@ -27,15 +27,13 @@ exports
   context-free priorities
     Alt -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}
   >
-    OffsideAlt ";" -> OffsideAlt {prefer,layout(gt(col(first(2)), col(first(1))))}
+    OffsideAlt ";" -> OffsideAlt {layout(gt(col(first(2)), col(first(1))))}
   >
     ";" OffsideAlt -> OffsideAlt {layout(gt(col(first(2)), col(first(1))))}
   >
-    Alt ";" OffsideAlt -> OffsideAlt
+    OffsideAlt ";" Alt -> OffsideAlt
           {cons("AltSeq"),
-           layout(and(gt(col(left(1)), col(first(1))),
-                  and(gt(col(first(2)), col(first(1))),
-                      gt(col(first(3)), col(first(1))))))}
+           layout("1.first.col < 2.first.col && 1.first.col < 3.first.col && 1.first.col < 3.left.col")}
   
   context-free syntax
     OffsideAlt -> OffsideAltList

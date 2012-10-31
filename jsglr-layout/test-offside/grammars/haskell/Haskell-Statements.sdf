@@ -32,9 +32,9 @@ exports
   >
     ";" OffsideStmt -> OffsideStmt {layout("1.first.col < 2.first.col")}
   >
-    OffsideStmt ";" OffsideStmt -> OffsideStmt
+    OffsideStmt ";" Stmt -> OffsideStmt
           {cons("StmtSeq"),
-           layout("1.first.col < 2.first.col && 1.first.col < 3.first.col")}
+           layout("1.first.col < 2.first.col && 1.first.col < 3.first.col && 1.first.col < 3.left.col")}
   
   context-free syntax
     OffsideStmt -> OffsideStmtList
