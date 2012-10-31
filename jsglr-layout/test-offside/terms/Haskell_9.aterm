@@ -8,4 +8,5 @@ Module(
         StmtSeq(ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
                 ExpStmt(Do(StmtList(
                   StmtSeq(ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"])))),
-                          ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"]))))))))))))))
+                          ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"]))))))))))),
+      Where(DeclList(Empty)))))

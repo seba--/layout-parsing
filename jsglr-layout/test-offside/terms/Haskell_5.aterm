@@ -4,7 +4,7 @@ Module(
   Body(
     Empty,
     TopdeclSeq(
-      Valdef(Var("a"),Do(StmtList(ExpStmt(Lit(Int("5")))))),
+      Valdef(Var("a"),Do(StmtList(ExpStmt(Lit(Int("5"))))),Where(DeclList(Empty))),
     TopdeclSeq(
       Valdef(Var("main"),
 			  Do(StmtList(
@@ -12,5 +12,6 @@ Module(
             ExpStmt(AppBin(Var("putStrLn"),Lit(String(["a","b","c"])))),
 			    StmtSeq(
             ExpStmt(Do(StmtList(ExpStmt(AppBin(Var("putStrLn"),Lit(String(["d","e","f"]))))))),
-			      ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"]))))))))),
-       Valdef(Var("b"),Do(StmtList(ExpStmt(Var("z")))))))))
+			      ExpStmt(AppBin(Var("putStrLn"),Lit(String(["g","h","i"])))))))),
+              Where(DeclList(Empty))),
+       Valdef(Var("b"),Do(StmtList(ExpStmt(Var("z")))),Where(DeclList(Empty)))))))

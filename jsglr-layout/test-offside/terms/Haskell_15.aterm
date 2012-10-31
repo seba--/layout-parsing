@@ -4,4 +4,5 @@ Program(
     Valdef(Var("main"),
       Do(StmtList(
         ExpStmt(Do(StmtList(
-          ExpStmt(Var("x"))))))))))
+          ExpStmt(Var("x"))))))),
+      Where(DeclList(Empty)))))
