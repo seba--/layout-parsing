@@ -361,7 +361,7 @@ public class SGLR {
     try {
       return filteredResult(startSymbol, parseMax);
     } catch (SGLRException e) {
-      if (acceptingStack != lastAcceptingStack) {
+      if (acceptingStack != lastAcceptingStack && lastAcceptingStack != null) {
         acceptingStack = lastAcceptingStack;
         return filteredResult(startSymbol, parseMax);
       }
