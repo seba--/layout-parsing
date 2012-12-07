@@ -191,7 +191,7 @@ public class TreeBuilder extends TopdownTreeBuilder {
 	 * Recreates a tree node, changing its begin and end token
 	 * to the begin and end token of the entire token stream.
 	 */
-	private Object recreateWithAllTokens(Object tree) {
+	protected Object recreateWithAllTokens(Object tree) {
 		List<Object> children = new ArrayList<Object>();
 		for (Object child : factory.getChildren(tree))
 			children.add(child);

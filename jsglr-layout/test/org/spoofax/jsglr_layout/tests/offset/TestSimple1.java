@@ -36,4 +36,8 @@ public class TestSimple1 extends ParseTestCase {
     public void testSimple1_4() throws FileNotFoundException, IOException {
       doParseTest("Simple1_4");
     }
+
+    public void testSimple1_5() throws FileNotFoundException, IOException {
+      doParseTest("Simple1_5");
+    }
 }
