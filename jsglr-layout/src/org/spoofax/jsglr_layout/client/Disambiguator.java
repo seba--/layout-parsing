@@ -483,8 +483,12 @@ public class Disambiguator {
       if (Thread.currentThread().isInterrupted())
         throw new InterruptedException();
       
-      int pendingPeekPos = pending.isEmpty() ? -1 : output.size() - pending.peek().getChildren().length - 1;
-      if (!pending.isEmpty() && pendingPeekPos >= 0 && output.get(output.size() - pendingPeekPos - 1) == pending.peek()) {
+      int pendingPeekSize = pending.isEmpty() ? -1 : pending.peek().getChildren().length;
+
+//      if (input.isEmpty() && !(!pending.isEmpty() && output.size() > pendingPeekSize && output.get(pendingPeekSize) == pending.peek()))
+//        System.out.println("fail");
+        
+      if (!pending.isEmpty() && output.size() > pendingPeekSize && output.get(pendingPeekSize) == pending.peek()) {
         AbstractParseNode t = pending.pop();
         
         AbstractParseNode[] args = new AbstractParseNode[t.getChildren().length];
@@ -498,7 +502,6 @@ public class Disambiguator {
         }
         
         output.pop();
-        
         
         if (!rejected && changed)
           t = new ParseNode(t.getLabel(), 
@@ -530,19 +533,11 @@ public class Disambiguator {
       
         switch (t.getNodeType()) {
         case AMBIGUITY:
-          if (!output.isEmpty()) {
-            // (some cycle stuff should be done here)
-            t = filterAmbiguities(t.getChildren()[0], t.getChildren()[1]);
-            if (t == null)
-              return null;
-            output.push(t);
-          } 
-          // FIXME: hasRejectProd(Amb) can never succeed?
-          else if (filterReject && t.isParseRejectNode())
-              output.push(t);
-          else
-            output.push(filterAmbiguities(t.getChildren()[0], t.getChildren()[1]));
-        
+          // (some cycle stuff should be done here)
+          t = filterAmbiguities(t.getChildren()[0], t.getChildren()[1]);
+          if (t == null)
+            return null;
+          output.push(t);
           break;
 
         case PARSENODE:
@@ -556,12 +551,14 @@ public class Disambiguator {
             rejected = true;
           }
           
-          if (!layoutFilter.hasValidLayout((ParseNode) t)) {
-            layoutFiltering++;
-            rejected = true;
+          if (!rejected) {
+            if (!layoutFilter.hasValidLayout((ParseNode) t)) {
+              layoutFiltering++;
+              rejected = true;
+            }
+            else
+              layoutFiltering += layoutFilter.getDisambiguationCount();
           }
-          else
-            layoutFiltering += layoutFilter.getDisambiguationCount();
           
           if (!rejected) {
             t = applyAssociativityPriorityFilter(t);
