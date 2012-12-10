@@ -1,5 +1,5 @@
 *.class
-*.tbl
+*/test*/**/*.tbl
 *.def
 *.labs
 *.prios
