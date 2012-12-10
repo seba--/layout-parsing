@@ -1,0 +1,61 @@
+module LayoutConstraint
+
+exports
+  
+context-free start-symbols
+  Constraint
+
+lexical syntax
+  [\ \t\n\r] -> LAYOUT
+
+lexical syntax
+  [0-9]+ -> Nat
+  [a-zA-Z][a-zA-Z0-9]* -> Var
+  "all" -> Var {reject}
+lexical restrictions
+  Nat -/- [0-9]
+  Var -/- [a-zA-Z0-9]
+  "all" -/- [a-zA-Z0-9]
+
+context-free syntax
+  Nat -> Constraint {cons("tree")}
+  "num" "(" Nat ")" -> Constraint {cons("num")}
+  Var -> Constraint
+  "all" "(" Var "," Constraint "," Constraint ")" -> Constraint {cons("all")}
+  
+context-free priorities
+  {
+    Constraint "." "first" -> Constraint {cons("first")}
+    Constraint "." "left" -> Constraint {cons("left")}
+    Constraint "." "right" -> Constraint {cons("right")}
+    Constraint "." "last" -> Constraint {cons("last")}
+    Constraint "." "line" -> Constraint {cons("line")}
+    Constraint "." "col" -> Constraint {cons("col")}
+    "!" Constraint -> Constraint {cons("not")}
+  }
+ >
+  { right:
+    Constraint "*" Constraint -> Constraint {cons("mul")}
+    Constraint "/" Constraint -> Constraint {cons("div")} 
+  }
+ >
+  { right:
+    Constraint "+" Constraint -> Constraint {cons("add")}
+    Constraint "-" Constraint -> Constraint {cons("sub")}
+  }
+ >
+  { right:
+    Constraint "==" Constraint -> Constraint {cons("eq")}
+    Constraint "<" Constraint -> Constraint {cons("lt")}
+    Constraint "<=" Constraint -> Constraint {cons("le")}
+    Constraint ">" Constraint -> Constraint {cons("gt")}
+    Constraint ">=" Constraint -> Constraint {cons("ge")}
+  }
+ >
+  { right:
+    Constraint "&&" Constraint -> Constraint {cons("and")}
+  }
+ >
+  { right:
+    Constraint "||" Constraint -> Constraint {cons("or")}
+  }

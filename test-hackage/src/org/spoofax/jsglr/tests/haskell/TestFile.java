@@ -12,6 +12,7 @@ import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
+import org.spoofax.jsglr.tests.haskell.compare.CompareLibrary;
 import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr_layout.shared.SGLRException;
@@ -27,30 +28,28 @@ import org.sugarj.haskell.normalize.normalize_0_0;
  */
 public class TestFile extends TestCase {
   
-  private final static boolean LOGGING = true;
+  private final static boolean LOGGING = false;
   
-  private Context normalizeContext = normalize.init();
-  private Context compareContext = CompareAST.init();
+  private static Context normalizeContext = normalize.init();
+  private static Context compareContext = CompareAST.init();
+  static {
+    normalizeContext.addOperatorRegistry(new CompareLibrary());
+    compareContext.addOperatorRegistry(new CompareLibrary());
+  }
 
-  public HaskellParser newParserCorrectness = new HaskellParser();
-  public HaskellParser newParserSpeed = new HaskellParser();
+  public HaskellParser newParserOrig = new HaskellParser();
+  public HaskellParser newParserImpl = new HaskellParser();
   public org.spoofax.jsglr_orig.tests.haskell.HaskellParser oldParser = new org.spoofax.jsglr_orig.tests.haskell.HaskellParser();
   
-  private IStrategoTerm newResultCorrectness;
-  private IStrategoTerm newResultSpeed;
+  private IStrategoTerm newResultOrig;
+  private IStrategoTerm newResultImpl;
   private IStrategoTerm oldResult;
   
   private FileResult result;
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "d:/layout-parsing/test-hackage/hackage-data/Agda/Agda-2.3.0.1/src/full/Agda/TypeChecking/Polarity.hs";
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
+    String file = "d:/tmp/test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -95,18 +94,18 @@ public class TestFile extends TestCase {
     File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
 
     oldParse(explicitLayoutInput, pkg);
-    newParseCorrectness(preparedInput, pkg);
-    newParseSpeed(implicitLayoutInput, pkg);
+    newParseOrig(preparedInput, pkg);
+    newParseImpl(implicitLayoutInput, pkg);
 
-    Utilities.writeToFile(newResultCorrectness, f.getAbsolutePath() + ".new.corre");
-    Utilities.writeToFile(newResultSpeed, f.getAbsolutePath() + ".new.speed");
+    Utilities.writeToFile(newResultOrig, f.getAbsolutePath() + ".new.orig");
+    Utilities.writeToFile(newResultImpl, f.getAbsolutePath() + ".new.impl");
     Utilities.writeToFile(oldResult, f.getAbsolutePath() + ".old");
     
     checkAmbiguities(pkg, f);
     checkDiff(pkg, f);
     
-    result.allNull = oldResult == null && newResultCorrectness == null && newResultSpeed == null;
-    result.allSuccess = oldResult != null && newResultCorrectness != null && newResultSpeed != null &&
+    result.allNull = oldResult == null && newResultOrig == null && newResultImpl == null;
+    result.allSuccess = result.parseOk.t1 && result.parseOk.t2 && result.parseOk.t3 &&
                         result.differencesToReferenceParser.t2 == 0 && result.differencesToReferenceParser.t3 == 0;
     
     if (LOGGING)
@@ -138,7 +137,19 @@ public class TestFile extends TestCase {
     if (f == null)
       return null;
     
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    String input;
+    try {
+      input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t1 = true;
+      return null;
+    }
+    
+    if (input == null) {
+      result.otherExceptions.t1 = "input is null";
+      return null;
+    }
+    
     result.linesOfCode.t1 = input.split("\n").length;
     result.byteSize.t1 = input.getBytes().length;
 
@@ -152,6 +163,8 @@ public class TestFile extends TestCase {
       
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t1 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
         result.parseExceptions.t1 = e.getCause().getMessage();
@@ -160,10 +173,12 @@ public class TestFile extends TestCase {
       }
       
       result.stackOverflow.t1 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
 
       if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
         result.otherExceptions.t1 = e.getCause().getMessage();
-        e.getCause().printStackTrace();
+//        e.getCause().printStackTrace();
       }
     } finally {
       result.ambiguities.t1 = oldParser.ambiguities;
@@ -190,23 +205,38 @@ public class TestFile extends TestCase {
     return oldResult;
   }
   
-  private IStrategoTerm newParseCorrectness(File f, String pkg) {
-    newResultCorrectness = null;
+  private IStrategoTerm newParseOrig(File f, String pkg) {
+    newResultOrig = null;
 
     if (f == null)
       return null;
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    
+    String input;
+    try {
+      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t2 = true;
+      return null;
+    }
+    
+    if (input == null) {
+      result.otherExceptions.t2 = "input is null";
+      return null;
+    }
+    
     result.linesOfCode.t2 = input.split("\n").length;
     result.byteSize.t2 = input.getBytes().length;
     
     System.gc();
     
     try {
-      newResultCorrectness = (IStrategoTerm) newParserCorrectness.parse(input, f.getAbsolutePath());
-      result.parseOk.t2 = newResultCorrectness != null;
+      newResultOrig = (IStrategoTerm) newParserOrig.parse(input, f.getAbsolutePath());
+      result.parseOk.t2 = newResultOrig != null;
       result.stackOverflow.t2 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t2 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof SGLRException) {
         result.parseExceptions.t2 = e.getCause().getMessage();
@@ -215,40 +245,57 @@ public class TestFile extends TestCase {
       }
 
       result.stackOverflow.t2 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
+
 
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t2 = e.getCause().getMessage();
     } finally {
-      result.ambiguities.t2 = newParserCorrectness.ambiguities;
-      result.layoutFilterCallsParseTime.t2 = newParserCorrectness.layoutFilterCountParseTime;
-      result.layoutFilteringParseTime.t2 = newParserCorrectness.layoutFilteringCountParseTime;
-      result.layoutFilterCallsDisambiguationTime.t2 = newParserCorrectness.layoutFilterCountDisambiguationTime;
-      result.layoutFilteringDisambiguationTime.t2 = newParserCorrectness.layoutFilteringCountDisambiguationTime;
-      result.enforcedNewlineSkips.t2 = newParserCorrectness.enforcedNewlineSkips;
-      result.time.t2 = newParserCorrectness.timeParse;
-      result.timeout.t2 = newParserCorrectness.timeParse < 0;
-      result.memoryBefore.t2 = newParserCorrectness.memoryBefore;
-      result.memoryAfter.t2 = newParserCorrectness.memoryAfter;
+      result.ambiguities.t2 = newParserOrig.ambiguities;
+      result.layoutFilterCallsParseTime.t2 = newParserOrig.layoutFilterCountParseTime;
+      result.layoutFilteringParseTime.t2 = newParserOrig.layoutFilteringCountParseTime;
+      result.layoutFilterCallsDisambiguationTime.t2 = newParserOrig.layoutFilterCountDisambiguationTime;
+      result.layoutFilteringDisambiguationTime.t2 = newParserOrig.layoutFilteringCountDisambiguationTime;
+      result.enforcedNewlineSkips.t2 = newParserOrig.enforcedNewlineSkips;
+      result.time.t2 = newParserOrig.timeParse;
+      result.timeout.t2 = newParserOrig.timeParse < 0;
+      result.memoryBefore.t2 = newParserOrig.memoryBefore;
+      result.memoryAfter.t2 = newParserOrig.memoryAfter;
     }
     
     if (LOGGING) {
       String time;
-      if (newParserCorrectness.timeParse >= 0)
-        time = newParserCorrectness.timeParse / 1000 / 1000 + "ms";
+      if (newParserOrig.timeParse >= 0)
+        time = newParserOrig.timeParse / 1000 / 1000 + "ms";
       else
         time = "TIMEOUT";
-      System.out.println("[" + pkg + ", new, corre] " + "parsing took " + time + ", " + (newResultCorrectness != null ? "success" : "failure"));
+      System.out.println("[" + pkg + ", new, orig] " + "parsing took " + time + ", " + (newResultOrig != null ? "success" : "failure"));
     }
     
-    return newResultCorrectness;
+    return newResultOrig;
   }
   
-  private IStrategoTerm newParseSpeed(File f, String pkg) {
-    newResultSpeed = null;
+  private IStrategoTerm newParseImpl(File f, String pkg) {
+    newResultImpl = null;
 
     if (f == null)
       return null;
-    String input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    
+    String input;
+    try {
+      input = org.spoofax.jsglr_layout.io.FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t3 = true;
+      return null;
+    }
+    
+    if (input == null) {
+      result.otherExceptions.t3 = "input is null";
+      return null;
+    }
+
+
     result.linesOfCode.t3 = input.split("\n").length;
     result.byteSize.t3 = input.getBytes().length;
 
@@ -256,11 +303,13 @@ public class TestFile extends TestCase {
     result.memoryBefore.t3 = Utilities.usedMemory();
     
     try {
-      newResultSpeed = (IStrategoTerm) newParserSpeed.parse(input, f.getAbsolutePath());
-      result.parseOk.t3 = newResultSpeed != null;
+      newResultImpl = (IStrategoTerm) newParserImpl.parse(input, f.getAbsolutePath());
+      result.parseOk.t3 = newResultImpl != null;
       result.stackOverflow.t3 = false;
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (OutOfMemoryError e) {
+      result.outOfMemory.t3 = true;;
     } catch (ExecutionException e) {
       if (e.getCause() instanceof SGLRException) {
         result.parseExceptions.t3 = e.getCause().getMessage();
@@ -269,32 +318,35 @@ public class TestFile extends TestCase {
       }
       
       result.stackOverflow.t3 = e.getCause() instanceof StackOverflowError;
+      if (e.getCause() instanceof StackOverflowError)
+        e.getCause().printStackTrace();
+
 
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t3 = e.getCause().getMessage();
     } finally {
-      result.ambiguities.t3 = newParserSpeed.ambiguities;
-      result.layoutFilterCallsParseTime.t3 = newParserSpeed.layoutFilterCountParseTime;
-      result.layoutFilteringParseTime.t3 = newParserSpeed.layoutFilteringCountParseTime;
-      result.layoutFilterCallsDisambiguationTime.t3 = newParserSpeed.layoutFilterCountDisambiguationTime;
-      result.layoutFilteringDisambiguationTime.t3 = newParserSpeed.layoutFilteringCountDisambiguationTime;
-      result.enforcedNewlineSkips.t3 = newParserCorrectness.enforcedNewlineSkips;
-      result.time.t3 = newParserSpeed.timeParse;
-      result.timeout.t3 = newParserSpeed.timeParse < 0;
-      result.memoryBefore.t3 = newParserSpeed.memoryBefore;
-      result.memoryAfter.t3 = newParserSpeed.memoryAfter;
+      result.ambiguities.t3 = newParserImpl.ambiguities;
+      result.layoutFilterCallsParseTime.t3 = newParserImpl.layoutFilterCountParseTime;
+      result.layoutFilteringParseTime.t3 = newParserImpl.layoutFilteringCountParseTime;
+      result.layoutFilterCallsDisambiguationTime.t3 = newParserImpl.layoutFilterCountDisambiguationTime;
+      result.layoutFilteringDisambiguationTime.t3 = newParserImpl.layoutFilteringCountDisambiguationTime;
+      result.enforcedNewlineSkips.t3 = newParserOrig.enforcedNewlineSkips;
+      result.time.t3 = newParserImpl.timeParse;
+      result.timeout.t3 = newParserImpl.timeParse < 0;
+      result.memoryBefore.t3 = newParserImpl.memoryBefore;
+      result.memoryAfter.t3 = newParserImpl.memoryAfter;
     }
     
     if (LOGGING) {
       String time;
-      if (newParserSpeed.timeParse >= 0)
-        time = newParserSpeed.timeParse / 1000 / 1000 + "ms";
+      if (newParserImpl.timeParse >= 0)
+        time = newParserImpl.timeParse / 1000 / 1000 + "ms";
       else
         time = "TIMEOUT";
-      System.out.println("[" + pkg + ", new, speed] " + "parsing took " + time + ", " + (newResultSpeed != null ? "success" : "failure"));
+      System.out.println("[" + pkg + ", new, impl] " + "parsing took " + time + ", " + (newResultImpl != null ? "success" : "failure"));
     }
     
-    return newResultSpeed;
+    return newResultImpl;
   }
   
 
@@ -387,36 +439,36 @@ public class TestFile extends TestCase {
   
   private void checkDiff(String pkg, File f) {
     IStrategoTerm oldResultNorm = null;
-    IStrategoTerm newResultCorrectnessNorm = null;
-    IStrategoTerm newResultSpeedNorm = null;
+    IStrategoTerm newResultOrigNorm = null;
+    IStrategoTerm newResultImplNorm = null;
     try {
       oldResultNorm = normalize(oldResult);
       result.normalizeOk.t1 = true;
     } catch (StackOverflowError e) {
     }
     try {
-      newResultCorrectnessNorm = normalize(newResultCorrectness);
+      newResultOrigNorm = normalize(newResultOrig);
       result.normalizeOk.t2 = true;
     } catch (StackOverflowError e) {
     }
     try {
-      newResultSpeedNorm = normalize(newResultSpeed);
+      newResultImplNorm = normalize(newResultImpl);
       result.normalizeOk.t3 = true;
     } catch (StackOverflowError e) {
     }
 
-    Utilities.writeToFile(newResultCorrectnessNorm, f.getAbsolutePath() + ".new.corre.norm");
-    Utilities.writeToFile(newResultSpeedNorm, f.getAbsolutePath() + ".new.speed.norm");
+    Utilities.writeToFile(newResultOrigNorm, f.getAbsolutePath() + ".new.orig.norm");
+    Utilities.writeToFile(newResultImplNorm, f.getAbsolutePath() + ".new.impl.norm");
     Utilities.writeToFile(oldResultNorm, f.getAbsolutePath() + ".old.norm");
     
     result.differencesToReferenceParser.t1 = 0;
     try {
-      result.differencesToReferenceParser.t2 = checkDiff(pkg, f, newResultCorrectnessNorm, oldResultNorm, "corre");
+      result.differencesToReferenceParser.t2 = checkDiff(pkg, f, newResultOrigNorm, oldResultNorm, "orig");
     } catch (StackOverflowError e) {
       result.normalizeOk.t2 = false;
     }
     try {
-      result.differencesToReferenceParser.t3 = checkDiff(pkg, f, newResultSpeedNorm, oldResultNorm, "speed");
+      result.differencesToReferenceParser.t3 = checkDiff(pkg, f, newResultImplNorm, oldResultNorm, "impl");
     } catch (StackOverflowError e) {
       result.normalizeOk.t3 = false;
     }
@@ -455,10 +507,10 @@ public class TestFile extends TestCase {
   private void checkAmbiguities(String pkg, File f) {
     if (LOGGING && oldParser.ambiguities > 0)
       System.out.println("[" + pkg + ", old] " + oldParser.ambiguities + " ambiguities");
-    if (LOGGING && newParserCorrectness.ambiguities > 0)
-      System.out.println("[" + pkg + ", new corre] " + newParserCorrectness.ambiguities + " ambiguities");
-    if (LOGGING && newParserSpeed.ambiguities > 0)
-      System.out.println("[" + pkg + ", new speed] " + newParserSpeed.ambiguities + " ambiguities");
+    if (LOGGING && newParserOrig.ambiguities > 0)
+      System.out.println("[" + pkg + ", new orig] " + newParserOrig.ambiguities + " ambiguities");
+    if (LOGGING && newParserImpl.ambiguities > 0)
+      System.out.println("[" + pkg + ", new impl] " + newParserImpl.ambiguities + " ambiguities");
   }
 
   
@@ -470,7 +522,9 @@ public class TestFile extends TestCase {
     Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp.impl");
     Utilities.deleteFile(f.getAbsoluteFile() + ".old");
     Utilities.deleteFile(f.getAbsoluteFile() + ".new.corre");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.orig");
     Utilities.deleteFile(f.getAbsoluteFile() + ".new.speed");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.impl");
     Utilities.deleteFile(f.getAbsoluteFile() + ".old.pt");
     Utilities.deleteFile(f.getAbsoluteFile() + ".new.pt");
   }

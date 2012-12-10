@@ -7,15 +7,15 @@ exports
     Decl 		   	-> Topdecl
 
   context-free syntax
-  	"{" NoOffsideBody "}" -> Body {ignore-indent, bracket}
+  	"{" NoOffsideBody "}" -> Body {ignore-layout, bracket}
     OffsideBody           -> Body
   	
   	"" -> Empty {cons("Empty")}
   	
-  	Empty                       Empty                -> NoOffsideBody {cons("Body")}
-  	Empty                       NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
-  	NoOffsideImportdeclList     Empty                -> NoOffsideBody {cons("Body")}
-    NoOffsideImportdeclList ";" NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
+  	Empty                          Empty                   -> NoOffsideBody {cons("Body")}
+  	Empty                          NoOffsideTopdeclListSem -> NoOffsideBody {cons("Body")}
+  	NoOffsideImportdeclListSem     Empty                   -> NoOffsideBody {cons("Body")}
+    NoOffsideImportdeclListSem ";" NoOffsideTopdeclList -> NoOffsideBody {cons("Body")}
 
     Empty                 Empty              -> OffsideBody {cons("Body")}
     Empty                 OffsideTopdeclList -> OffsideBody {cons("Body")}
@@ -35,21 +35,21 @@ exports
     NoOffsideImportdecl -> NoOffsideImportdeclList
     NoOffsideImportdecl ";" NoOffsideImportdeclList -> NoOffsideImportdeclList {cons("ImportdeclSeq")}
 
+    NoOffsideImportdeclList  -> NoOffsideImportdeclListSem
+    ";" NoOffsideImportdeclListSem -> NoOffsideImportdeclListSem 
+
 %% No offside top declarations
   context-free priorities
     Topdecl -> NoOffsideTopdecl
   >
     NoOffsideTopdecl ";" -> NoOffsideTopdecl {prefer}
-%%  >
-%%    ";" NoOffsideTopdecl -> NoOffsideTopdecl
-
 
   context-free syntax
-%%    NoOffsideTopdecl -> NoOffsideTopdeclSeqs
-%%    ";" NoOffsideTopdeclSeqs -> NoOffsideTopdeclSeqs
-    
     NoOffsideTopdecl -> NoOffsideTopdeclList
     NoOffsideTopdecl ";" NoOffsideTopdeclList -> NoOffsideTopdeclList {cons("TopdeclSeq")}
+
+    NoOffsideTopdeclList  -> NoOffsideTopdeclListSem
+    ";" NoOffsideTopdeclListSem -> NoOffsideTopdeclListSem 
 
 
 %% Offside import declarations

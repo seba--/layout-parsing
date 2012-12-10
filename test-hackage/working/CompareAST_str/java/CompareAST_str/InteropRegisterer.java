@@ -31,10 +31,6 @@ import java.lang.ref.WeakReference;
     varScope.addSVar("peq_1_0", new InteropSDefT(peq_1_0.instance, context));
     varScope.addSVar("hs_string_to_int_0_0", new InteropSDefT(hs_string_to_int_0_0.instance, context));
     varScope.addSVar("hs_string_to_float_0_0", new InteropSDefT(hs_string_to_float_0_0.instance, context));
-    varScope.addSVar("norm_char_char_0_0", new InteropSDefT(norm_char_char_0_0.instance, context));
-    varScope.addSVar("norm_char_0_0", new InteropSDefT(norm_char_0_0.instance, context));
-    varScope.addSVar("norm_string_0_0", new InteropSDefT(norm_string_0_0.instance, context));
-    varScope.addSVar("DecimalEsc_1_0", new InteropSDefT($Decimal$Esc_1_0.instance, context));
   }
 
   private void registerLazy(org.spoofax.interpreter.core.IContext context, Context compiledContext, ClassLoader classLoader, org.spoofax.interpreter.core.VarScope varScope)
@@ -47,9 +43,5 @@ import java.lang.ref.WeakReference;
     varScope.addSVar("peq_1_0", new InteropSDefT(classLoader, "CompareAST_str.peq_1_0", context));
     varScope.addSVar("hs_string_to_int_0_0", new InteropSDefT(classLoader, "CompareAST_str.hs_string_to_int_0_0", context));
     varScope.addSVar("hs_string_to_float_0_0", new InteropSDefT(classLoader, "CompareAST_str.hs_string_to_float_0_0", context));
-    varScope.addSVar("norm_char_char_0_0", new InteropSDefT(classLoader, "CompareAST_str.norm_char_char_0_0", context));
-    varScope.addSVar("norm_char_0_0", new InteropSDefT(classLoader, "CompareAST_str.norm_char_0_0", context));
-    varScope.addSVar("norm_string_0_0", new InteropSDefT(classLoader, "CompareAST_str.norm_string_0_0", context));
-    varScope.addSVar("DecimalEsc_1_0", new InteropSDefT(classLoader, "CompareAST_str.$Decimal$Esc_1_0", context));
   }
 }

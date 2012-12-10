@@ -200,10 +200,36 @@ public abstract class AbstractParseNode {
   public AbstractParseNode getLast() {
     AbstractParseNode n = this;
     while (n.getChildren().length > 0)
-      n = n.getChildren()[n.getChildren().length - 1];
+      for (int i = n.getChildren().length - 1; i >= 0; i--) {
+        AbstractParseNode kid = n.getChildren()[i];
+        if (kid.isEmpty() || kid.isLayout())
+          continue;
+        n = kid;
+        break;
+      }
     return n;
   }
   
+  public AbstractParseNode getRight() {
+    AbstractParseNode last = getLast();
+    AbstractParseNode right = null;
+    
+    for (int i = getChildren().length - 1; i >= 0; i--) {
+      AbstractParseNode kid = getChildren()[i];
+      AbstractParseNode kidLast = kid.getLast();
+      if (!kid.isLayout() && !kid.isEmpty() && !kid.isIgnoreLayout()) {
+        if (kidLast.getLine() < last.getLine() && (right == null || kidLast.getColumn() > right.getColumn()))
+          right = kidLast;
+        AbstractParseNode kidRight = kid.getRight();
+        if (kidRight != null && 
+            kidRight.getLine() < last.getLine() &&
+            (right == null || kidRight.getColumn() > right.getColumn()))
+          right = kidRight;
+      }
+    }
+    return right;
+  }
+
   public void setProperty(String key, Object val) {
     if (properties == null)
       properties = new HashMap<String, Object>();

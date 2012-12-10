@@ -27,20 +27,21 @@ exports
 
   context-free syntax
   	NoOffsideDeclBlock -> DeclList {cons("DeclList")}
-  	OffsideDeclList | Empty   -> DeclList {cons("DeclList")}
+  	OffsideDeclList | Empty   -> DeclList {cons("DeclList"), longest-match} 
   	
-    "{" NoOffsideDeclList | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-indent}
+    "{" NoOffsideDeclListSem | Empty "}"  -> NoOffsideDeclBlock {bracket, ignore-layout}
     
   context-free priorities
     Decl -> NoOffsideDecl
   >
-    NoOffsideDecl ";" -> NoOffsideDecl {prefer}
-%%  >
-%%    ";" NoOffsideStmt -> NoOffsideStmt
+    NoOffsideDecl ";" -> NoOffsideDecl
 
   context-free syntax
     NoOffsideDecl -> NoOffsideDeclList
     NoOffsideDecl ";" NoOffsideDeclList -> NoOffsideDeclList {cons("DeclSeq")}
+    
+    NoOffsideDeclList  -> NoOffsideDeclListSem
+    ";" NoOffsideDeclListSem -> NoOffsideDeclListSem 
 
 
   context-free priorities

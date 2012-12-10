@@ -35,6 +35,7 @@ import org.spoofax.jsglr_layout.shared.Tools;
  * @author Lennart Kats <lennart add lclnet.nl>
  */
 public class Disambiguator {
+  private static final boolean LAYOUT_FITERING = true;
 
   private static final int FILTER_DRAW = 1;
 
@@ -512,16 +513,17 @@ public class Disambiguator {
                             t.isLayout(),
                             t.isIgnoreLayout());
         
-        if (!rejected) {
-          if (!layoutFilter.hasValidLayout((ParseNode) t)) {
-            layoutFiltering++;
-            rejected = true;
+        if (!rejected) 
+          if (LAYOUT_FITERING) {
+            if (!layoutFilter.hasValidLayout((ParseNode) t)) {
+              layoutFiltering++;
+              rejected = true;
+            }
+            else
+              layoutFiltering += layoutFilter.getDisambiguationCount();
+  
+            ambiguityManager.decreaseAmbiguityCount(layoutFilter.getDisambiguationCount());
           }
-          else
-            layoutFiltering += layoutFilter.getDisambiguationCount();
-
-          ambiguityManager.decreaseAmbiguityCount(layoutFilter.getDisambiguationCount());
-        }
         
         if (rejected)
           return null;
@@ -534,7 +536,7 @@ public class Disambiguator {
         switch (t.getNodeType()) {
         case AMBIGUITY:
           // (some cycle stuff should be done here)
-          t = filterAmbiguities(t.getChildren()[0], t.getChildren()[1]);
+          t = filterAmbiguities(t.getChildren());
           if (t == null)
             return null;
           output.push(t);
@@ -551,7 +553,7 @@ public class Disambiguator {
             rejected = true;
           }
           
-          if (!rejected) {
+          if (LAYOUT_FITERING && !rejected) {
             if (!layoutFilter.hasValidLayout((ParseNode) t)) {
               layoutFiltering++;
               rejected = true;
@@ -866,6 +868,16 @@ public class Disambiguator {
     return null;
   }
 
+  private AbstractParseNode filterAmbiguities(AbstractParseNode[] ambs) throws FilterException, InterruptedException {
+    if (ambs.length == 0)
+      return null;
+    AbstractParseNode current = ambs[0];
+    for (int i = 1; i < ambs.length; i++)
+      current = filterAmbiguities(current, ambs[i]);
+    
+    return current;
+  }
+  
   private AbstractParseNode filterAmbiguities(AbstractParseNode amb1, AbstractParseNode amb2)
       throws FilterException, InterruptedException {
     // SG_FilterAmb

@@ -10,19 +10,19 @@ exports
   	NoOffsideAltBlock -> AltList {cons("AltList")}
   	OffsideAltList   -> AltList {cons("AltList")}
   	
-    "{" NoOffsideAltList "}"  -> NoOffsideAltBlock {bracket, ignore-block}
+    "{" NoOffsideAltList "}"  -> NoOffsideAltBlock {bracket, ignore-layout}
     
   context-free priorities
     Alt -> NoOffsideAlt
   >
-    NoOffsideAlt ";" -> NoOffsideAlt {prefer}
-%%  >
-%%    ";" NoOffsideStmt -> NoOffsideStmt
+    NoOffsideAlt ";" -> NoOffsideAlt
 
   context-free syntax
     NoOffsideAlt -> NoOffsideAltList
     NoOffsideAlt ";" NoOffsideAltList -> NoOffsideAltList {cons("AltSeq")}
 
+    NoOffsideAltList  -> NoOffsideAltListSem
+    ";" NoOffsideAltListSem -> NoOffsideAltListSem 
 
   context-free priorities
     Alt -> OffsideAlt {layout(gt(col(left(1)), col(first(1))))}

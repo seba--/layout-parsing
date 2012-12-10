@@ -5,9 +5,9 @@ def gcd(a, b):
     return b
   while b != 0:
     if a > b:
-      print "first branch"
+      print ("first branch")
       a = a - b
     else:
-      print "second branch"
+      print ("second branch")
       b = b - a
   return a

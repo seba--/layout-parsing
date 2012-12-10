@@ -26,7 +26,7 @@ public class HaskellParser {
   /**
    * Time out for parser (in seconds).
    */
-  private static final int TIMEOUT = 10;
+  private static final int TIMEOUT = 30;
   
   private static final boolean DEBUG = false;
 
@@ -77,6 +77,9 @@ public class HaskellParser {
         startParse = System.nanoTime();
         try {
           return parser.parse(input, filename, startSymbol);
+        } catch (RuntimeException e) {
+          e.printStackTrace();
+          throw e;
         } finally {
           endParse = System.nanoTime();
           memoryAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -106,10 +109,15 @@ public class HaskellParser {
       } catch (OutOfMemoryError e1) {
         thread.stop();
         System.err.println("heap overflow: " + filename);
+        throw e1;
       }
       endParse = startParse - 1;
     } catch (InterruptedException e) {
       endParse = startParse - 1;
+    } catch (OutOfMemoryError e) {
+      thread.stop();
+      System.err.println("heap overflow: " + filename);
+      throw e;
     } finally {
       if (endParse == -1)
         endParse = System.nanoTime();

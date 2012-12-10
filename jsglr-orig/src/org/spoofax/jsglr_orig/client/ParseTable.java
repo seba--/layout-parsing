@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -405,43 +406,28 @@ public class ParseTable implements Serializable {
     }
 
     private RangeList[] parseCharRanges(IStrategoList list) throws InvalidParseTableException {
-        RangeList[] ret = new RangeList[list.getSubtermCount()];
-        for (int i=0;i<ret.length; i++) {
-            IStrategoNamed t = (IStrategoNamed) list.head();
-            list = list.tail();
-            IStrategoList l, n;
-            if (t.getName().equals("look")) { // sdf2bundle 2.4
-                l = termAt(termAt(t, 0), 0);
-                n = termAt(t, 1);
-            } else { // sdf2bundle 2.6
-                assert t.getName().equals("follow-restriction");
-                l = termAt(Term.termAt(termAt(t, 0), 0), 0);
-                n = ((IStrategoList) termAt(t, 0)).tail();
-            }
+      List<RangeList> ret = new LinkedList<RangeList>();
+      for (int i=0;i<list.getSubtermCount(); i++) {
+          IStrategoNamed t = (IStrategoNamed) list.head();
+          list = list.tail();
+          IStrategoList l, n;
+          if (t.getName().equals("look")) { // sdf2bundle 2.4
+              l = termAt(termAt(t, 0), 0);
+              n = termAt(t, 1);
+          } else { // sdf2bundle 2.6
+              assert t.getName().equals("follow-restriction");
+              l = termAt(Term.termAt(termAt(t, 0), 0), 0);
+              n = ((IStrategoList) termAt(t, 0)).tail();
+          }
 
-            // FIXME: multiple lookahead are not fully supported or tested
-            //        (and should work for both 2.4 and 2.6 tables)
+          // FIXME: multiple lookahead are not fully supported or tested
+          //        (and should work for both 2.4 and 2.6 tables)
 
-            if (n.getSubtermCount() > 0 && l.getSubtermCount() == 1) {
-                // This handles restrictions like:
-                //   LAYOUT? -/- [\/].[\/]
-                // where there is no other restriction that starts with a [\/]
-                
-                ret[i] = parseRanges(l);
-            } else if (n.getSubtermCount() > 0) {
-                // This handles restrictions like:
-                //   LAYOUT? -/- [\/].[\/\+].[\*]
-                throw new InvalidParseTableException("Multiple lookahead not fully supported");
-            } else {
-                // This handles restrictions like:
-                //   LAYOUT? -/- [\/].[\/]
-                //   LAYOUT? -/- [\/].[\*]
-                //   LAYOUT? -/- [\/].[\{]
-
-                ret[i] = parseRanges(l);
-            }
-        }
-        return ret;
+          ret.add(parseRanges(l));
+          for (IStrategoTerm nt : n.getAllSubterms())
+            ret.add(parseRanges((IStrategoList) nt.getSubterm(0)));
+      }
+      return ret.toArray(new RangeList[ret.size()]);
     }
 
     private ActionItem makeReduceLookahead(int productionArity, int label, int status, RangeList[] charClasses) {

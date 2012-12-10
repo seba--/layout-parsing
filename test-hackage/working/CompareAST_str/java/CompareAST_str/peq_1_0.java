@@ -13,30 +13,30 @@ import java.lang.ref.WeakReference;
 { 
   public static peq_1_0 instance = new peq_1_0();
 
-  @Override public IStrategoTerm invoke(Context context, IStrategoTerm term, Strategy l_4065)
+  @Override public IStrategoTerm invoke(Context context, IStrategoTerm term, Strategy v_198)
   { 
     ITermFactory termFactory = context.getFactory();
     context.push("peq_1_0");
-    Fail22:
+    Fail24:
     { 
-      IStrategoTerm j_4065 = null;
-      IStrategoTerm k_4065 = null;
-      IStrategoTerm m_4065 = null;
+      IStrategoTerm t_198 = null;
+      IStrategoTerm u_198 = null;
+      IStrategoTerm w_198 = null;
       if(term.getTermType() != IStrategoTerm.TUPLE || term.getSubtermCount() != 2)
-        break Fail22;
-      j_4065 = term.getSubterm(0);
-      k_4065 = term.getSubterm(1);
-      term = l_4065.invoke(context, j_4065);
+        break Fail24;
+      t_198 = term.getSubterm(0);
+      u_198 = term.getSubterm(1);
+      term = v_198.invoke(context, t_198);
       if(term == null)
-        break Fail22;
-      m_4065 = term;
-      term = l_4065.invoke(context, k_4065);
+        break Fail24;
+      w_198 = term;
+      term = v_198.invoke(context, u_198);
       if(term == null)
-        break Fail22;
-      term = termFactory.makeTuple(m_4065, term);
+        break Fail24;
+      term = termFactory.makeTuple(w_198, term);
       term = equal_0_0.instance.invoke(context, term);
       if(term == null)
-        break Fail22;
+        break Fail24;
       context.popOnSuccess();
       if(true)
         return term;

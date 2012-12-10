@@ -16,11 +16,27 @@ import java.lang.ref.WeakReference;
   @Override public IStrategoTerm invoke(Context context, IStrategoTerm term)
   { 
     context.push("hs_string_to_float_0_0");
-    Fail28:
+    Fail30:
     { 
+      IStrategoTerm term25 = term;
+      Success25:
+      { 
+        Fail31:
+        { 
+          if(term.getTermType() != IStrategoTerm.STRING || !"".equals(((IStrategoString)term).stringValue()))
+            break Fail31;
+          { 
+            if(true)
+              break Fail30;
+            if(true)
+              break Success25;
+          }
+        }
+        term = term25;
+      }
       term = string_to_real_0_0.instance.invoke(context, term);
       if(term == null)
-        break Fail28;
+        break Fail30;
       context.popOnSuccess();
       if(true)
         return term;

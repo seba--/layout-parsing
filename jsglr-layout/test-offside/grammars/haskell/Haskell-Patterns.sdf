@@ -3,14 +3,19 @@ exports
   context-free syntax
     LPat -> Pat
     
-  context-free priorities
-      Pat Qconop LPat -> Pat {cons("BinOpApp")}
-    > XPat ConsOp Pat -> Pat {cons("BinOpApp")}
-    
-  context-free syntax
-  	Pat Qconop LPat -> XPat {cons("BinOpApp")}
-  	LPat -> XPat
-  	
+%% with infix precedence:
+%%  context-free priorities
+%%      Pat QconopNoCons LPat -> Pat {cons("BinOpApp")}
+%%    > XPat ConsOp Pat -> Pat {cons("BinOpApp")}  
+%%  context-free syntax
+%%    Pat QconopNoCons LPat -> XPat {cons("BinOpApp")}
+%%    LPat -> XPat
+%%    Qconop -> QconopNoCons
+%%    ":" -> QconopNoCons  {reject}
+
+%% without precedence    
+    Pat Qconop LPat -> Pat {cons("BinOpApp")}
+
     APat -> LPat
     "-" Literal -> LPat {cons("Negation")}
     Gcon APat+ -> LPat {cons("ConstrApp")}
@@ -19,7 +24,7 @@ exports
     Var "@" APat -> APat {cons("Named")}
     Gcon -> APat {cons("Constr")}
     Qcon LabeledPat -> APat {cons("Labeled")}
-    "{" {FPat ","}* "}" -> LabeledPat {cons("LabeledPats"), ignore-indent}
+    "{" {FPat ","}* "}" -> LabeledPat {cons("LabeledPats"), ignore-layout}
     Literal -> APat
     "_" -> APat {cons("Wildcard")}
     "(" Pat ")" -> APat {bracket}
@@ -28,4 +33,8 @@ exports
     "~" APat -> APat {cons("Irrefutable")}
     
     Qvar "=" Pat -> FPat {cons("PatBind")}
-    
+
+  lexical restrictions
+    "~" -/- [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+    "-" -/- [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
+    "|" -/- [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]

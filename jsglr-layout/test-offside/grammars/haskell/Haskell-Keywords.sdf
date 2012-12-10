@@ -28,4 +28,4 @@ exports
     "then" 	 "type" 	 "where" 	
     "_" 
     "as" 	 "hiding" 	 "qualified" 	
-    "export" 	 "label" 	 "dynamic" -/- [a-zA-Z0-9]
+    "export" 	 "label" 	 "dynamic" -/- [a-zA-Z0-9\'\_]

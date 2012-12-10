@@ -69,7 +69,11 @@ public class SGLR {
 
 	protected int columnNumber;
 
-	private int startOffset;
+  protected int lastLineNumber;
+
+  protected int lastColumnNumber;
+
+  private int startOffset;
 
 	private final ArrayDeque<ActionState> forShifter;
 
@@ -538,7 +542,7 @@ public class SGLR {
 	private void shifter() {
 		logBeforeShifter();
 		activeStacks.clear();
-		final AbstractParseNode prod = new ParseProductionNode(currentToken, lineNumber, columnNumber);
+		final AbstractParseNode prod = new ParseProductionNode(currentToken, lastLineNumber, lastColumnNumber);
 
 		while (forShifter.size() > 0) {
 			final ActionState as = forShifter.remove();
@@ -548,7 +552,7 @@ public class SGLR {
 					st1 = newStack(as.s);
 					addStack(st1);
 				}
-				st1.addLink(as.st, prod, 1, lineNumber, columnNumber);
+				st1.addLink(as.st, prod, 1, lastLineNumber, lastColumnNumber);
 			} else {
 				if (Tools.logging) {
 					Tools.logger("Shifter: skipping rejected stack with state ",
@@ -670,28 +674,41 @@ public class SGLR {
 	}
 
 	private boolean checkLookahead(ReduceLookahead red) {
-		return doCheckLookahead(red, red.getCharRanges(), 0);
+		return doCheckLookahead(red, red.getCharRanges());
 	}
 
-	private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass, int pos) {
+	private boolean doCheckLookahead(ReduceLookahead red, RangeList[] charClass) {
 		if(Tools.tracing) {
 			TRACE("SG_CheckLookAhead() - ");
 		}
 
-		final int c = currentInputStream.read();
-
-		// EOF
-		if(c == -1) {
-			return true;
+		if (charClass.length == 0)
+		  return true;
+		
+    boolean permit = false;
+    int offset = -1;
+    int[] readChars = new int[charClass.length];
+		
+    int i;
+		for (i = 0; i < charClass.length; i++) {
+  		int c = currentInputStream.read();
+  		offset++;
+  		readChars[offset] = c; 
+  
+  		// EOF
+  		if(c == -1) {
+  			permit = true;
+  			break;
+  		}
+  
+  		if (!charClass[i].within(c)) {
+  		  permit = true;
+  		  break;
+  		}
 		}
 
-		boolean permit = true;
-
-		if(pos < charClass.length) {
-			permit = charClass[pos].within(c) ? false : doCheckLookahead(red, charClass, pos + 1);
-		}
-
-		currentInputStream.unread(c);
+		for (int j = offset; j >= 0; j--)
+		  currentInputStream.unread(readChars[j]);
 
 		return permit;
 	}
@@ -761,15 +778,15 @@ public class SGLR {
 			final State next = parseTable.go(st0.state, prod.label);
 			logReductionPath(prod, path, st0, next);
 			
-			if (SGLR.PARSE_TIME_LAYOUT_FITER &&
+			if (PARSE_TIME_LAYOUT_FITER &&
 			    !layoutFilter.hasValidLayout(prod.label, kids)) {
 			  layoutFiltering++;
 			  continue;
 			}
-			else
+			else if (PARSE_TIME_LAYOUT_FITER)
 			  layoutFiltering += layoutFilter.getDisambiguationCount();
 			
-			if (SGLR.ENFORCE_NEWLINE_FITER && 
+			if (ENFORCE_NEWLINE_FITER && 
           parseTable.getLabel(prod.label).getAttributes().isNewlineEnforced()) {
         boolean hasNewline = false;
         for (int j = kids.length - 1; j >= 0; j--) {
@@ -1184,6 +1201,9 @@ public class SGLR {
 		if (Tools.debugging) {
 			Tools.debug("getNextToken() - ", ch, "(", (char) ch, ")");
 		}
+		
+		lastLineNumber = lineNumber;
+		lastColumnNumber = columnNumber;
 
 		switch (ch) {
 		case '\n':

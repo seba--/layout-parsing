@@ -1,59 +1,59 @@
 module Haskell-Expressions
-exports   
+exports
   context-free syntax
-    Exp 				 -> AnyExp
+    Exp -> AnyExp
 
-    Qvar 				 -> Exp 	{cons("Var")}
-    Gcon 				 -> Exp 	{cons("Constr")}
-    Literal 				 -> Exp 	{cons("Lit")}
-    "(" Exps2 ")" 			 -> Exp 	{cons("Product")}
-%%    "(#" Exps "#)" 			 -> Exp 	{cons("Unboxed?")}
-    "(" Exp ")" 			 -> Exp 	{bracket}
+    Qvar -> Exp {cons("Var")}
+    Gcon -> Exp {cons("Constr")}
+    Literal -> Exp {cons("Lit")}
+    "(" Exps2 ")" -> Exp {cons("Product")}
+%% "(#" Exps "#)" -> Exp {cons("Unboxed?")}
+    "(" Exp ")" -> Exp {bracket}
 
-    {Exp ","}+ 				 -> Exps
-    Exp "," {Exp ","}+ 			 -> Exps2 	{cons("Cons")}
-    APat+				 -> Fargs
+    {Exp ","}+ -> Exps
+    Exp "," {Exp ","}+ -> Exps2 {cons("Cons")}
+    APat+ -> Fargs
 
 
   context-free syntax
-    "infix"  	   	  -> Infix 	{cons("Infix")}
-    "infixl" 	   	  -> Infix 	{cons("InfixL")}
-    "infixr" 	   	  -> Infix 	{cons("InfixR")}
-    INTEGER? 	   	  -> Prec
-    {Op ","}+ 	   	  -> Ops
-    Infix Prec Ops 	  -> Fixdecl 	{cons("FixDecl")}
-    Fixdecl 	   	  -> Decl 
+    "infix" -> Infix {cons("Infix")}
+    "infixl" -> Infix {cons("InfixL")}
+    "infixr" -> Infix {cons("InfixR")}
+    INTEGER? -> Prec
+    {Op ","}+ -> Ops
+    Infix Prec Ops -> Fixdecl {cons("FixDecl")}
+    Fixdecl -> Decl
 
-    "(" Exp Qop ")"  -> Exp 	{cons("LSection")}
-    "(" QopNoNeg Exp ")" -> Exp 	{cons("RSection")}
+    "(" Exp Qop ")" -> Exp {cons("LSection")}
+    "(" QopNoNeg Exp ")" -> Exp {cons("RSection")}
 
-    Qop -> QopNoNeg    
+    Qop -> QopNoNeg
     "-" -> QopNoNeg {reject}
  
-    "{" {Fbind ","}* "}" -> LabelBinds {cons("LabelBinds"), ignore-indent}
+    "{" {Fbind ","}* "}" -> LabelBinds {cons("LabelBinds"), ignore-layout}
 
   context-free priorities
-    Qvar "@" Exp 			  -> Exp  	{cons("Named")}
-  > Exp LabelBinds 			  -> Exp  	{cons("Labeled")}
-  > Exp				  	  -> Aexp
-  > Exp Exp				  -> Exp 	{cons("AppBin"),left}
-  > Exp "::" Type 			  -> Exp 	{cons("Typed")}
-  > "-" Exp               -> Exp  {cons("Negation")}
+    Qvar "@" Exp -> Exp {cons("Named")}
+  > Exp LabelBinds -> Exp {cons("Labeled")}
+  > Exp -> Aexp
+  > Exp Exp -> Exp {cons("AppBin"),left}
+  > "-" Exp -> Exp {cons("Negation")}
   > Exp Qop Exp -> Exp {cons("OpApp"), right}
+  > Exp "::" Context? Type -> Exp {cons("Typed")}
 
 
   context-free syntax
-  	"\\" Fargs "->" Exp		  -> Exp 	{cons("Abs")}
-    "let" Declbinds "in" Exp 		  -> Exp 	{cons("Let")} 
-    "if" AnyExp "then" AnyExp "else" Exp -> Exp 	{cons("If")}
+   "\\" Fargs "->" Exp -> Exp {cons("Abs"), longest-match}
+    "let" Declbinds "in" Exp -> Exp {cons("Let"), longest-match}
+    "if" AnyExp "then" AnyExp "else" Exp -> Exp {cons("If"), longest-match}
     "do" StmtList -> Exp {cons("Do"), longest-match}
-    "case" AnyExp "of" AltList          -> Exp  	{cons("Case"), longest-match}
+    "case" AnyExp "of" AltList -> Exp {cons("Case"), longest-match}
 
   context-free priorities
-  	Exp Exp				  -> Exp 	{cons("AppBin"),left}
-  	> {
+   Exp Exp -> Exp {cons("AppBin"),left}
+   > {
         "\\" Fargs "->" Exp -> Exp
-       "let" Declbinds "in" Exp -> Exp 
+       "let" Declbinds "in" Exp -> Exp
        "if" AnyExp "then" AnyExp "else" Exp -> Exp
        "case" AnyExp "of" AltList -> Exp
        "do" StmtList -> Exp
@@ -63,22 +63,46 @@ exports
     Exp Qop Exp -> Exp
   <0>
   > {
-  	 "\\" Fargs "->" Exp -> Exp
-     "let" Declbinds "in" Exp -> Exp 
+   "\\" Fargs "->" Exp -> Exp
+     "let" Declbinds "in" Exp -> Exp
      "if" AnyExp "then" AnyExp "else" Exp -> Exp
     }
  
-  context-free priorities
-  	"-" Exp               -> Exp  {cons("Negation")}
-    >
-  	Exp Qop Exp -> Exp
-  
-  
-  
-%% Notes:
-%% AnyExp is used to prevent priorities from forbidding expressions
-%% where the do not cause ambiguities.
-%% Fargs is used instead of Aexp+ because of a bug in the SDF2 
-%% normalizer; regular expression expansion does not take into
-%% account symbols used only in priority rules.
+   context-free priorities
+    Exp "::" Context? Type -> Exp
+  .> {
+   "\\" Fargs "->" Exp -> Exp
+     "let" Declbinds "in" Exp -> Exp
+     "if" AnyExp "then" AnyExp "else" Exp -> Exp
+    }
 
+%%  context-free syntax
+%%  	Exp -> ExpSem
+%%  	Exp ";" -> ExpSem 
+%%  	
+%%  	InfixExp "::" Context? Type -> Exp {cons("Typed")}
+%%  	InfixExp -> Exp
+%%  	
+%%  	LExp Qop InifxExp -> InfixExp {cons("OpApp")}
+%%  	"-" InfixExp -> InfixExp {cons("Negation")}
+%%  	LExp -> InfixExp
+%%
+%%    "\\" Fargs "->" Exp -> LExp {cons("Abs"), longest-match}
+%%    "let" Declbinds "in" Exp -> LExp {cons("Let"), longest-match} 
+%%    "if" ExpSem "then" ExpSem "else" Exp -> LExp {cons("If"), longest-match}
+%%    "case" Exp "of" AltList -> LExp {cons("Case"), longest-match}
+%%    "do" StmtList -> LExp {cons("Do"), longest-match}
+%%    FExp -> LExp
+%%    
+%%    FExp AExp -> FExp  {cons("AppBin")} 
+%%    AExp -> FExp
+%%
+%%    Qvar -> AExp {cons("Var")}
+%%    Gcon -> AExp {cons("Constr")}
+%%    Literal -> AExp {cons("Lit")}
+%%    "(" Exp ")"  -> AExp {bracket}
+%%    "(" Exps2 ")" -> AExp {cons("Product")}
+%%    %% lists in Haskell-List-Comprehensions
+%%    "(" InfixExp Qop ")" -> AExp {cons("LSection")}
+%%    "(" QopNoNeg InfixExp ")" -> AExp {cons("RSection")}
+%%    Exp LabelBinds -> AExp {cons("Labeled")}

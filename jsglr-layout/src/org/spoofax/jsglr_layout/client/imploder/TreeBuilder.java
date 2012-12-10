@@ -212,6 +212,7 @@ public class TreeBuilder extends TopdownTreeBuilder {
     int lastOffset = offset;
     AbstractParseNode[] subnodes = node.getChildren();
     boolean isList = label.isList();
+    boolean isLayout = label.isLayout();
     boolean lexicalStart = false;
     
     if (!inLexicalContext && label.isNonContextFree())
@@ -219,7 +220,24 @@ public class TreeBuilder extends TopdownTreeBuilder {
     
     List<Object> children;
     
-    if (isList) {
+    if (isLayout) {
+      // structure of layout does not matter; can simply iterate over all production nodes
+      children = null;
+      
+      LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
+      nodes.push(node);
+
+      while (!nodes.isEmpty()) {
+        AbstractParseNode current = nodes.pop();
+        
+        if (current.isParseProductionNode())
+          buildTreeProduction((ParseProductionNode) current);
+        
+        for (int i = current.getChildren().length - 1; i >= 0; i--)
+          nodes.push(current.getChildren()[i]);
+      }
+    }
+    else if (isList) {
       children = inLexicalContext ? null : new AutoConcatList<Object>(label.getSort());
 
       LinkedList<AbstractParseNode> nodes = new LinkedList<AbstractParseNode>();
@@ -252,7 +270,7 @@ public class TreeBuilder extends TopdownTreeBuilder {
         IToken token = tokenizer.makeToken(tokenizer.getStartOffset() - 1, IToken.TK_LAYOUT, true);
         ((AutoConcatList) children).setEmptyListToken(token);
       }
-    }
+    } 
     else {
       children = inLexicalContext ? null : new ArrayList<Object>(max(EXPECTED_NODE_CHILDREN, subnodes.length));
 
@@ -262,7 +280,6 @@ public class TreeBuilder extends TopdownTreeBuilder {
         if (inLexicalContext && subnode.isParseProductionChain()) {
           child = chainToTreeTopdown(subnode);
         } else {
-          // TODO: Optimize stack - inline toTreeTopdown case selection?
           child = subnode.toTreeTopdown(this);
         }
         // TODO: handle ambiguities in lexicals better (ignored now)
@@ -278,6 +295,8 @@ public class TreeBuilder extends TopdownTreeBuilder {
     if (lexicalStart) {
       result = tryCreateStringTerminal(label, lastOffset);
       inLexicalContext = false;
+    } else if (isLayout) {
+      result = null;
     } else if (inLexicalContext) {
       tokenizer.tryMakeLayoutToken(offset - 1, lastOffset - 1, label);
       result = null; // don't create nodes inside lexical context; just create one big token at the top

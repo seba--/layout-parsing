@@ -3,6 +3,7 @@ exports
   context-free syntax
     "class" SContext? Tycls Tyvar MaybeWhere 		-> Topdecl {cons("Class")}
     "instance" SContext? Qtycls Inst* MaybeWhere 		-> Topdecl {cons("Instance")}
+    "instance" SContext? "(" Qtycls Inst* ")" MaybeWhere    -> Topdecl {cons("Instance")}
     "default"  "(" {Type ","}* ")" 	-> Topdecl {cons("Default")}
 
     Gtycon -> Inst {cons("InstCons")}

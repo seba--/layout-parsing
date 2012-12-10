@@ -19,6 +19,8 @@ public class TestAllPackages extends TestCase {
   private File csvDir;
   private File csvFile;
   
+  private int warmupCount = 0;
+  
   public void warmup() throws IOException {
     String[] warmupPackages = new String[] {
         "matlab",
@@ -29,12 +31,27 @@ public class TestAllPackages extends TestCase {
         "maybench",
         "mbox",
         "mdo",
+        "dbf", 
+        "dbjava",
+        "dbmigrations",
+        "hakismet",
+        "hakyll",
+        "halfs",
+        "halipeto",
+        "haltavista",
+        "hamlet",
+        "hamtmap",
+        "zenc",
+        "zeno"
     };
     
-    FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { } };
+    
+    FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { warmupCount++; } };
     
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
+    
+    System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }
   
   public void testAllPackages() throws IOException {
@@ -68,6 +85,8 @@ public class TestAllPackages extends TestCase {
       if (in != null)
         in.close();
     }
+    
+    System.out.println(csvFile.getAbsolutePath());
   }
 
   private class MyFileResultObserver implements FileResultObserver {
@@ -80,7 +99,7 @@ public class TestAllPackages extends TestCase {
       packageResult.appendAsCSV(csvFile.getAbsolutePath());
       packageResult.appendAsCSV(pkgCsv.getAbsolutePath());
       
-      System.out.println(csvFile.getAbsolutePath());
+//      System.out.println(csvFile.getAbsolutePath());
     }
   }
 }

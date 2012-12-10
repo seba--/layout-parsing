@@ -14,7 +14,7 @@ import org.spoofax.jsglr.tests.result.FileResultObserver;
  */
 public class TestPackage extends TestCase {
   
-  private final static boolean LOGGING = false;
+  private final static boolean LOGGING = true;
   
   private final static Pattern SOURCE_FILE_PATTERN = Pattern.compile(".*\\.hs");
   
@@ -22,7 +22,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("4Blocks", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("Cabal", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   

@@ -7,7 +7,11 @@ exports
 
     [\ \t\n\r]                      -> WhiteChar
 
-    "--" ~[\n\r]* ([\r\n] | EOF)    -> Comment
+    ~[\n\r] -> AnyNoSymbol
+    Symbol -> AnyNoSymbol {reject}
+    "--" [\-]* -> Dashes
+
+    Dashes (AnyNoSymbol ~[\n\r]*)? ([\r\n] | EOF)    -> Comment
     -> EOF
 
     "{-" NCommentContent* "-}" -> NComment
@@ -29,6 +33,7 @@ exports
     NoNewlineLayout? Newline LAYOUT -> NewLineLayout
     
   lexical restrictions
+  	Dashes -/- [\-]
     Hyphen    -/- [\}]
     CurlyOpen -/- [\-]
     EOF -/- ~[]
@@ -36,4 +41,5 @@ exports
     NCommentText -/- ~[\-\{] | [\-].~[\}] | [\{].~[\-]
 
   context-free restrictions
-    LAYOUT? -/- [\ \t\n\r] | [\-].[\-] | [\{].[\-]
+    LAYOUT? -/- [\ \t\n\r] | [\{].[\-] | [\-].[\-]
+  
