@@ -164,7 +164,7 @@ public class LayoutFilter {
         
         AbstractParseNode n = evalConstraint(constraint.getSubterm(1), kids, env, AbstractParseNode.class);
         
-        return checkAll(n, v, constraint, kids, env);
+        return checkAll(n, v, constraint.getSubterm(2), kids, env);
       }
       if (consName.equals("col")) {
         ensureChildCount(constraint, 1, consName);
@@ -222,7 +222,7 @@ public class LayoutFilter {
         Object old = env.get(v);
         env.put(v, next);
         try {
-          Boolean b = evalConstraint(constraint.getSubterm(2), kids, env, Boolean.class);
+          Boolean b = evalConstraint(constraint, kids, env, Boolean.class);
           if (b != NO_VALUE && !b)
             return false;
         } finally {
