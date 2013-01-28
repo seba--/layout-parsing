@@ -260,7 +260,7 @@ public class LayoutFilter {
     i = i - 1;
     int elems = (kids.length + 1) / 2;
     if (i < 0 || i >= elems)
-      throw new IllegalStateException("index out of bounds: " + "index is " + i + " but only " + elems + " children available");
+      throw new IllegalStateException("index out of bounds: " + "index is " + (i + 1) + " but only " + elems + " children available");
     return kids[2 * i];
   }
   
