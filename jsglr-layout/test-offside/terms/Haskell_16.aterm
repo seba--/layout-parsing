@@ -5,4 +5,5 @@ Program(
       Var("f"),
       Do(
         StmtList(
-          ExpStmt(AppBin(Var("x"),Var("y"))))))))
+          ExpStmt(AppBin(Var("x"),Var("y"))))),
+      Where(DeclList(Empty)))))

@@ -3,5 +3,5 @@ Module(
   None,
   Body(
     Import(None,None,"Abc",None,None),
-    TopdeclSeq(Valdef(Var("foo"),Lit(Int("5"))),
-               Valdef(Var("bar"),Lit(Int("7"))))))
+    TopdeclSeq(Valdef(Var("foo"),Lit(Int("5")),Where(DeclList(Empty))),
+               Valdef(Var("bar"),Lit(Int("7")),Where(DeclList(Empty))))))
