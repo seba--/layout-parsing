@@ -39,8 +39,8 @@ public interface CompilableLayoutNode<V> extends LayoutNode<V> {
     
   }
   
-  public String getCompiledParseTimeCode();
-  public String getCompiledDisambiguationTimeCode();
+  public String getCompiledParseTimeCode(LocalVariableManager manager);
+  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager);
   public ParseTimeInvokeType getParseTimeInvokeType();
 
 }

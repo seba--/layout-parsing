@@ -1,5 +1,7 @@
 package org.spoofax.jsglr_layout.client.indentation;
 
+import org.spoofax.jsglr_layout.client.indentation.LocalVariableManager.LocalVariable;
+
 public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
   
   public BinaryArithNode(IntegerNode node1, IntegerNode node2) {
@@ -9,7 +11,7 @@ public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
   protected abstract String getOperatorString();
   
   @Override
-  public String getCompiledParseTimeCode() {
+  public String getCompiledParseTimeCode(LocalVariableManager manager) {
     ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
     ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
     if (type0 == ParseTimeInvokeType.NOT_INVOKABLE
@@ -18,38 +20,48 @@ public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
     }
     if (type0 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
       if (type1 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
-        return "((" + this.operands[0].getCompiledParseTimeCode()
-            + " == null || " + this.operands[1].getCompiledParseTimeCode()
-            + " == null) ? null : "
-            + this.getOperateParseTimeCode()+")";
+        // Noth unsafe,, local variables for both
+        LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
+        LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
+        String code = "((" +"("+var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ")"
+            + " == null || " + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ")"
+            + " == null) ? null : (" + var0.getName() + this.getOperatorString() + var1.getName() +")" + ")";
+        manager.releaseLocalVariable(var0);
+        manager.releaseLocalVariable(var1);
+        return code;
       } else {
-        return this.getCodeForSafeAndUnsafeType(this.operands[0]);
+        return this.getCodeForSafeAndUnsafeType(this.operands[0], manager);
       }
     } else {
       if (type1 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
-        return this.getCodeForSafeAndUnsafeType(this.operands[1]);
+        return this.getCodeForSafeAndUnsafeType(this.operands[1], manager);
       } else {
-        return this.getOperateParseTimeCode();
+        return "("+this.operands[0].getCompiledParseTimeCode(manager)
+            + this.getOperatorString()
+            + this.operands[1].getCompiledParseTimeCode(manager)+")";
       }
     }
   }
 
-  private String getCodeForSafeAndUnsafeType(IntegerNode unsafe) {
-    return "("+unsafe.getCompiledParseTimeCode() + " == null ? null : "
-        + this.getOperateParseTimeCode() +")";
+  private String getCodeForSafeAndUnsafeType(IntegerNode unsafe, LocalVariableManager manager) {
+    // Local variable for unsafe
+    LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
+    String code = "("+"(" + var0.getName() + " = " +unsafe.getCompiledParseTimeCode(manager) + ")" + " == null ? null : ";
+    if (unsafe ==this.operands[0]) {
+      code += "("+var0.getName() + this.getOperatorString() + this.operands[1].getCompiledParseTimeCode(manager)+")";
+    } else {
+      code += "("+this.operands[0].getCompiledParseTimeCode(manager) + this.getOperatorString() + var0.getName()+")";
+    }
+    code += ")";
+    manager.releaseLocalVariable(var0);
+    return code;
   }
   
-  private String getOperateParseTimeCode() {
-    return "("+this.operands[0].getCompiledParseTimeCode()
-        + this.getOperatorString()
-        + this.operands[1].getCompiledParseTimeCode()+")";
-  }
-
   @Override
-  public String getCompiledDisambiguationTimeCode() {
-    return "("+this.operands[0].getCompiledDisambiguationTimeCode()
+  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
+    return "("+this.operands[0].getCompiledDisambiguationTimeCode(manager)
         + this.getOperatorString()
-        + this.operands[1].getCompiledDisambiguationTimeCode()+")";
+        + this.operands[1].getCompiledDisambiguationTimeCode(manager)+")";
   }
 
   @Override

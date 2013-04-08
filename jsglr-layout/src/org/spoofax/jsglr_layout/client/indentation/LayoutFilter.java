@@ -89,6 +89,8 @@ public class LayoutFilter {
         bNode = evalConstraint(layoutConstraint, kids,
           new HashMap<String, Object>(), BooleanNode.class);
         this.cachedConstraints.put(layoutConstraint, bNode);
+        System.out.println(bNode.getCompiledParseTimeCode(new LocalVariableManager()));
+        System.out.println(bNode.getCompiledDisambiguationTimeCode(null));
         numCreations ++;
       } else {
         numCached ++;

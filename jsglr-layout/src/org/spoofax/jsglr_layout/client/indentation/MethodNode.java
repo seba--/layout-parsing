@@ -3,6 +3,7 @@ package org.spoofax.jsglr_layout.client.indentation;
 import java.util.Map;
 
 import org.spoofax.jsglr_layout.client.AbstractParseNode;
+import org.spoofax.jsglr_layout.client.indentation.LocalVariableManager.LocalVariable;
 
 public class MethodNode extends NodeOperatorNode<Integer> implements
     IntegerNode {
@@ -59,12 +60,15 @@ public class MethodNode extends NodeOperatorNode<Integer> implements
   }
 
   @Override
-  public String getCompiledParseTimeCode() {
+  public String getCompiledParseTimeCode(LocalVariableManager manager) {
     switch (this.operand.getParseTimeInvokeType()) {
     case SAFELY_INVOKABLE:
-      return this.operand.getCompiledParseTimeCode()+this.method.getCode();
+      return this.operand.getCompiledParseTimeCode(manager)+this.method.getCode();
     case UNSAFELY_INVOKABLE:
-      return this.operand.getCompiledParseTimeCode()+" == null ? null : "+this.operand.getCompiledParseTimeCode() +this.method.getCode();
+      LocalVariable var = manager.getFreeLocalVariable(AbstractParseNode.class);
+      String code = "((" + var.getName() + " = " + this.operand.getCompiledParseTimeCode(manager)+") == null ? null : "+var.getName() +this.method.getCode()+")";
+      manager.releaseLocalVariable(var);
+      return code;
     case NOT_INVOKABLE:
     default:
       return "null";
@@ -72,8 +76,8 @@ public class MethodNode extends NodeOperatorNode<Integer> implements
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode() {
-    return this.operand.getCompiledParseTimeCode()+this.method.getCode();
+  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
+    return this.operand.getCompiledDisambiguationTimeCode(manager)+this.method.getCode();
   }
 
   @Override

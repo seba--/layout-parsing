@@ -13,4 +13,22 @@ public class AllNode implements BooleanNode {
     return null;
   }
 
+  @Override
+  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.ParseTimeInvokeType getParseTimeInvokeType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }
