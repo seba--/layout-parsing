@@ -8,11 +8,11 @@ import java.util.Collection;
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
  */
 public class TestConfiguration {
-  // public final static String CABAL_COMMAND = "cabal";
-  public final static String CABAL_COMMAND = "d:/Programs/Haskell/lib/extralibs/bin/cabal.exe";
+  public final static String CABAL_COMMAND = "cabal";
+  //public final static String CABAL_COMMAND = "d:/Programs/Haskell/lib/extralibs/bin/cabal.exe";
   
-  //public final static String PP_HASKELL_COMMAND = "pp-haskell";
-  public final static String PP_HASKELL_COMMAND = "c:/Users/seba.INFORMATIK.001/AppData/Roaming/cabal/bin/pp-haskell.exe";
+  public final static String PP_HASKELL_COMMAND = "pp-haskell";
+  //public final static String PP_HASKELL_COMMAND = "c:/Users/seba.INFORMATIK.001/AppData/Roaming/cabal/bin/pp-haskell.exe";
   
   public final static Collection<String> SKIP_PACKAGES = new ArrayList<String>();
   private final static Collection<String> SKIP_FILES = new ArrayList<String>();

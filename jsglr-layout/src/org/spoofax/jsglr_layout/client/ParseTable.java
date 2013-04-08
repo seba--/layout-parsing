@@ -329,7 +329,7 @@ public class ParseTable implements Serializable {
                             try {
                               if (layoutParser == null) {
                                 try {
-                                  InputStream in = getClass().getResourceAsStream("indentation/LayoutConstraint.tbl");
+                                  InputStream in = getClass().getResourceAsStream("/org/spoofax/jsglr_layout/client/indentation/LayoutConstraint.tbl");
                                   ParseTable pt = new ParseTableManager(factory).loadFromStream(in);
                                   layoutParser =  new SGLR(new TreeBuilder(), pt);
                                 } catch (ParseError e) {

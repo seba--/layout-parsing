@@ -2,6 +2,7 @@ package org.spoofax.jsglr.tests.haskell;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -90,12 +91,12 @@ public class TestFile extends TestCase {
     else
       result.cppPreprocess = true;
     
-    File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
-    File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
+   // File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
+  // File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
 
-    oldParse(explicitLayoutInput, pkg);
+    //oldParse(explicitLayoutInput, pkg);
     newParseOrig(preparedInput, pkg);
-    newParseImpl(implicitLayoutInput, pkg);
+   // newParseImpl(implicitLayoutInput, pkg);
 
     Utilities.writeToFile(newResultOrig, f.getAbsolutePath() + ".new.orig");
     Utilities.writeToFile(newResultImpl, f.getAbsolutePath() + ".new.impl");
@@ -391,6 +392,7 @@ public class TestFile extends TestCase {
       messages[0] = (String[]) result[1];
       messages[1] = (String[]) result[2];
     } catch (ExecutionError e) {
+      e.printStackTrace();
       messages = e.getMessages();
       return null;
     } finally {

@@ -1,5 +1,6 @@
 package org.spoofax.jsglr_orig.tests.haskell;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -30,11 +31,12 @@ public class HaskellParser {
   
   private static final boolean DEBUG = false;
 
-  private static final String tableLocation = HaskellParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr_orig/tests/haskell/Haskell.tbl";
+  private static final String tableLocation;
   
   private static final ParseTable table;
   static {
     try {
+      tableLocation  = new File(HaskellParser.class.getResource("/org/spoofax/jsglr_orig/tests/haskell/Haskell.tbl").toURI()).getPath();
       table = new ParseTableManager().loadFromFile(tableLocation);
     } catch (Exception e) {
       throw new RuntimeException(e);

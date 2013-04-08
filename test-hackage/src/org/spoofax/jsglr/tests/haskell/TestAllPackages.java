@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr.tests.result.FileResultObserver;
+import org.spoofax.jsglr_layout.client.indentation.LayoutFilter;
 
 /**
  * @author Sebastian Erdweg <seba at informatik uni-marburg de>
@@ -81,11 +82,14 @@ public class TestAllPackages extends TestCase {
         new TestPackage().testPackage(pkg, new MyFileResultObserver(pkg));
       }
       
-    } finally { 
+    } catch(Exception e) {
+     ;
+    }  finally { 
       if (in != null)
         in.close();
     }
     
+    System.out.println("LayoutFilter: Created: "+LayoutFilter.getNumCreations() + " Cached: " +LayoutFilter.getNumCached());
     System.out.println(csvFile.getAbsolutePath());
   }
 
