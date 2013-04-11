@@ -107,4 +107,9 @@ public class ArithOperatorNode extends BinaryArithNode<Integer> implements
     return this.operation.getSymbol();
   }
 
+  @Override
+  protected String convertToInt(String val, LocalVariableManager manager) {
+    return "("+val+")";
+  }
+
 }

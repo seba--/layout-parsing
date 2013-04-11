@@ -66,12 +66,12 @@ public class MethodNode extends NodeOperatorNode<Integer> implements
       return this.operand.getCompiledParseTimeCode(manager)+this.method.getCode();
     case UNSAFELY_INVOKABLE:
       LocalVariable var = manager.getFreeLocalVariable(AbstractParseNode.class);
-      String code = "((" + var.getName() + " = " + this.operand.getCompiledParseTimeCode(manager)+") == null ? null : "+var.getName() +this.method.getCode()+")";
+      String code = "((" + var.getName() + " = " + this.operand.getCompiledParseTimeCode(manager)+") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "+var.getName() +this.method.getCode()+")";
       manager.releaseLocalVariable(var);
       return code;
     case NOT_INVOKABLE:
     default:
-      return "null";
+      return "Integer.MIN_VALUE";
     }
   }
 

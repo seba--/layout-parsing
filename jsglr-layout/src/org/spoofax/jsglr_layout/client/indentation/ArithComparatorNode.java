@@ -3,6 +3,7 @@ package org.spoofax.jsglr_layout.client.indentation;
 import java.util.Map;
 
 import org.spoofax.jsglr_layout.client.AbstractParseNode;
+import org.spoofax.jsglr_layout.client.indentation.LocalVariableManager.LocalVariable;
 
 public class ArithComparatorNode extends BinaryArithNode<Boolean> implements
     BooleanNode {
@@ -117,6 +118,22 @@ public class ArithComparatorNode extends BinaryArithNode<Boolean> implements
   @Override
   protected String getOperatorString() {
     return this.comperator.getSymbol();
+  }
+
+  @Override
+  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+    return super.getCompiledParseTimeCode(manager);
+  }
+
+  @Override
+  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
+    // TODO Auto-generated method stub
+    return super.getCompiledDisambiguationTimeCode(manager);
+  }
+
+  @Override
+  protected String convertToInt(String val, LocalVariableManager manager) {
+    return "(("+val+")? 1 : 0)";
   }
 
 }

@@ -30,10 +30,11 @@ public class LayoutFilter {
   private ProductionAttributeReader attrReader;
   private int disambiguationCount;
   private int filterCallCount = 0;
-  
-  private static int numCreations= 0;
+
+  private static int numCreations = 0;
   private static int numCached = 0;
-  private static WeakHashMap<IStrategoTerm, BooleanNode> cachedConstraints = new WeakHashMap<IStrategoTerm, BooleanNode>();
+  private static WeakHashMap<IStrategoTerm, CompiledLayoutConstraint> cachedConstraints = new WeakHashMap<IStrategoTerm, CompiledLayoutConstraint>();
+  private static WeakHashMap<IStrategoTerm, BooleanNode> cachedNodes = new WeakHashMap<IStrategoTerm, BooleanNode>();
 
   /**
    * 
@@ -59,11 +60,11 @@ public class LayoutFilter {
   public int getDisambiguationCount() {
     return disambiguationCount;
   }
-  
+
   public static int getNumCreations() {
     return numCreations;
   }
-  
+
   public static int getNumCached() {
     return numCached;
   }
@@ -82,20 +83,47 @@ public class LayoutFilter {
     filterCallCount++;
     Boolean b;
     if (USE_GENERATION) {
-      
-      BooleanNode bNode;
-      bNode = this.cachedConstraints.get(layoutConstraint);
-      if (bNode == null) {
+
+      CompiledLayoutConstraint constraint;
+      BooleanNode bNode;// = cachedNodes.get(layoutConstraint);
+      constraint = cachedConstraints.get(layoutConstraint);
+      if (constraint == null) {
         bNode = evalConstraint(layoutConstraint, kids,
-          new HashMap<String, Object>(), BooleanNode.class);
-        this.cachedConstraints.put(layoutConstraint, bNode);
-        System.out.println(bNode.getCompiledParseTimeCode(new LocalVariableManager()));
-        System.out.println(bNode.getCompiledDisambiguationTimeCode(null));
-        numCreations ++;
+            new HashMap<String, Object>(), BooleanNode.class);
+        cachedNodes.put(layoutConstraint, bNode);
+        try {
+       //   System.out.println("Start compiler for " + layoutConstraint);
+          LayoutNodeCompiler compiler = new LayoutNodeCompiler();
+          constraint = compiler.compile(bNode);
+       //   System.out.println("Got " + constraint);
+          cachedConstraints.put(layoutConstraint, constraint);
+        } catch (Throwable e) {
+      //    System.out.println("Did something wrong");
+          e.printStackTrace();
+        } finally {
+     //     System.out.println("After compiling");
+        }
+        numCreations++;
       } else {
-        numCached ++;
+        numCached++;
       }
-      b = bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);
+      int val;
+      if (this.atParseTime)
+        val = constraint.evaluateParseTime(kids, null);
+      else
+        val = constraint.evaluateDisambiguationTime(kids, null);
+      if (val == 1) {
+        b = true;
+      } else if (val == 0) {
+        b = false;
+      } else {
+        b = null;
+      }
+    //  Boolean check =  bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);
+   //   if (b != check) {
+    //   System.out.println("Compiled: "+val + " " +  b + " parsed: " + check + " for " + layoutConstraint + " while " + atParseTime);
+    //  }
+
     } else {
       b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
           Boolean.class);

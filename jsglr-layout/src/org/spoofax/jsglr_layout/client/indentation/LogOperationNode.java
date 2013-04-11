@@ -26,12 +26,12 @@ public class LogOperationNode extends LogicalNode {
 
       @Override
       public String getSymbol() {
-        return "&&";
+        return "&";
       }
 
       @Override
       public String getOperateSingleCode(String argument) {
-        return "(!" + argument + "? false : null)";
+        return "((" + argument + ") == 0 ? 0 : Integer.MIN_VALUE)";
       }
     },
     OR {
@@ -47,12 +47,12 @@ public class LogOperationNode extends LogicalNode {
 
       @Override
       public String getSymbol() {
-        return "||";
+        return "|";
       }
 
       @Override
       public String getOperateSingleCode(String argument) {
-        return "(" + argument + "? true : null)";
+        return "((" + argument + ") == 1 ? 1 : Integer.MIN_VALUE)";
       }
     };
 
@@ -162,7 +162,7 @@ public class LogOperationNode extends LogicalNode {
       LocalVariableManager manager) {
     LocalVariable var = manager.getFreeLocalVariable(Boolean.class);
     String code = "((" + var.getName() + " = "
-        + unsafe.getCompiledParseTimeCode(manager) + ") == null ? null : "
+        + unsafe.getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "
         + this.operator.getOperateSingleCode(var.getName()) + ")";
     manager.releaseLocalVariable(var);
     return code;
@@ -176,7 +176,7 @@ public class LogOperationNode extends LogicalNode {
         + var.getName()
         + " = "
         + this.operands[unsafe].getCompiledParseTimeCode(manager)
-        + ") == null ? "
+        + ") == Integer.MIN_VALUE ? "
         + this.operator.getOperateSingleCode(this.operands[safe]
             .getCompiledParseTimeCode(manager)) + " : ";
     if (unsafe < safe) {
@@ -192,10 +192,10 @@ public class LogOperationNode extends LogicalNode {
   private String getCompiledCodeForTwoUnsafe(LocalVariableManager manager) {
     LocalVariable var0 = manager.getFreeLocalVariable(Boolean.class);
     LocalVariable var1 = manager.getFreeLocalVariable(Boolean.class);
-    String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ") == null ? " +
-            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == null ? null : " +
+    String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? " +
+            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : " +
             this.operator.getOperateSingleCode(var1.getName()) + ")" + ":" +
-            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == null ? " +
+            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? " +
             this.operator.getOperateSingleCode(var0.getName()) + ":" +
             "(" + var0.getName() + this.operator.getSymbol() + var1.getName() +")" +")" +")";
     manager.releaseLocalVariable(var0);
