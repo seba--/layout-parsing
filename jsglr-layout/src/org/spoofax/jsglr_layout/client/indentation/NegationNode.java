@@ -25,21 +25,21 @@ public class NegationNode extends LogicalNode {
   public String getCompiledParseTimeCode(LocalVariableManager manager) {
     switch (this.operands[0].getParseTimeInvokeType()) {
     case NOT_INVOKABLE:
-      return "null";
+      return "Integer.MIN_VALUE";
     case SAFELY_INVOKABLE:
-      return "(!" + this.operands[0].getCompiledParseTimeCode(manager) + ")";
+      return "((" + this.operands[0].getCompiledParseTimeCode(manager) + ") == 0 ? 1 : 0";
     case UNSAFELY_INVOKABLE:
     default:
-      LocalVariable var = manager.getFreeLocalVariable(Boolean.class);
+      LocalVariable var = manager.getFreeLocalVariable(Integer.class);
       return "(" + "(" + var.getName() + " " + this.operands[0].getCompiledParseTimeCode(manager)
-          + ")" +" == null ? null : !" + this.operands[0].getCompiledParseTimeCode(manager)
-          + ")";
+          + ")" +" == Integer.MIN_VALUE ? Integer.MIN_VALUE : ((" + this.operands[0].getCompiledParseTimeCode(manager)
+          + ") == 0 ? 1: 0)";
     }
   }
 
   @Override
   public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    return "(!" + this.operands[0].getCompiledDisambiguationTimeCode(manager) + ")";
+    return "((" + this.operands[0].getCompiledDisambiguationTimeCode(manager) + ") == 0 ? 1 : 0)";
   }
 
   @Override

@@ -59,7 +59,7 @@ public class LayoutNodeCompiler {
   //  System.out.println(java.util.Arrays.toString(loadedClass.getMethods()));
   //  System.out.println(java.lang.reflect.Modifier.isAbstract(loadedClass.getModifiers()));
     //Create an instance
-  //  System.out.println("Compiled " + loadedClass);
+    System.out.println("Compiled " + loadedClass);
     CompiledLayoutConstraint constraint =  loadedClass.newInstance();
  //   System.out.println("Read instance" + constraint);
     return constraint;
@@ -77,15 +77,15 @@ public class LayoutNodeCompiler {
       sourceCode = node.getCompiledDisambiguationTimeCode(manager);
     }
     //Append variable declarations to code
-    sourceCode = getCodeForVariables(manager) + "return " + sourceCode +";";
+    sourceCode = "{"+getCodeForVariables(manager) + "\nreturn " + sourceCode +";}";
     
     //Create the method
     ClassPool classPool = ClassPool.getDefault();
     CtClass parseNodeArrayClass = classPool.get(AbstractParseNode.class.getName()+"[]");
     CtClass mapClass = classPool.get(Map.class.getName());
     CtMethod parseMethod = new CtMethod(CtClass.intType, methodName, new CtClass[]{parseNodeArrayClass, mapClass}, newClass);
-   // System.out.println("Parse: "+ parse + " " + methodName);
-   // System.out.println(sourceCode);
+    System.out.println("Parse: "+ parse + " " + methodName);
+    System.out.println(sourceCode);
     parseMethod.setBody(sourceCode);
     newClass.addMethod(parseMethod);
   }
@@ -94,7 +94,10 @@ public class LayoutNodeCompiler {
     String code = "";
     List<LocalVariable> variables = manager.getDeclaredVariables();
     for (LocalVariable var : variables) {
-      code += var.getType().getName() + " " + var.getName()+";";
+      if (var.getType() == Integer.class)
+        code +=  "int " + var.getName()+";\n";
+      else
+      code += var.getType().getName() + " " + var.getName()+";\n";
     }
     return code;
   }

@@ -120,36 +120,36 @@ public class LogOperationNode extends LogicalNode {
     // First check to own type
     switch (this.getParseTimeInvokeType()) {
     case NOT_INVOKABLE:
-      return "null";
+ //     return "null";
     case SAFELY_INVOKABLE:
-      return "(" + this.operands[0].getCompiledParseTimeCode(manager)
-          + this.operator.getSymbol()
-          + this.operands[1].getCompiledParseTimeCode(manager) + ")";
+//      return "(" + this.operands[0].getCompiledParseTimeCode(manager)
+//          + this.operator.getSymbol()
+//          + this.operands[1].getCompiledParseTimeCode(manager) + ")";
     case UNSAFELY_INVOKABLE:
     default:
       // Wee need to check which parts are unsafe
-      ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
-      ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
-      if (type0 == NOT_INVOKABLE) {
-        if (type1 == SAFELY_INVOKABLE) {
-          return this.getCompiledCodeForOneSafe(this.operands[1], manager);
-        } else {
-          return this.getCompiledCodeForOneUnsafe(this.operands[1], manager);
-        }
-      }
-      if (type1 == NOT_INVOKABLE) {
-        if (type0 == SAFELY_INVOKABLE) {
-          return this.getCompiledCodeForOneSafe(this.operands[0], manager);
-        } else {
-          return this.getCompiledCodeForOneUnsafe(this.operands[0], manager);
-        }
-      }
-      if (type0 == SAFELY_INVOKABLE) {
-        return this.getCompiledCodeForOneUnsafeOneSafe(1,0, manager);
-      }
-      if (type1 == SAFELY_INVOKABLE) {
-        return this.getCompiledCodeForOneUnsafeOneSafe(0, 1, manager);
-      }
+//      ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
+//      ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
+//      if (type0 == NOT_INVOKABLE) {
+//        if (type1 == SAFELY_INVOKABLE) {
+//          return this.getCompiledCodeForOneSafe(this.operands[1], manager);
+//        } else {
+//          return this.getCompiledCodeForOneUnsafe(this.operands[1], manager);
+//        }
+//      }
+//      if (type1 == NOT_INVOKABLE) {
+//        if (type0 == SAFELY_INVOKABLE) {
+//          return this.getCompiledCodeForOneSafe(this.operands[0], manager);
+//        } else {
+//          return this.getCompiledCodeForOneUnsafe(this.operands[0], manager);
+//        }
+//      }
+//      if (type0 == SAFELY_INVOKABLE) {
+//        return this.getCompiledCodeForOneUnsafeOneSafe(1,0, manager);
+//      }
+//      if (type1 == SAFELY_INVOKABLE) {
+//        return this.getCompiledCodeForOneUnsafeOneSafe(0, 1, manager);
+//      }
       return this.getCompiledCodeForTwoUnsafe(manager);
     }
   }
@@ -160,7 +160,7 @@ public class LogOperationNode extends LogicalNode {
 
   private String getCompiledCodeForOneUnsafe(BooleanNode unsafe,
       LocalVariableManager manager) {
-    LocalVariable var = manager.getFreeLocalVariable(Boolean.class);
+    LocalVariable var = manager.getFreeLocalVariable(Integer.class);
     String code = "((" + var.getName() + " = "
         + unsafe.getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "
         + this.operator.getOperateSingleCode(var.getName()) + ")";
@@ -170,7 +170,7 @@ public class LogOperationNode extends LogicalNode {
 
   private String getCompiledCodeForOneUnsafeOneSafe(int unsafe,
       int safe, LocalVariableManager manager) {
-    LocalVariable var = manager.getFreeLocalVariable(Boolean.class);
+    LocalVariable var = manager.getFreeLocalVariable(Integer.class);
     String code = "("
         + "("
         + var.getName()
@@ -190,8 +190,8 @@ public class LogOperationNode extends LogicalNode {
   }
   
   private String getCompiledCodeForTwoUnsafe(LocalVariableManager manager) {
-    LocalVariable var0 = manager.getFreeLocalVariable(Boolean.class);
-    LocalVariable var1 = manager.getFreeLocalVariable(Boolean.class);
+    LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
+    LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
     String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? " +
             "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : " +
             this.operator.getOperateSingleCode(var1.getName()) + ")" + ":" +
@@ -205,9 +205,10 @@ public class LogOperationNode extends LogicalNode {
 
   @Override
   public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    return "(" + this.operands[0].getCompiledDisambiguationTimeCode(manager)
-        + this.operator.getSymbol()
-        + this.operands[1].getCompiledDisambiguationTimeCode(manager) + ")";
+//    return "(" + this.operands[0].getCompiledDisambiguationTimeCode(manager)
+//        + this.operator.getSymbol()
+//        + this.operands[1].getCompiledDisambiguationTimeCode(manager) + ")";
+    return this.getCompiledParseTimeCode(manager);
   }
 
   @Override

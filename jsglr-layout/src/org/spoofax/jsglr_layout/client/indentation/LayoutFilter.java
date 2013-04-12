@@ -21,7 +21,7 @@ import org.spoofax.terms.Term;
  */
 public class LayoutFilter {
 
-  private static boolean USE_GENERATION = true;
+  private boolean USE_GENERATION = true;
 
   private final Object NO_VALUE = null;
 
@@ -85,14 +85,14 @@ public class LayoutFilter {
     if (USE_GENERATION) {
 
       CompiledLayoutConstraint constraint;
-      BooleanNode bNode;// = cachedNodes.get(layoutConstraint);
+      BooleanNode bNode = cachedNodes.get(layoutConstraint);
       constraint = cachedConstraints.get(layoutConstraint);
       if (constraint == null) {
         bNode = evalConstraint(layoutConstraint, kids,
             new HashMap<String, Object>(), BooleanNode.class);
         cachedNodes.put(layoutConstraint, bNode);
         try {
-       //   System.out.println("Start compiler for " + layoutConstraint);
+          System.out.println("Start compiler for " + layoutConstraint);
           LayoutNodeCompiler compiler = new LayoutNodeCompiler();
           constraint = compiler.compile(bNode);
        //   System.out.println("Got " + constraint);
@@ -119,10 +119,21 @@ public class LayoutFilter {
       } else {
         b = null;
       }
-    //  Boolean check =  bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);
-   //   if (b != check) {
-    //   System.out.println("Compiled: "+val + " " +  b + " parsed: " + check + " for " + layoutConstraint + " while " + atParseTime);
-    //  }
+      
+//      USE_GENERATION = false;
+//      Boolean check = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
+//          Boolean.class);
+//      if (b != check) {
+//        System.out.println("Failed for recursive eval at parse: " + this.atParseTime + " " + layoutConstraint);
+//        System.out.println(b + " but correct " + check);
+//      }
+//      USE_GENERATION = true;
+//      //check =  bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);
+//      check = bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);;  
+//      if (b != check) {
+//       System.out.println("Compiled: "+val + " " +  b + " parsed: " + check + " for " + layoutConstraint + " while " + atParseTime);
+//      }
+      
 
     } else {
       b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
@@ -251,7 +262,12 @@ public class LayoutFilter {
             return true;
           Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
               Boolean.class);
-          return b2;
+          if (b2 != NO_VALUE && b2)
+            return true;
+          if (b1 == NO_VALUE || b2 == NO_VALUE) {
+            return NO_VALUE;
+          }
+          return b1 || b2;
         }
         if (consName.equals("and")) {
           ensureChildCount(constraint, 2, consName);
@@ -261,7 +277,12 @@ public class LayoutFilter {
             return false;
           Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
               Boolean.class);
-          return b2;
+          if (b2 != NO_VALUE && !b2)
+            return false;
+          if (b1 == NO_VALUE || b2 == NO_VALUE) {
+            return noValue();
+          }
+          return b2 && b1;
         }
       }
       if (consName.equals("not")) {
@@ -456,9 +477,11 @@ public class LayoutFilter {
 
     if (atParseTime)
       return noValue();
-    else if (sel.equals("left"))
+    else if (sel.equals("left")) {
+     // System.out.println(t);
+     // System.out.println(t.getLeft());
       return t.getLeft();
-    else if (sel.equals("right"))
+    } else if (sel.equals("right"))
       return t.getRight();
 
     throw new IllegalStateException("unknown selector " + sel);

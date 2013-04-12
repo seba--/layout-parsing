@@ -94,10 +94,14 @@ public class NodeSelectorNode extends NodeOperatorNode<AbstractParseNode>
       return null;
     }
     AbstractParseNode node = this.operand.evaluate(kids, env, parseTime);
+    if (!parseTime) {
+      assert node != null;
+    }
     if (node == null) {
       return null;
     }
-    return this.position.select(node);
+    AbstractParseNode result =  this.position.select(node);
+    return result;
   }
 
   @Override

@@ -105,10 +105,12 @@ public class ArithComparatorNode extends BinaryArithNode<Boolean> implements
   public Boolean evaluate(AbstractParseNode[] kids, Map<String, Object> env,
       boolean parseTime) {
     Integer value1 = this.operands[0].evaluate(kids, env, parseTime);
+   // assert parseTime || value1 != null;
     if (value1 == null) {
       return null;
     }
     Integer value2 = this.operands[1].evaluate(kids, env, parseTime);
+  //  assert parseTime || value2 != null;
     if (value2 == null) {
       return null;
     }
