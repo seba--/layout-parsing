@@ -41,7 +41,7 @@ public class LayoutNodeCompiler {
     ClassPool classPool = ClassPool.getDefault();
     
     //Create the class
-    CtClass newClass = classPool.makeClass("CompiledLayoutConstraint"+compiledClassCount);
+    CtClass newClass = classPool.makeClass(LayoutNodeCompiler.class.getPackage().getName() +".compiledConstraints.CompiledLayoutConstraint"+compiledClassCount);
     compiledClassCount ++;
     newClass.setInterfaces(new CtClass[]{compiledInterfaceClass});
     createMethod(node, true, newClass);
@@ -71,10 +71,10 @@ public class LayoutNodeCompiler {
     LocalVariableManager manager = new LocalVariableManager();
     if (parse) {
       methodName = "evaluateParseTime";
-      sourceCode = node.getCompiledParseTimeCode(manager);
+      sourceCode = node.getCompiledCode(manager, true);
     } else {
       methodName = "evaluateDisambiguationTime";
-      sourceCode = node.getCompiledDisambiguationTimeCode(manager);
+      sourceCode = node.getCompiledCode(manager, false);
     }
     //Append variable declarations to code
     sourceCode = "{"+getCodeForVariables(manager) + "\nreturn " + sourceCode +";}";

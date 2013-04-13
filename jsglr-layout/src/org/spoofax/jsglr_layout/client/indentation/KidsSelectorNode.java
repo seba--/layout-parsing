@@ -20,20 +20,14 @@ public class KidsSelectorNode implements AbstractParseNodeNode {
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
     return "$1["+this.arrayIndex+"]";
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    // Disambiguation time is same as parse time
-    return this.getCompiledParseTimeCode(manager);
-  }
-
-  @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
+  public InvokeState getInvokeState(boolean atParseTime) {
     // Can always be invoked on parse time
-    return ParseTimeInvokeType.SAFELY_INVOKABLE;
+    return InvokeState.SAFELY_INVOKABLE;
   }
 
 }

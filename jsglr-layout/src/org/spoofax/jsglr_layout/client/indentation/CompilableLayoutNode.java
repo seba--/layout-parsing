@@ -2,11 +2,11 @@ package org.spoofax.jsglr_layout.client.indentation;
 
 public interface CompilableLayoutNode<V> extends LayoutNode<V> {
   
-  public static enum ParseTimeInvokeType {
+  public static enum InvokeState {
     SAFELY_INVOKABLE {
 
       @Override
-      public ParseTimeInvokeType combine(ParseTimeInvokeType type) {
+      public InvokeState combine(InvokeState type) {
         // return the given type
         return type;
       }
@@ -15,7 +15,7 @@ public interface CompilableLayoutNode<V> extends LayoutNode<V> {
     UNSAFELY_INVOKABLE {
 
       @Override
-      public ParseTimeInvokeType combine(ParseTimeInvokeType type) {
+      public InvokeState combine(InvokeState type) {
         // Stays UNSAFLEY when SAFLY is given, otherwise given type
         if (type == SAFELY_INVOKABLE) {
           return this;
@@ -28,19 +28,18 @@ public interface CompilableLayoutNode<V> extends LayoutNode<V> {
     NOT_INVOKABLE {
 
       @Override
-      public ParseTimeInvokeType combine(ParseTimeInvokeType type) {
+      public InvokeState combine(InvokeState type) {
         // Stays not invokable
         return this;
       }
       
     };
     
-    public abstract ParseTimeInvokeType combine(ParseTimeInvokeType type);
+    public abstract InvokeState combine(InvokeState type);
     
   }
   
-  public String getCompiledParseTimeCode(LocalVariableManager manager);
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager);
-  public ParseTimeInvokeType getParseTimeInvokeType();
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime);
+  public InvokeState getInvokeState(boolean atParseTime);
 
 }

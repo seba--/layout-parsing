@@ -20,18 +20,13 @@ public class ConstantNode implements IntegerNode {
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
     return Integer.toString(this.value);
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    return this.getCompiledParseTimeCode(manager);
-  }
-
-  @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
-    return ParseTimeInvokeType.SAFELY_INVOKABLE;
+  public InvokeState getInvokeState(boolean atParseTime) {
+    return InvokeState.SAFELY_INVOKABLE;
   }
 
 }

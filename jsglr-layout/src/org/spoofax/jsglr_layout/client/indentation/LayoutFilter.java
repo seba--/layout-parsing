@@ -22,6 +22,8 @@ import org.spoofax.terms.Term;
 public class LayoutFilter {
 
   private boolean USE_GENERATION = true;
+  private boolean CHECK_LAYOUT_TREE = false;
+  private boolean CHECK_RECURSVIE = true;
 
   private final Object NO_VALUE = null;
 
@@ -95,13 +97,13 @@ public class LayoutFilter {
           System.out.println("Start compiler for " + layoutConstraint);
           LayoutNodeCompiler compiler = new LayoutNodeCompiler();
           constraint = compiler.compile(bNode);
-       //   System.out.println("Got " + constraint);
+          // System.out.println("Got " + constraint);
           cachedConstraints.put(layoutConstraint, constraint);
         } catch (Throwable e) {
-      //    System.out.println("Did something wrong");
+          // System.out.println("Did something wrong");
           e.printStackTrace();
         } finally {
-     //     System.out.println("After compiling");
+          // System.out.println("After compiling");
         }
         numCreations++;
       } else {
@@ -119,21 +121,29 @@ public class LayoutFilter {
       } else {
         b = null;
       }
-      
-//      USE_GENERATION = false;
-//      Boolean check = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
-//          Boolean.class);
-//      if (b != check) {
-//        System.out.println("Failed for recursive eval at parse: " + this.atParseTime + " " + layoutConstraint);
-//        System.out.println(b + " but correct " + check);
-//      }
-//      USE_GENERATION = true;
-//      //check =  bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);
-//      check = bNode.evaluate(kids, new HashMap<String, Object>(), this.atParseTime);;  
-//      if (b != check) {
-//       System.out.println("Compiled: "+val + " " +  b + " parsed: " + check + " for " + layoutConstraint + " while " + atParseTime);
-//      }
-      
+
+      if (CHECK_RECURSVIE) {
+        USE_GENERATION = false;
+        Boolean check = evalConstraint(layoutConstraint, kids,
+            new HashMap<String, Object>(), Boolean.class);
+        if (b != check) {
+          System.out.println("Failed for recursive eval at parse: "
+              + this.atParseTime + " " + layoutConstraint);
+          System.out.println(b + " but correct " + check);
+        }
+        USE_GENERATION = true;
+      }
+      if (CHECK_LAYOUT_TREE) {
+        // check = bNode.evaluate(kids, new HashMap<String, Object>(),
+        // this.atParseTime);
+        Boolean check = bNode.evaluate(kids, new HashMap<String, Object>(),
+            this.atParseTime);
+        ;
+        if (b != check) {
+          System.out.println("Compiled: " + val + " " + b + " parsed: " + check
+              + " for " + layoutConstraint + " while " + atParseTime);
+        }
+      }
 
     } else {
       b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
@@ -478,8 +488,8 @@ public class LayoutFilter {
     if (atParseTime)
       return noValue();
     else if (sel.equals("left")) {
-     // System.out.println(t);
-     // System.out.println(t.getLeft());
+      // System.out.println(t);
+      // System.out.println(t.getLeft());
       return t.getLeft();
     } else if (sel.equals("right"))
       return t.getRight();

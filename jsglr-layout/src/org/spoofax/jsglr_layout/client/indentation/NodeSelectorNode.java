@@ -105,26 +105,24 @@ public class NodeSelectorNode extends NodeOperatorNode<AbstractParseNode>
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
-    if (this.getParseTimeInvokeType() == ParseTimeInvokeType.NOT_INVOKABLE) {
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
+    if (this.getInvokeState(atParseTime) == InvokeState.NOT_INVOKABLE) {
       return "null";
     } else {
-      return this.position.getCode(this.operand.getCompiledParseTimeCode(manager));
+      return this.position.getCode(this.operand.getCompiledCode(manager, atParseTime));
     }
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    return this.position.getCode(this.operand
-        .getCompiledDisambiguationTimeCode(manager));
-  }
-
-  @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
+  public InvokeState getInvokeState(boolean atParseTime) {
     if (this.position == Position.LEFT || this.position == Position.RIGHT) {
-      return ParseTimeInvokeType.NOT_INVOKABLE;
+      if (atParseTime) {
+        return InvokeState.NOT_INVOKABLE;
+      } else {
+        return InvokeState.UNSAFELY_INVOKABLE;
+      }
     } else {
-      return ParseTimeInvokeType.SAFELY_INVOKABLE;
+      return InvokeState.SAFELY_INVOKABLE;
     }
   }
 

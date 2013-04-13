@@ -1,6 +1,7 @@
 package org.spoofax.jsglr_layout.client.indentation;
 
 import org.spoofax.jsglr_layout.client.indentation.LocalVariableManager.LocalVariable;
+import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.InvokeState.*;
 
 public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
   
@@ -11,73 +12,57 @@ public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
   protected abstract String getOperatorString();
   protected abstract String convertToInt(String val, LocalVariableManager manager);
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
-    ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
-    ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
-//    if (type0 == ParseTimeInvokeType.NOT_INVOKABLE
-//        || type1 == ParseTimeInvokeType.NOT_INVOKABLE) {
-//      return "Integer.MIN_VALUE";
-//    }
-//    if (type0 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
-//      if (type1 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
-//        // Noth unsafe,, local variables for both
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
+    InvokeState type0 = this.operands[0].getInvokeState(atParseTime);
+    InvokeState type1 = this.operands[1].getInvokeState(atParseTime);
+    if (type0 == NOT_INVOKABLE
+        || type1 == NOT_INVOKABLE) {
+      return "Integer.MIN_VALUE";
+    }
+    if (type0 == UNSAFELY_INVOKABLE) {
+      if (type1 == UNSAFELY_INVOKABLE) {
+        // Noth unsafe,, local variables for both
         LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
         LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
-        String code = "((" +"("+var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ")"
-            + " == Integer.MIN_VALUE || " + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ")"
+        String code = "((" +"("+var0.getName() + " = " + this.operands[0].getCompiledCode(manager, atParseTime) + ")"
+            + " == Integer.MIN_VALUE || " + "(" + var1.getName() + " = " + this.operands[1].getCompiledCode(manager, atParseTime) + ")"
             + " == Integer.MIN_VALUE) ? Integer.MIN_VALUE : "+this.convertToInt(var0.getName() + this.getOperatorString() + var1.getName(),manager)  + ")";
         manager.releaseLocalVariable(var0);
         manager.releaseLocalVariable(var1);
         return code;
-//      } else {
-//        return this.getCodeForSafeAndUnsafeType(this.operands[0], manager);
-//      }
-//    } else {
-//      if (type1 == ParseTimeInvokeType.UNSAFELY_INVOKABLE) {
-//        return this.getCodeForSafeAndUnsafeType(this.operands[1], manager);
-//      } else {
-//        return "("+this.convertToInt(this.operands[0].getCompiledParseTimeCode(manager)
-//            + this.getOperatorString()
-//            + this.operands[1].getCompiledParseTimeCode(manager), manager)+")";
-//      }
-//    }
+      } else {
+        return this.getCodeForSafeAndUnsafeType(this.operands[0], manager, atParseTime);
+      }
+    } else {
+      if (type1 == UNSAFELY_INVOKABLE) {
+        return this.getCodeForSafeAndUnsafeType(this.operands[1], manager, atParseTime);
+      } else {
+        return "("+this.convertToInt(this.operands[0].getCompiledCode(manager, atParseTime)
+            + this.getOperatorString()
+            + this.operands[1].getCompiledCode(manager, atParseTime), manager)+")";
+      }
+    }
   }
 
-  private String getCodeForSafeAndUnsafeType(IntegerNode unsafe, LocalVariableManager manager) {
+  private String getCodeForSafeAndUnsafeType(IntegerNode unsafe, LocalVariableManager manager, boolean atParseTime) {
     // Local variable for unsafe
     LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
-    String code = "("+"(" + var0.getName() + " = " +unsafe.getCompiledParseTimeCode(manager) + ")" + " == Integer.MIN_VALUE ? Integer.MIN_VALUE : (";
+    String code = "("+"(" + var0.getName() + " = " +unsafe.getCompiledCode(manager, atParseTime) + ")" + " == Integer.MIN_VALUE ? Integer.MIN_VALUE : (";
     String executeCode;
     if (unsafe ==this.operands[0]) {
-      executeCode = "("+var0.getName() + this.getOperatorString() + this.operands[1].getCompiledParseTimeCode(manager)+")";
+      executeCode = "("+var0.getName() + this.getOperatorString() + this.operands[1].getCompiledCode(manager, atParseTime)+")";
     } else {
-      executeCode = "("+this.operands[0].getCompiledParseTimeCode(manager) + this.getOperatorString() + var0.getName()+")";
+      executeCode = "("+this.operands[0].getCompiledCode(manager, atParseTime) + this.getOperatorString() + var0.getName()+")";
     }
     code += this.convertToInt(executeCode, manager)+"))";
     manager.releaseLocalVariable(var0);
     return code;
   }
-  
-  @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-//    return "("+this.convertToInt("("+this.operands[0].getCompiledDisambiguationTimeCode(manager)
-//        + this.getOperatorString()
-//        + this.operands[1].getCompiledDisambiguationTimeCode(manager)+")", manager)+")"
-//        ;
-    LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
-    LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
-    String code = "((" +"("+var0.getName() + " = " + this.operands[0].getCompiledDisambiguationTimeCode(manager) + ")"
-        + " == Integer.MIN_VALUE || " + "(" + var1.getName() + " = " + this.operands[1].getCompiledDisambiguationTimeCode(manager) + ")"
-        + " == Integer.MIN_VALUE) ? Integer.MIN_VALUE : "+this.convertToInt(var0.getName() + this.getOperatorString() + var1.getName(),manager)  + ")";
-    manager.releaseLocalVariable(var0);
-    manager.releaseLocalVariable(var1);
-    return code;
-  }
 
   @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
-    return this.operands[0].getParseTimeInvokeType().combine(
-        this.operands[1].getParseTimeInvokeType());
+  public InvokeState getInvokeState(boolean atParseTime) {
+    return this.operands[0].getInvokeState(atParseTime).combine(
+        this.operands[1].getInvokeState(atParseTime));
   }
 
 }

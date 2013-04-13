@@ -20,19 +20,15 @@ public class VariableNode<V> implements CompilableLayoutNode<V> {
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+  public String getCompiledCode(LocalVariableManager manager,
+      boolean atParseTime) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.ParseTimeInvokeType getParseTimeInvokeType() {
+  public org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.InvokeState getInvokeState(
+      boolean atParseTime) {
     // TODO Auto-generated method stub
     return null;
   }

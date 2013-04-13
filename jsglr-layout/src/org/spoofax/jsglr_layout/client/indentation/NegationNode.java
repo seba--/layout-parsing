@@ -22,29 +22,25 @@ public class NegationNode extends LogicalNode {
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
-    switch (this.operands[0].getParseTimeInvokeType()) {
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
+    switch (this.operands[0].getInvokeState(atParseTime)) {
     case NOT_INVOKABLE:
       return "Integer.MIN_VALUE";
     case SAFELY_INVOKABLE:
-      return "((" + this.operands[0].getCompiledParseTimeCode(manager) + ") == 0 ? 1 : 0";
+      return "((" + this.operands[0].getCompiledCode(manager,atParseTime) + ") == 0 ? 1 : 0";
     case UNSAFELY_INVOKABLE:
     default:
       LocalVariable var = manager.getFreeLocalVariable(Integer.class);
-      return "(" + "(" + var.getName() + " " + this.operands[0].getCompiledParseTimeCode(manager)
-          + ")" +" == Integer.MIN_VALUE ? Integer.MIN_VALUE : ((" + this.operands[0].getCompiledParseTimeCode(manager)
+      return "(" + "(" + var.getName() + " = " + this.operands[0].getCompiledCode(manager,atParseTime)
+          + ")" +" == Integer.MIN_VALUE ? Integer.MIN_VALUE : ((" + var.getName()
           + ") == 0 ? 1: 0)";
     }
   }
 
-  @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    return "((" + this.operands[0].getCompiledDisambiguationTimeCode(manager) + ") == 0 ? 1 : 0)";
-  }
 
   @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
-    return this.operands[0].getParseTimeInvokeType();
+  public InvokeState getInvokeState(boolean atParseTime) {
+    return this.operands[0].getInvokeState(atParseTime);
   }
 
 }

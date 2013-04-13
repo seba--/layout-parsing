@@ -123,17 +123,6 @@ public class ArithComparatorNode extends BinaryArithNode<Boolean> implements
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
-    return super.getCompiledParseTimeCode(manager);
-  }
-
-  @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    // TODO Auto-generated method stub
-    return super.getCompiledDisambiguationTimeCode(manager);
-  }
-
-  @Override
   protected String convertToInt(String val, LocalVariableManager manager) {
     return "(("+val+")? 1 : 0)";
   }

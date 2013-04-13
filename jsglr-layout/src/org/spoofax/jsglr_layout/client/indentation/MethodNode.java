@@ -60,33 +60,24 @@ public class MethodNode extends NodeOperatorNode<Integer> implements
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
-   // switch (this.operand.getParseTimeInvokeType()) {
-   // case SAFELY_INVOKABLE:
-      //return this.operand.getCompiledParseTimeCode(manager)+this.method.getCode();
-    //case UNSAFELY_INVOKABLE:
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
+    switch (this.operand.getInvokeState(atParseTime)) {
+    case SAFELY_INVOKABLE:
+      return this.operand.getCompiledCode(manager, atParseTime)+this.method.getCode();
+    case UNSAFELY_INVOKABLE:
       LocalVariable var = manager.getFreeLocalVariable(AbstractParseNode.class);
-      String code = "((" + var.getName() + " = " + this.operand.getCompiledParseTimeCode(manager)+") == null ? Integer.MIN_VALUE : "+var.getName() +this.method.getCode()+")";
+      String code = "((" + var.getName() + " = " + this.operand.getCompiledCode(manager, atParseTime)+") == null ? Integer.MIN_VALUE : "+var.getName() +this.method.getCode()+")";
       manager.releaseLocalVariable(var);
       return code;
-   // case NOT_INVOKABLE:
-   // default:
-   //   return "Integer.MIN_VALUE";
-   // }
+    case NOT_INVOKABLE:
+    default:
+      return "Integer.MIN_VALUE";
+    }
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-    //return this.operand.getCompiledDisambiguationTimeCode(manager)+this.method.getCode();
-    LocalVariable var = manager.getFreeLocalVariable(AbstractParseNode.class);
-    String code = "((" + var.getName() + " = " + this.operand.getCompiledDisambiguationTimeCode(manager)+") == null ? Integer.MIN_VALUE : "+var.getName() +this.method.getCode()+")";
-    manager.releaseLocalVariable(var);
-    return code;
-  }
-
-  @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
-    return this.operand.getParseTimeInvokeType();
+  public InvokeState getInvokeState(boolean atParseTime) {
+    return this.operand.getInvokeState(atParseTime);
   }
 
 }

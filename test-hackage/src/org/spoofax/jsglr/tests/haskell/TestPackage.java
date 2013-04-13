@@ -47,7 +47,6 @@ public class TestPackage extends TestCase {
   }
   
   private void logResult(FileResult result) throws IOException {
-    System.out.println("log");
     observer.observe(result);
     try {
       result.appendAsCSV(csvFile.getAbsolutePath());

@@ -1,8 +1,8 @@
 package org.spoofax.jsglr_layout.client.indentation;
 
-import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.ParseTimeInvokeType.NOT_INVOKABLE;
-import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.ParseTimeInvokeType.SAFELY_INVOKABLE;
-import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.ParseTimeInvokeType.UNSAFELY_INVOKABLE;
+import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.InvokeState.NOT_INVOKABLE;
+import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.InvokeState.SAFELY_INVOKABLE;
+import static org.spoofax.jsglr_layout.client.indentation.CompilableLayoutNode.InvokeState.UNSAFELY_INVOKABLE;
 
 import java.util.Map;
 
@@ -116,86 +116,86 @@ public class LogOperationNode extends LogicalNode {
   }
 
   @Override
-  public String getCompiledParseTimeCode(LocalVariableManager manager) {
+  public String getCompiledCode(LocalVariableManager manager, boolean atParseTime) {
     // First check to own type
-    switch (this.getParseTimeInvokeType()) {
+    switch (this.getInvokeState(atParseTime)) {
     case NOT_INVOKABLE:
- //     return "null";
+      return "Integer.MIN_VALUE";
     case SAFELY_INVOKABLE:
-//      return "(" + this.operands[0].getCompiledParseTimeCode(manager)
-//          + this.operator.getSymbol()
-//          + this.operands[1].getCompiledParseTimeCode(manager) + ")";
+      return "(" + this.operands[0].getCompiledCode(manager, atParseTime)
+          + this.operator.getSymbol()
+          + this.operands[1].getCompiledCode(manager, atParseTime) + ")";
     case UNSAFELY_INVOKABLE:
     default:
       // Wee need to check which parts are unsafe
-//      ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
-//      ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
-//      if (type0 == NOT_INVOKABLE) {
-//        if (type1 == SAFELY_INVOKABLE) {
-//          return this.getCompiledCodeForOneSafe(this.operands[1], manager);
-//        } else {
-//          return this.getCompiledCodeForOneUnsafe(this.operands[1], manager);
-//        }
-//      }
-//      if (type1 == NOT_INVOKABLE) {
-//        if (type0 == SAFELY_INVOKABLE) {
-//          return this.getCompiledCodeForOneSafe(this.operands[0], manager);
-//        } else {
-//          return this.getCompiledCodeForOneUnsafe(this.operands[0], manager);
-//        }
-//      }
-//      if (type0 == SAFELY_INVOKABLE) {
-//        return this.getCompiledCodeForOneUnsafeOneSafe(1,0, manager);
-//      }
-//      if (type1 == SAFELY_INVOKABLE) {
-//        return this.getCompiledCodeForOneUnsafeOneSafe(0, 1, manager);
-//      }
-      return this.getCompiledCodeForTwoUnsafe(manager);
+      InvokeState type0 = this.operands[0].getInvokeState(atParseTime);
+      InvokeState type1 = this.operands[1].getInvokeState(atParseTime);
+      if (type0 == NOT_INVOKABLE) {
+        if (type1 == SAFELY_INVOKABLE) {
+          return this.getCompiledCodeForOneSafe(this.operands[1], manager, atParseTime);
+        } else {
+          return this.getCompiledCodeForOneUnsafe(this.operands[1], manager, atParseTime);
+        }
+      }
+      if (type1 == NOT_INVOKABLE) {
+        if (type0 == SAFELY_INVOKABLE) {
+          return this.getCompiledCodeForOneSafe(this.operands[0], manager, atParseTime);
+        } else {
+          return this.getCompiledCodeForOneUnsafe(this.operands[0], manager, atParseTime);
+        }
+      }
+      if (type0 == SAFELY_INVOKABLE) {
+        return this.getCompiledCodeForOneUnsafeOneSafe(1,0, manager, atParseTime);
+      }
+      if (type1 == SAFELY_INVOKABLE) {
+        return this.getCompiledCodeForOneUnsafeOneSafe(0, 1, manager, atParseTime);
+      }
+      return this.getCompiledCodeForTwoUnsafe(manager, atParseTime);
     }
   }
   
-  private String getCompiledCodeForOneSafe(BooleanNode safe, LocalVariableManager manager) {
-    return this.operator.getOperateSingleCode(safe.getCompiledParseTimeCode(manager));
+  private String getCompiledCodeForOneSafe(BooleanNode safe, LocalVariableManager manager, boolean atParseTime) {
+    return this.operator.getOperateSingleCode(safe.getCompiledCode(manager, atParseTime));
   }
 
   private String getCompiledCodeForOneUnsafe(BooleanNode unsafe,
-      LocalVariableManager manager) {
+      LocalVariableManager manager, boolean atParseTime) {
     LocalVariable var = manager.getFreeLocalVariable(Integer.class);
     String code = "((" + var.getName() + " = "
-        + unsafe.getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "
+        + unsafe.getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "
         + this.operator.getOperateSingleCode(var.getName()) + ")";
     manager.releaseLocalVariable(var);
     return code;
   }
 
   private String getCompiledCodeForOneUnsafeOneSafe(int unsafe,
-      int safe, LocalVariableManager manager) {
+      int safe, LocalVariableManager manager, boolean atParseTime) {
     LocalVariable var = manager.getFreeLocalVariable(Integer.class);
     String code = "("
         + "("
         + var.getName()
         + " = "
-        + this.operands[unsafe].getCompiledParseTimeCode(manager)
+        + this.operands[unsafe].getCompiledCode(manager,atParseTime)
         + ") == Integer.MIN_VALUE ? "
         + this.operator.getOperateSingleCode(this.operands[safe]
-            .getCompiledParseTimeCode(manager)) + " : ";
+            .getCompiledCode(manager,atParseTime)) + " : ";
     if (unsafe < safe) {
-      code += "("+ var.getName()  + this.operator.getSymbol() + this.operands[safe].getCompiledParseTimeCode(manager) +")";
+      code += "("+ var.getName()  + this.operator.getSymbol() + this.operands[safe].getCompiledCode(manager,atParseTime) +")";
     } else {
-      code += "(" + this.operands[safe].getCompiledParseTimeCode(manager) + this.operator.getSymbol() + var.getName() +")";
+      code += "(" + this.operands[safe].getCompiledCode(manager,atParseTime) + this.operator.getSymbol() + var.getName() +")";
     }
     code += ")";
     manager.releaseLocalVariable(var);
     return code;
   }
   
-  private String getCompiledCodeForTwoUnsafe(LocalVariableManager manager) {
+  private String getCompiledCodeForTwoUnsafe(LocalVariableManager manager, boolean atParseTime) {
     LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
     LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
-    String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? " +
-            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : " +
+    String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? " +
+            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : " +
             this.operator.getOperateSingleCode(var1.getName()) + ")" + ":" +
-            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledParseTimeCode(manager) + ") == Integer.MIN_VALUE ? " +
+            "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? " +
             this.operator.getOperateSingleCode(var0.getName()) + ":" +
             "(" + var0.getName() + this.operator.getSymbol() + var1.getName() +")" +")" +")";
     manager.releaseLocalVariable(var0);
@@ -204,19 +204,11 @@ public class LogOperationNode extends LogicalNode {
   }
 
   @Override
-  public String getCompiledDisambiguationTimeCode(LocalVariableManager manager) {
-//    return "(" + this.operands[0].getCompiledDisambiguationTimeCode(manager)
-//        + this.operator.getSymbol()
-//        + this.operands[1].getCompiledDisambiguationTimeCode(manager) + ")";
-    return this.getCompiledParseTimeCode(manager);
-  }
-
-  @Override
-  public ParseTimeInvokeType getParseTimeInvokeType() {
+  public InvokeState getInvokeState(boolean atParseTime) {
     // Cannot combine because sometimes the operator does not need to evaluate
     // one operand
-    ParseTimeInvokeType type0 = this.operands[0].getParseTimeInvokeType();
-    ParseTimeInvokeType type1 = this.operands[1].getParseTimeInvokeType();
+    InvokeState type0 = this.operands[0].getInvokeState(atParseTime);
+    InvokeState type1 = this.operands[1].getInvokeState(atParseTime);
     // Check whether one is safely invokable
     if (type0 == SAFELY_INVOKABLE || type1 == SAFELY_INVOKABLE) {
       // When both are safe, everything is safe
