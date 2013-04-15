@@ -30,7 +30,7 @@ public class NegationNode extends LogicalNode {
       return "((" + this.operands[0].getCompiledCode(manager,atParseTime) + ") == 0 ? 1 : 0";
     case UNSAFELY_INVOKABLE:
     default:
-      LocalVariable var = manager.getFreeLocalVariable(Integer.class);
+      LocalVariable var = manager.getFreeLocalPrimitiveVariable(Integer.class);
       return "(" + "(" + var.getName() + " = " + this.operands[0].getCompiledCode(manager,atParseTime)
           + ")" +" == Integer.MIN_VALUE ? Integer.MIN_VALUE : ((" + var.getName()
           + ") == 0 ? 1: 0)";

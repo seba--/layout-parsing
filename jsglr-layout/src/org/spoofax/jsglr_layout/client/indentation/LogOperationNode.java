@@ -160,7 +160,7 @@ public class LogOperationNode extends LogicalNode {
 
   private String getCompiledCodeForOneUnsafe(BooleanNode unsafe,
       LocalVariableManager manager, boolean atParseTime) {
-    LocalVariable var = manager.getFreeLocalVariable(Integer.class);
+    LocalVariable var = manager.getFreeLocalPrimitiveVariable(Integer.class);
     String code = "((" + var.getName() + " = "
         + unsafe.getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : "
         + this.operator.getOperateSingleCode(var.getName()) + ")";
@@ -170,7 +170,7 @@ public class LogOperationNode extends LogicalNode {
 
   private String getCompiledCodeForOneUnsafeOneSafe(int unsafe,
       int safe, LocalVariableManager manager, boolean atParseTime) {
-    LocalVariable var = manager.getFreeLocalVariable(Integer.class);
+    LocalVariable var = manager.getFreeLocalPrimitiveVariable(Integer.class);
     String code = "("
         + "("
         + var.getName()
@@ -190,8 +190,8 @@ public class LogOperationNode extends LogicalNode {
   }
   
   private String getCompiledCodeForTwoUnsafe(LocalVariableManager manager, boolean atParseTime) {
-    LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
-    LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
+    LocalVariable var0 = manager.getFreeLocalPrimitiveVariable(Integer.class);
+    LocalVariable var1 = manager.getFreeLocalPrimitiveVariable(Integer.class);
     String code = "(" + "(" + var0.getName() + " = " + this.operands[0].getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? " +
             "(" + "(" + var1.getName() + " = " + this.operands[1].getCompiledCode(manager, atParseTime) + ") == Integer.MIN_VALUE ? Integer.MIN_VALUE : " +
             this.operator.getOperateSingleCode(var1.getName()) + ")" + ":" +

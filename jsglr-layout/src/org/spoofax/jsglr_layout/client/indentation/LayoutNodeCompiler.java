@@ -94,10 +94,15 @@ public class LayoutNodeCompiler {
     String code = "";
     List<LocalVariable> variables = manager.getDeclaredVariables();
     for (LocalVariable var : variables) {
-      if (var.getType() == Integer.class)
-        code +=  "int " + var.getName()+";\n";
-      else
-      code += var.getType().getName() + " " + var.getName()+";\n";
+      if (var.isPrimitive()) {
+        if (var.getType() == Integer.class) {
+          code +=  "int " + var.getName()+";\n";
+        } else if (var.getType() == Boolean.class) {
+          code += "boolean " + var.getName() + ";\n";
+        }
+      } else {
+        code += var.getType().getName() + " " + var.getName()+";\n";
+      }
     }
     return code;
   }

@@ -22,8 +22,8 @@ public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
     if (type0 == UNSAFELY_INVOKABLE) {
       if (type1 == UNSAFELY_INVOKABLE) {
         // Noth unsafe,, local variables for both
-        LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
-        LocalVariable var1 = manager.getFreeLocalVariable(Integer.class);
+        LocalVariable var0 = manager.getFreeLocalPrimitiveVariable(Integer.class);
+        LocalVariable var1 = manager.getFreeLocalPrimitiveVariable(Integer.class);
         String code = "((" +"("+var0.getName() + " = " + this.operands[0].getCompiledCode(manager, atParseTime) + ")"
             + " == Integer.MIN_VALUE || " + "(" + var1.getName() + " = " + this.operands[1].getCompiledCode(manager, atParseTime) + ")"
             + " == Integer.MIN_VALUE) ? Integer.MIN_VALUE : "+this.convertToInt(var0.getName() + this.getOperatorString() + var1.getName(),manager)  + ")";
@@ -46,7 +46,7 @@ public abstract class BinaryArithNode<V> extends ArithmeticNode<V> {
 
   private String getCodeForSafeAndUnsafeType(IntegerNode unsafe, LocalVariableManager manager, boolean atParseTime) {
     // Local variable for unsafe
-    LocalVariable var0 = manager.getFreeLocalVariable(Integer.class);
+    LocalVariable var0 = manager.getFreeLocalPrimitiveVariable(Integer.class);
     String code = "("+"(" + var0.getName() + " = " +unsafe.getCompiledCode(manager, atParseTime) + ")" + " == Integer.MIN_VALUE ? Integer.MIN_VALUE : (";
     String executeCode;
     if (unsafe ==this.operands[0]) {
