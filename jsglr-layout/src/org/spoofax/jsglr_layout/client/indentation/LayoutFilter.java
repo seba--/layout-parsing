@@ -133,7 +133,9 @@ public class LayoutFilter {
       if (CHECK_RECURSVIE) {
         Boolean check = evalConstraint(layoutConstraint, kids,
             new HashMap<String, Object>(), Boolean.class);
-        if (b != check) {
+        boolean b1 = b == null ? true : b;
+        boolean b2 = check == null ? true : check;
+        if (b1 != b2) {
           System.out.println("Failed for recursive eval at parse: "
               + this.atParseTime + " " + layoutConstraint);
           System.out.println(b + " but correct " + check);
@@ -314,12 +316,13 @@ public class LayoutFilter {
           return true;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
             Boolean.class);
-        if (b2 != NO_VALUE && b2)
-          return true;
-        if (b1 == NO_VALUE || b2 == NO_VALUE) {
-          return NO_VALUE;
-        }
-        return b1 || b2;
+        return b2;
+//        if (b2 != NO_VALUE && b2)
+//          return true;
+//        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+//          return NO_VALUE;
+//        }
+//        return b1 || b2;
       }
       if (consName.equals("and")) {
         ensureChildCount(constraint, 2, consName);
@@ -329,12 +332,13 @@ public class LayoutFilter {
           return false;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
             Boolean.class);
-        if (b2 != NO_VALUE && !b2)
-          return false;
-        if (b1 == NO_VALUE || b2 == NO_VALUE) {
-          return noValue();
-        }
-        return b2 && b1;
+        return b2;
+//        if (b2 != NO_VALUE && !b2)
+//          return false;
+//        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+//          return noValue();
+//        }
+//        return b2 && b1;
       }
       if (consName.equals("not")) {
         ensureChildCount(constraint, 1, consName);
