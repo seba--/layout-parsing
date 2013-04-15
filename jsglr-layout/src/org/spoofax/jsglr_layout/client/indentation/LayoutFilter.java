@@ -74,7 +74,27 @@ public class LayoutFilter {
   public boolean hasValidLayout(ParseNode t) {
     return hasValidLayout(t.getLabel(), t.getChildren());
   }
-
+  
+  private CompiledLayoutConstraint compileConstraint(IStrategoTerm layoutConstraint) {
+    BooleanNode bNode = buildConstraintTree(layoutConstraint, BooleanNode.class);
+    if (CHECK_LAYOUT_TREE) {
+      cachedNodes.put(layoutConstraint, bNode);
+    }
+    try {
+      System.out.println("Start compiler for " + layoutConstraint);
+      LayoutNodeCompiler compiler = new LayoutNodeCompiler();
+      CompiledLayoutConstraint constraint = compiler.compile(bNode);
+      // System.out.println("Got " + constraint);
+      cachedConstraints.put(layoutConstraint, constraint);
+      return constraint;
+    } catch (Throwable e) {
+      // System.out.println("Did something wrong");
+      e.printStackTrace();
+    } finally {
+      // System.out.println("After compiling");
+    }
+    return null;
+  }
   public boolean hasValidLayout(int label, AbstractParseNode[] kids) {
     IStrategoTerm layoutConstraint = parseTable.getLabel(label).getAttributes()
         .getLayoutConstraint();
@@ -87,24 +107,9 @@ public class LayoutFilter {
     if (USE_GENERATION) {
 
       CompiledLayoutConstraint constraint;
-      BooleanNode bNode = cachedNodes.get(layoutConstraint);
       constraint = cachedConstraints.get(layoutConstraint);
       if (constraint == null) {
-        bNode = evalConstraint(layoutConstraint, kids,
-            new HashMap<String, Object>(), BooleanNode.class);
-        cachedNodes.put(layoutConstraint, bNode);
-        try {
-          System.out.println("Start compiler for " + layoutConstraint);
-          LayoutNodeCompiler compiler = new LayoutNodeCompiler();
-          constraint = compiler.compile(bNode);
-          // System.out.println("Got " + constraint);
-          cachedConstraints.put(layoutConstraint, constraint);
-        } catch (Throwable e) {
-          // System.out.println("Did something wrong");
-          e.printStackTrace();
-        } finally {
-          // System.out.println("After compiling");
-        }
+        constraint = this.compileConstraint(layoutConstraint);
         numCreations++;
       } else {
         numCached++;
@@ -114,6 +119,8 @@ public class LayoutFilter {
         val = constraint.evaluateParseTime(kids, null);
       else
         val = constraint.evaluateDisambiguationTime(kids, null);
+      
+      // Convert val to Boolean
       if (val == 1) {
         b = true;
       } else if (val == 0) {
@@ -122,8 +129,8 @@ public class LayoutFilter {
         b = null;
       }
 
+      // Check whether the determined result by compiled node matches required ones
       if (CHECK_RECURSVIE) {
-        USE_GENERATION = false;
         Boolean check = evalConstraint(layoutConstraint, kids,
             new HashMap<String, Object>(), Boolean.class);
         if (b != check) {
@@ -131,14 +138,13 @@ public class LayoutFilter {
               + this.atParseTime + " " + layoutConstraint);
           System.out.println(b + " but correct " + check);
         }
-        USE_GENERATION = true;
       }
       if (CHECK_LAYOUT_TREE) {
         // check = bNode.evaluate(kids, new HashMap<String, Object>(),
         // this.atParseTime);
+        BooleanNode bNode = cachedNodes.get(layoutConstraint);
         Boolean check = bNode.evaluate(kids, new HashMap<String, Object>(),
             this.atParseTime);
-        ;
         if (b != check) {
           System.out.println("Compiled: " + val + " " + b + " parsed: " + check
               + " for " + layoutConstraint + " while " + atParseTime);
@@ -162,18 +168,98 @@ public class LayoutFilter {
     return (T) o;
   }
 
+  private <T extends LayoutNode<?>> T buildConstraintTree(IStrategoTerm constraint, Class<T> cl) {
+    return (T) buildConstraintTree(constraint);
+  }
+
+  private Object buildConstraintTree(IStrategoTerm constraint) {
+    switch (constraint.getTermType()) {
+    case IStrategoTerm.INT: {
+      int i = Term.asJavaInt(constraint);
+      return new KidsSelectorNode(i);
+    }
+    case IStrategoTerm.STRING:
+      // TODO implement that
+      throw new UnsupportedOperationException(
+          "Variables are not implemented in compiled constraints");
+      // String v = Term.asJavaString(constraint);
+      // return new VariableNode<Object>(v);
+    case IStrategoTerm.APPL:
+      IStrategoConstructor cons = Term.tryGetConstructor(constraint);
+      String consName = cons.getName();
+      if (consName.equals("num")) {
+        String num = Term.asJavaString(constraint.getSubterm(0));
+        int i = Integer.parseInt(num);
+        return new ConstantNode(i);
+      }
+      if (consName.equals("tree")) {
+        String num = Term.asJavaString(constraint.getSubterm(0));
+        int i = Integer.parseInt(num);
+        return new KidsSelectorNode(i);
+      }
+      if (consName.equals("eq") || consName.equals("gt")
+          || consName.equals("ge") || consName.equals("lt")
+          || consName.equals("le")) {
+        IntegerNode operand1 = buildConstraintTree(constraint.getSubterm(0),
+             IntegerNode.class);
+        IntegerNode operand2 = buildConstraintTree(constraint.getSubterm(1),
+             IntegerNode.class);
+        return new ArithComparatorNode(operand1, operand2, consName);
+      }
+      if (consName.equals("add") || consName.equals("sub")
+          || consName.equals("mul") || consName.equals("div")) {
+        IntegerNode operand1 = buildConstraintTree(constraint.getSubterm(0),
+             IntegerNode.class);
+        IntegerNode operand2 = buildConstraintTree(constraint.getSubterm(1),
+             IntegerNode.class);
+        return new ArithOperatorNode(operand1, operand2, consName);
+      }
+      if (consName.equals("first") || consName.equals("left")
+          || consName.equals("right") || consName.equals("last")) {
+        AbstractParseNodeNode n = buildConstraintTree(constraint.getSubterm(0),
+             AbstractParseNodeNode.class);
+        return new NodeSelectorNode(n, consName);
+      }
+      if (consName.equals("or") || consName.equals("and")) {
+        BooleanNode b1 = buildConstraintTree(constraint.getSubterm(0),
+            BooleanNode.class);
+        BooleanNode b2 = buildConstraintTree(constraint.getSubterm(1),
+            BooleanNode.class);
+        return new LogOperationNode(b1, b2, consName);
+      }
+      if (consName.equals("not")) {
+        BooleanNode b1 = buildConstraintTree(constraint.getSubterm(0),
+            BooleanNode.class);
+        return new NegationNode(b1);
+      }
+      if (consName.equals("all")) {
+        // TODO implement that
+        throw new UnsupportedOperationException(
+            "All is not implemented in compiled layouts");
+      }
+      if (consName.equals("col")) {
+        AbstractParseNodeNode child = buildConstraintTree(
+            constraint.getSubterm(0), AbstractParseNodeNode.class);
+        return new MethodNode(child, MethodNode.Method.GET_COLUMN);
+      }
+      if (consName.equals("line")) {
+        AbstractParseNodeNode child = buildConstraintTree(
+            constraint.getSubterm(0), AbstractParseNodeNode.class);
+        return new MethodNode(child, MethodNode.Method.GET_LINE);
+      }
+      throw new IllegalStateException("unhandeled constructor " + consName);
+    default:
+      throw new IllegalStateException("unhandeled constraint " + constraint);
+    }
+  }
+
   private Object evalConstraint(IStrategoTerm constraint,
       AbstractParseNode[] kids, Map<String, Object> env) {
     switch (constraint.getTermType()) {
     case IStrategoTerm.INT: {
       int i = Term.asJavaInt(constraint);
-      if (USE_GENERATION) {
-        return new KidsSelectorNode(i);
-      } else {
         return getSubtree(i, kids);
-      }
     }
-
     case IStrategoTerm.STRING:
       String v = Term.asJavaString(constraint);
       Object o = env.get(v);
@@ -184,177 +270,105 @@ public class LayoutFilter {
     case IStrategoTerm.APPL:
       IStrategoConstructor cons = Term.tryGetConstructor(constraint);
       String consName = cons.getName();
-
       if (consName.equals("num")) {
         String num = Term.asJavaString(constraint.getSubterm(0));
         int i = Integer.parseInt(num);
-        if (USE_GENERATION) {
-          return new ConstantNode(i);
-        } else {
-          return i;
-        }
+        return i;
       }
       if (consName.equals("tree")) {
         String num = Term.asJavaString(constraint.getSubterm(0));
         int i = Integer.parseInt(num);
-        if (USE_GENERATION) {
-          return new KidsSelectorNode(i);
-        } else {
-          return getSubtree(i, kids);
-        }
+        return getSubtree(i, kids);
       }
       if (consName.equals("eq") || consName.equals("gt")
           || consName.equals("ge") || consName.equals("lt")
           || consName.equals("le")) {
         ensureChildCount(constraint, 2, consName);
-        if (USE_GENERATION) {
-          IntegerNode operand1 = evalConstraint(constraint.getSubterm(0), kids,
-              env, IntegerNode.class);
-          IntegerNode operand2 = evalConstraint(constraint.getSubterm(1), kids,
-              env, IntegerNode.class);
-          return new ArithComparatorNode(operand1, operand2, consName);
-        } else {
-          Integer i1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              Integer.class);
-          Integer i2 = evalConstraint(constraint.getSubterm(1), kids, env,
-              Integer.class);
-          return binArithComp(consName, i1, i2);
-        }
-
+        Integer i1 = evalConstraint(constraint.getSubterm(0), kids, env,
+            Integer.class);
+        Integer i2 = evalConstraint(constraint.getSubterm(1), kids, env,
+            Integer.class);
+        return binArithComp(consName, i1, i2);
       }
       if (consName.equals("add") || consName.equals("sub")
           || consName.equals("mul") || consName.equals("div")) {
         ensureChildCount(constraint, 2, consName);
-        if (USE_GENERATION) {
-          IntegerNode operand1 = evalConstraint(constraint.getSubterm(0), kids,
-              env, IntegerNode.class);
-          IntegerNode operand2 = evalConstraint(constraint.getSubterm(1), kids,
-              env, IntegerNode.class);
-
-          return new ArithOperatorNode(operand1, operand2, consName);
-        } else {
-          Integer i1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              Integer.class);
-          Integer i2 = evalConstraint(constraint.getSubterm(1), kids, env,
-              Integer.class);
-          return binArithOp(consName, i1, i2);
-        }
+        Integer i1 = evalConstraint(constraint.getSubterm(0), kids, env,
+            Integer.class);
+        Integer i2 = evalConstraint(constraint.getSubterm(1), kids, env,
+            Integer.class);
+        return binArithOp(consName, i1, i2);
       }
       if (consName.equals("first") || consName.equals("left")
           || consName.equals("right") || consName.equals("last")) {
         ensureChildCount(constraint, 1, consName);
-        if (USE_GENERATION) {
-
-          AbstractParseNodeNode n = evalConstraint(constraint.getSubterm(0),
-              kids, env, AbstractParseNodeNode.class);
-          return new NodeSelectorNode(n, consName);
-        } else {
-          AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
-              env, AbstractParseNode.class);
-          return nodeSelector(consName, n);
-        }
+        AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
+            env, AbstractParseNode.class);
+        return nodeSelector(consName, n);
       }
-      if (USE_GENERATION) {
-        if (consName.equals("or") || consName.equals("and")) {
-          ensureChildCount(constraint, 2, consName);
-          BooleanNode b1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              BooleanNode.class);
-          BooleanNode b2 = evalConstraint(constraint.getSubterm(1), kids, env,
-              BooleanNode.class);
-          return new LogOperationNode(b1, b2, consName);
+      if (consName.equals("or")) {
+        ensureChildCount(constraint, 2, consName);
+        Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
+            Boolean.class);
+        if (b1 != NO_VALUE && b1)
+          return true;
+        Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
+            Boolean.class);
+        if (b2 != NO_VALUE && b2)
+          return true;
+        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+          return NO_VALUE;
         }
-      } else {
-        if (consName.equals("or")) {
-          ensureChildCount(constraint, 2, consName);
-          Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              Boolean.class);
-          if (b1 != NO_VALUE && b1)
-            return true;
-          Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
-              Boolean.class);
-          if (b2 != NO_VALUE && b2)
-            return true;
-          if (b1 == NO_VALUE || b2 == NO_VALUE) {
-            return NO_VALUE;
-          }
-          return b1 || b2;
+        return b1 || b2;
+      }
+      if (consName.equals("and")) {
+        ensureChildCount(constraint, 2, consName);
+        Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
+            Boolean.class);
+        if (b1 != NO_VALUE && !b1)
+          return false;
+        Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
+            Boolean.class);
+        if (b2 != NO_VALUE && !b2)
+          return false;
+        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+          return noValue();
         }
-        if (consName.equals("and")) {
-          ensureChildCount(constraint, 2, consName);
-          Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              Boolean.class);
-          if (b1 != NO_VALUE && !b1)
-            return false;
-          Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
-              Boolean.class);
-          if (b2 != NO_VALUE && !b2)
-            return false;
-          if (b1 == NO_VALUE || b2 == NO_VALUE) {
-            return noValue();
-          }
-          return b2 && b1;
-        }
+        return b2 && b1;
       }
       if (consName.equals("not")) {
         ensureChildCount(constraint, 1, consName);
-        if (USE_GENERATION) {
-
-          BooleanNode b1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              BooleanNode.class);
-          return new NegationNode(b1);
-        } else {
-          Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
-              Boolean.class);
-          if (b1 == NO_VALUE)
-            return NO_VALUE;
-
-        }
+        Boolean b1 = evalConstraint(constraint.getSubterm(0), kids, env,
+            Boolean.class);
+        if (b1 == NO_VALUE)
+          return NO_VALUE;
       }
       if (consName.equals("all")) {
         ensureChildCount(constraint, 3, consName);
-
         ensureType(constraint.getSubterm(0), IStrategoString.class,
             constraint.getSubterm(0));
         v = Term.asJavaString(constraint.getSubterm(0));
-
         AbstractParseNode n = evalConstraint(constraint.getSubterm(1), kids,
             env, AbstractParseNode.class);
-
         return checkAll(n, v, constraint, kids, env);
       }
       if (consName.equals("col")) {
         ensureChildCount(constraint, 1, consName);
-        if (USE_GENERATION) {
-
-          AbstractParseNodeNode child = evalConstraint(
-              constraint.getSubterm(0), kids, env, AbstractParseNodeNode.class);
-          return new MethodNode(child, MethodNode.Method.GET_COLUMN);
-        } else {
-          AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
-              env, AbstractParseNode.class);
-          if (n == NO_VALUE)
-            return NO_VALUE;
-          return n.getColumn();
-        }
+        AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
+            env, AbstractParseNode.class);
+        if (n == NO_VALUE)
+          return NO_VALUE;
+        return n.getColumn();
       }
       if (consName.equals("line")) {
         ensureChildCount(constraint, 1, consName);
-        if (USE_GENERATION) {
-
-          AbstractParseNodeNode child = evalConstraint(
-              constraint.getSubterm(0), kids, env, AbstractParseNodeNode.class);
-          return new MethodNode(child, MethodNode.Method.GET_LINE);
-        } else {
-          AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
-              env, AbstractParseNode.class);
-          if (n == NO_VALUE)
-            return NO_VALUE;
-          return n.getLine();
-        }
+        AbstractParseNode n = evalConstraint(constraint.getSubterm(0), kids,
+            env, AbstractParseNode.class);
+        if (n == NO_VALUE)
+          return NO_VALUE;
+        return n.getLine();
       }
-
       throw new IllegalStateException("unhandeled constructor " + consName);
-
     default:
       throw new IllegalStateException("unhandeled constraint " + constraint);
     }

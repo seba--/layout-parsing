@@ -8,5 +8,5 @@ public interface CompiledLayoutConstraint {
   
   public int evaluateParseTime(AbstractParseNode[] kids, Map<String,Object> maps);
   public int evaluateDisambiguationTime(AbstractParseNode[] kids, Map<String, Object> maps);
-
+  
 }
