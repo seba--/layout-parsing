@@ -23,7 +23,7 @@ public class LayoutFilter {
 
   private static boolean USE_GENERATION = true;
   private static boolean CHECK_LAYOUT_TREE = false;
-  private static boolean CHECK_RECURSVIE = true;
+  private static boolean CHECK_RECURSVIE = false;
 
   private final Object NO_VALUE = null;
 
@@ -320,13 +320,12 @@ public class LayoutFilter {
           return true;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
             Boolean.class);
-        return b2;
-//        if (b2 != NO_VALUE && b2)
-//          return true;
-//        if (b1 == NO_VALUE || b2 == NO_VALUE) {
-//          return NO_VALUE;
-//        }
-//        return b1 || b2;
+        if (b2 != NO_VALUE && b2)
+          return true;
+        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+          return NO_VALUE;
+        }
+        return b1 || b2;
       }
       if (consName.equals("and")) {
         ensureChildCount(constraint, 2, consName);
@@ -336,13 +335,12 @@ public class LayoutFilter {
           return false;
         Boolean b2 = evalConstraint(constraint.getSubterm(1), kids, env,
             Boolean.class);
-        return b2;
-//        if (b2 != NO_VALUE && !b2)
-//          return false;
-//        if (b1 == NO_VALUE || b2 == NO_VALUE) {
-//          return noValue();
-//        }
-//        return b2 && b1;
+        if (b2 != NO_VALUE && !b2)
+          return false;
+        if (b1 == NO_VALUE || b2 == NO_VALUE) {
+          return noValue();
+        }
+        return b2 && b1;
       }
       if (consName.equals("not")) {
         ensureChildCount(constraint, 1, consName);
