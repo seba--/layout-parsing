@@ -93,7 +93,7 @@ public class LayoutNodeCompiler {
     Class<? extends CompiledLayoutConstraint> loadedClass = (Class<? extends CompiledLayoutConstraint>) loader
         .loadClass(newClass.getName());
     newClass.freeze(); // No further modifications
-    System.out.println("Compiled " + loadedClass);
+//    System.out.println("Compiled " + loadedClass);
     // Create an instance
     CompiledLayoutConstraint constraint = loadedClass.newInstance();
     return constraint;
@@ -130,8 +130,8 @@ public class LayoutNodeCompiler {
     // statement
     sourceCode = "{" + getCodeForVariables(manager) + "\nreturn " + sourceCode
         + ";\n}";
-    System.out.println("Code for method: " + methodName);
-    System.out.println(sourceCode);
+ //   System.out.println("Code for method: " + methodName);
+ //   System.out.println(sourceCode);
 
     // Load class for arguments
     ClassPool classPool = ClassPool.getDefault();

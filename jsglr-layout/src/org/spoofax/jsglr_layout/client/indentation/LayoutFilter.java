@@ -21,9 +21,9 @@ import org.spoofax.terms.Term;
  */
 public class LayoutFilter {
 
-  private static boolean USE_GENERATION = true;
-  private static boolean CHECK_LAYOUT_TREE = false;
-  private static boolean CHECK_RECURSVIE = false;
+  public static boolean USE_GENERATION = true;
+  public static boolean CHECK_LAYOUT_TREE = false;
+  public static boolean CHECK_RECURSVIE = false;
 
   private final Object NO_VALUE = null;
 
@@ -33,16 +33,9 @@ public class LayoutFilter {
   private int disambiguationCount;
   private int filterCallCount = 0;
 
-  private static int numCreations = 0;
-  private static int numCached = 0;
-  private static WeakHashMap<IStrategoTerm, CompiledLayoutConstraint> cachedConstraints = new WeakHashMap<IStrategoTerm, CompiledLayoutConstraint>();
-  private static WeakHashMap<IStrategoTerm, BooleanNode> cachedNodes = null;
+  public static int numCreations = 0;
+  public static int numCached = 0;
   
-  static {
-    if (CHECK_LAYOUT_TREE) {
-      cachedNodes= new WeakHashMap<IStrategoTerm, BooleanNode>();
-    }
-  }
 
   /**
    * 
@@ -81,47 +74,28 @@ public class LayoutFilter {
     return hasValidLayout(t.getLabel(), t.getChildren());
   }
   
-  private CompiledLayoutConstraint compileConstraint(IStrategoTerm layoutConstraint) {
-    BooleanNode bNode = buildConstraintTree(layoutConstraint, BooleanNode.class);
-    if (CHECK_LAYOUT_TREE) {
-      cachedNodes.put(layoutConstraint, bNode);
-    }
-    try {
-      System.out.println("\nStart compiler for " + layoutConstraint);
-      LayoutNodeCompiler compiler = new LayoutNodeCompiler();
-      CompiledLayoutConstraint constraint = compiler.compile(bNode);
-      // System.out.println("Got " + constraint);
-      cachedConstraints.put(layoutConstraint, constraint);
-      return constraint;
-    } catch (Throwable e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    }
-  }
+ 
   public boolean hasValidLayout(int label, AbstractParseNode[] kids) {
-    IStrategoTerm layoutConstraint = parseTable.getLabel(label).getAttributes()
+    IStrategoTerm layoutConstraintSource = null;
+    if (CHECK_LAYOUT_TREE || CHECK_RECURSVIE) {
+      layoutConstraintSource = parseTable.getLabel(label).getAttributes()
+          .getLayoutConstraintSource();
+    }
+    CompiledLayoutConstraint compiledConstraint =  parseTable.getLabel(label).getAttributes()
         .getLayoutConstraint();
 
-    if (layoutConstraint == null)
+   // System.out.println("Found constraint " +layoutConstraintSource);
+    if (compiledConstraint == null)
       return true;
     disambiguationCount = 0;
     filterCallCount++;
-    Boolean b;
+    Boolean b= null;
     if (USE_GENERATION) {
-
-      CompiledLayoutConstraint constraint;
-      constraint = cachedConstraints.get(layoutConstraint);
-      if (constraint == null) {
-        constraint = this.compileConstraint(layoutConstraint);
-        numCreations++;
-      } else {
-        numCached++;
-      }
       int val;
       if (this.atParseTime)
-        val = constraint.evaluateParseTime(kids, null);
+        val = compiledConstraint.evaluateParseTime(kids, null);
       else
-        val = constraint.evaluateDisambiguationTime(kids, null);
+        val = compiledConstraint.evaluateDisambiguationTime(kids, null);
       
       // Convert val to Boolean
       if (val == 1) {
@@ -134,30 +108,30 @@ public class LayoutFilter {
 
       // Check whether the determined result by compiled node matches required ones
       if (CHECK_RECURSVIE) {
-        Boolean check = evalConstraint(layoutConstraint, kids,
+        Boolean check = evalConstraint(layoutConstraintSource, kids,
             new HashMap<String, Object>(), Boolean.class);
         boolean b1 = b == null ? true : b;
         boolean b2 = check == null ? true : check;
         if (b1 != b2) {
           System.out.println("Failed for recursive eval at parse: "
-              + this.atParseTime + " " + layoutConstraint);
+              + this.atParseTime + " " + layoutConstraintSource);
           System.out.println(b + " but correct " + check);
         }
       }
       if (CHECK_LAYOUT_TREE) {
         // check = bNode.evaluate(kids, new HashMap<String, Object>(),
         // this.atParseTime);
-        BooleanNode bNode = cachedNodes.get(layoutConstraint);
+        BooleanNode bNode = buildConstraintTree(layoutConstraintSource, BooleanNode.class);
         Boolean check = bNode.evaluate(kids, new HashMap<String, Object>(),
             this.atParseTime);
         if (b != check) {
           System.out.println("Compiled: " + val + " " + b + " parsed: " + check
-              + " for " + layoutConstraint + " while " + atParseTime);
+              + " for " + layoutConstraintSource + " while " + atParseTime);
         }
       }
 
     } else {
-      b = evalConstraint(layoutConstraint, kids, new HashMap<String, Object>(),
+      b = evalConstraint(layoutConstraintSource, kids, new HashMap<String, Object>(),
           Boolean.class);
     }
     if (b == NO_VALUE)
@@ -174,11 +148,11 @@ public class LayoutFilter {
   }
 
   @SuppressWarnings("unchecked")
-  private <T extends LayoutNode<?>> T buildConstraintTree(IStrategoTerm constraint, Class<T> cl) {
+  public static <T extends LayoutNode<?>> T buildConstraintTree(IStrategoTerm constraint, Class<T> cl) {
     return (T) buildConstraintTree(constraint);
   }
 
-  private Object buildConstraintTree(IStrategoTerm constraint) {
+  private static Object buildConstraintTree(IStrategoTerm constraint) {
     switch (constraint.getTermType()) {
     case IStrategoTerm.INT: {
       int i = Term.asJavaInt(constraint);

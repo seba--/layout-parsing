@@ -24,6 +24,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
+
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 
 import org.spoofax.NotImplementedException;
 import org.spoofax.interpreter.terms.IStrategoAppl;
@@ -33,6 +37,10 @@ import org.spoofax.interpreter.terms.IStrategoNamed;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr_layout.client.imploder.TreeBuilder;
+import org.spoofax.jsglr_layout.client.indentation.BooleanNode;
+import org.spoofax.jsglr_layout.client.indentation.CompiledLayoutConstraint;
+import org.spoofax.jsglr_layout.client.indentation.LayoutFilter;
+import org.spoofax.jsglr_layout.client.indentation.LayoutNodeCompiler;
 import org.spoofax.jsglr_layout.io.ParseTableManager;
 import org.spoofax.jsglr_layout.io.SGLR;
 import org.spoofax.jsglr_layout.shared.SGLRException;
@@ -54,6 +62,8 @@ public class ParseTable implements Serializable {
      */
     public static final int NUM_CHARS = 256;
     public static final int LABEL_BASE = NUM_CHARS + 1;
+    
+    private static WeakHashMap<String, CompiledLayoutConstraint> cachedConstraints = new WeakHashMap<String, CompiledLayoutConstraint>();
     
     private static final long serialVersionUID = -3372429249660900093L;
     
@@ -276,7 +286,8 @@ public class ParseTable implements Serializable {
             int type = 0;
             boolean isRecover = false;
             boolean isIgnoreLayout = false;
-            IStrategoTerm layoutConstraint = null;
+            IStrategoTerm layoutConstraintSource = null;
+            CompiledLayoutConstraint layoutConstraint = null;
             boolean isNewlineEnforced = false;
             boolean isLongestMatch = false;
             IStrategoTerm term = null;
@@ -324,26 +335,22 @@ public class ParseTable implements Serializable {
                           isIgnoreLayout = true;
                         }
                         else if (child.getSubtermCount() == 1 && child.getName().equals("layout")) {
-                          layoutConstraint = child.getSubterm(0);
-                          if (Term.isTermString(layoutConstraint))
-                            try {
-                              if (layoutParser == null) {
-                                try {
-                                  InputStream in = getClass().getResourceAsStream("/org/spoofax/jsglr_layout/client/indentation/LayoutConstraint.tbl");
-                                  ParseTable pt = new ParseTableManager(factory).loadFromStream(in);
-                                  layoutParser =  new SGLR(new TreeBuilder(), pt);
-                                } catch (ParseError e) {
-                                  e.printStackTrace();
-                                } catch (IOException e) {
-                                  e.printStackTrace();
-                                }
-                              }
-                              layoutConstraint = (IStrategoTerm) layoutParser.parse(Term.asJavaString(layoutConstraint), "", "Constraint");
-                            } catch (SGLRException e) {
-                              throw new InvalidParseTableException("invalid layout constraint " + Term.asJavaString(layoutConstraint) + ": " + e.getMessage());
-                            } catch (InterruptedException e) {
-                              e.printStackTrace();
+                          layoutConstraintSource = this.parseLayoutConstraint(child
+                              .getSubterm(0));
+                          if (layoutConstraintSource != null) {
+                            // Check whether a constraint was already created
+                            String key = layoutConstraintSource.toString();
+                            layoutConstraint = cachedConstraints.get(key);
+                            if (layoutConstraint == null) {
+                              // Compile the constraint
+                              layoutConstraint = this
+                                  .compileLayoutConstraint(layoutConstraintSource);
+                              cachedConstraints.put(key, layoutConstraint);
+                              LayoutFilter.numCreations ++;
+                            }else {
+                              LayoutFilter.numCached ++;
                             }
+                          }
                         }
                         else if (child.getSubtermCount() == 0 && child.getName().equals("enforce-newline")) {
                           isNewlineEnforced = true;
@@ -361,12 +368,57 @@ public class ParseTable implements Serializable {
                     }
                 }
             }
-            return new ProductionAttributes(term, type, isRecover, isIgnoreLayout, layoutConstraint, isNewlineEnforced, isLongestMatch);
+            return new ProductionAttributes(term, type, isRecover, isIgnoreLayout, layoutConstraintSource, layoutConstraint, isNewlineEnforced, isLongestMatch);
         } else if (attr.getName().equals("no-attrs")) {
-            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, null, false, false);
+            return new ProductionAttributes(null, ProductionType.NO_TYPE, false, false, null, null, false, false);
         }
         throw new InvalidParseTableException("Unknown attribute type: " + attr);
     }
+    
+    private IStrategoTerm parseLayoutConstraint(IStrategoTerm layoutConstraint)
+        throws InvalidParseTableException {
+      if (Term.isTermString(layoutConstraint))
+        try {
+          if (layoutParser == null) {
+            try {
+              InputStream in = getClass()
+                  .getResourceAsStream(
+                      "/org/spoofax/jsglr_layout/client/indentation/LayoutConstraint.tbl");
+              ParseTable pt = new ParseTableManager(factory).loadFromStream(in);
+              layoutParser = new SGLR(new TreeBuilder(), pt);
+            } catch (ParseError e) {
+              e.printStackTrace();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          return (IStrategoTerm) layoutParser.parse(
+              Term.asJavaString(layoutConstraint), "", "Constraint");
+
+        } catch (SGLRException e) {
+          throw new InvalidParseTableException("invalid layout constraint "
+              + Term.asJavaString(layoutConstraint) + ": " + e.getMessage());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      return layoutConstraint;
+    }
+
+    private CompiledLayoutConstraint compileLayoutConstraint(
+        IStrategoTerm layoutConstraintSource) throws InvalidParseTableException {
+      // Compile the constraint
+      LayoutNodeCompiler compiler = new LayoutNodeCompiler();
+      try {
+        CompiledLayoutConstraint compiledContraint = compiler
+            .compile(LayoutFilter.buildConstraintTree(layoutConstraintSource,
+                BooleanNode.class));
+        return compiledContraint;
+      } catch (Exception e) {
+        throw new InvalidParseTableException("Cannot compile layout constraint: "
+            + Term.asJavaString(layoutConstraintSource) + ": " + e.getMessage());
+      }
+    }
+
 
     private State[] parseStates(IStrategoNamed statesTerm) throws InvalidParseTableException {
         IStrategoList states = termAt(statesTerm, 0);

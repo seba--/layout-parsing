@@ -13,6 +13,8 @@ import static org.spoofax.jsglr_layout.client.ProductionType.PREFER;
 import java.io.Serializable;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.jsglr_layout.client.indentation.CompiledLayoutConstraint;
+import org.spoofax.jsglr_layout.client.indentation.LayoutFilter;
 
 public class ProductionAttributes implements Serializable {
 
@@ -22,13 +24,14 @@ public class ProductionAttributes implements Serializable {
 
     private final boolean isRecover;
     private final boolean isIgnoreLayout;
-    private final IStrategoTerm layoutConstraint;
+    private final IStrategoTerm layoutConstraintSource;
+    private final CompiledLayoutConstraint layoutConstraint;
     private final boolean isNewlineEnforced;
     private final boolean isLongestMatch;
 
     private final transient IStrategoTerm abstractCtor;
 
-    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isIgnoreIndent, IStrategoTerm layoutConstraint, boolean isNewlineEnforced, boolean isLongestMatch) {
+    ProductionAttributes(IStrategoTerm ctor, int type, boolean isRecover, boolean isIgnoreIndent, IStrategoTerm layoutConstraintSource, CompiledLayoutConstraint layoutConstraint, boolean isNewlineEnforced, boolean isLongestMatch) {
         this.type = type;
         this.abstractCtor = ctor;
         this.isRecover = isRecover;
@@ -36,6 +39,12 @@ public class ProductionAttributes implements Serializable {
         this.layoutConstraint = layoutConstraint;
         this.isNewlineEnforced = isNewlineEnforced;
         this.isLongestMatch = isLongestMatch;
+        if (LayoutFilter.CHECK_LAYOUT_TREE || LayoutFilter.CHECK_RECURSVIE) {
+          this.layoutConstraintSource = layoutConstraintSource;
+        } else {
+          this.layoutConstraintSource = null;
+        }
+     //   System.out.println("Created " + layoutConstraint + " " + layoutConstraintSource);
     }
 
     public final int getType() {
@@ -54,8 +63,13 @@ public class ProductionAttributes implements Serializable {
       return isIgnoreLayout;
     }
     
-    public IStrategoTerm getLayoutConstraint() {
+    
+    public CompiledLayoutConstraint getLayoutConstraint() {
       return layoutConstraint;
+    }
+    
+    public IStrategoTerm getLayoutConstraintSource() {
+      return layoutConstraintSource;
     }
     
     public boolean isNewlineEnforced() {

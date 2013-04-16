@@ -37,6 +37,7 @@ public class HaskellParser {
     try {
       table = new ParseTableManager().loadFromFile(tableLocation);
     } catch (Exception e) {
+      e.printStackTrace();
       System.out.println(e);
       throw new RuntimeException(e);
     }
