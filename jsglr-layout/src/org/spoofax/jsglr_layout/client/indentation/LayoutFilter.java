@@ -21,9 +21,9 @@ import org.spoofax.terms.Term;
  */
 public class LayoutFilter {
 
-  private boolean USE_GENERATION = true;
-  private boolean CHECK_LAYOUT_TREE = false;
-  private boolean CHECK_RECURSVIE = true;
+  private static boolean USE_GENERATION = true;
+  private static boolean CHECK_LAYOUT_TREE = false;
+  private static boolean CHECK_RECURSVIE = true;
 
   private final Object NO_VALUE = null;
 
@@ -36,7 +36,13 @@ public class LayoutFilter {
   private static int numCreations = 0;
   private static int numCached = 0;
   private static WeakHashMap<IStrategoTerm, CompiledLayoutConstraint> cachedConstraints = new WeakHashMap<IStrategoTerm, CompiledLayoutConstraint>();
-  private static WeakHashMap<IStrategoTerm, BooleanNode> cachedNodes = new WeakHashMap<IStrategoTerm, BooleanNode>();
+  private static WeakHashMap<IStrategoTerm, BooleanNode> cachedNodes = null;
+  
+  static {
+    if (CHECK_LAYOUT_TREE) {
+      cachedNodes= new WeakHashMap<IStrategoTerm, BooleanNode>();
+    }
+  }
 
   /**
    * 
@@ -81,19 +87,16 @@ public class LayoutFilter {
       cachedNodes.put(layoutConstraint, bNode);
     }
     try {
-      System.out.println("Start compiler for " + layoutConstraint);
+      System.out.println("\nStart compiler for " + layoutConstraint);
       LayoutNodeCompiler compiler = new LayoutNodeCompiler();
       CompiledLayoutConstraint constraint = compiler.compile(bNode);
       // System.out.println("Got " + constraint);
       cachedConstraints.put(layoutConstraint, constraint);
       return constraint;
     } catch (Throwable e) {
-      // System.out.println("Did something wrong");
       e.printStackTrace();
-    } finally {
-      // System.out.println("After compiling");
+      throw new RuntimeException(e);
     }
-    return null;
   }
   public boolean hasValidLayout(int label, AbstractParseNode[] kids) {
     IStrategoTerm layoutConstraint = parseTable.getLabel(label).getAttributes()
@@ -170,6 +173,7 @@ public class LayoutFilter {
     return (T) o;
   }
 
+  @SuppressWarnings("unchecked")
   private <T extends LayoutNode<?>> T buildConstraintTree(IStrategoTerm constraint, Class<T> cl) {
     return (T) buildConstraintTree(constraint);
   }
