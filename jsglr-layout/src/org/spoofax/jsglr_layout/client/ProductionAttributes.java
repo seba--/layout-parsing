@@ -39,7 +39,7 @@ public class ProductionAttributes implements Serializable {
         this.layoutConstraint = layoutConstraint;
         this.isNewlineEnforced = isNewlineEnforced;
         this.isLongestMatch = isLongestMatch;
-        if (LayoutFilter.CHECK_LAYOUT_TREE || LayoutFilter.CHECK_RECURSVIE) {
+        if (LayoutFilter.NEEDS_CONSTRAINTS_SOURCE) {
           this.layoutConstraintSource = layoutConstraintSource;
         } else {
           this.layoutConstraintSource = null;

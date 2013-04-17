@@ -12,8 +12,11 @@ import javassist.Loader;
 import javassist.Modifier;
 import javassist.NotFoundException;
 
+import org.spoofax.interpreter.terms.IStrategoConstructor;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr_layout.client.AbstractParseNode;
 import org.spoofax.jsglr_layout.client.indentation.LocalVariableManager.LocalVariable;
+import org.spoofax.terms.Term;
 
 /**
  * The {@link LayoutNodeCompiler} compiles {@link CompilableLayoutNode}s to
@@ -66,9 +69,12 @@ public class LayoutNodeCompiler {
    * @throws IllegalAccessException
    * @throws IOException
    */
-  public CompiledLayoutConstraint compile(BooleanNode node)
+  public CompiledLayoutConstraint compile(IStrategoTerm constraintTerm)
       throws NotFoundException, CannotCompileException, ClassNotFoundException,
       InstantiationException, IllegalAccessException, IOException {
+    
+    //First build the layout tree
+    BooleanNode node = buildConstraintTree(constraintTerm, BooleanNode.class);
     ClassPool classPool = ClassPool.getDefault();
     // Load the CompiledLayoutNode
     CtClass compiledInterfaceClass = classPool
@@ -173,6 +179,92 @@ public class LayoutNodeCompiler {
       code += " " + var.getName() + ";";
     }
     return code;
+  }
+
+  static Object buildConstraintTree(IStrategoTerm constraint) {
+    switch (constraint.getTermType()) {
+    case IStrategoTerm.INT: {
+      int i = Term.asJavaInt(constraint);
+      return new KidsSelectorNode(i);
+    }
+    case IStrategoTerm.STRING:
+      // TODO implement that
+      throw new UnsupportedOperationException(
+          "Variables are not implemented in compiled constraints");
+      // String v = Term.asJavaString(constraint);
+      // return new VariableNode<Object>(v);
+    case IStrategoTerm.APPL:
+      IStrategoConstructor cons = Term.tryGetConstructor(constraint);
+      String consName = cons.getName();
+      if (consName.equals("num")) {
+        String num = Term.asJavaString(constraint.getSubterm(0));
+        int i = Integer.parseInt(num);
+        return new ConstantNode(i);
+      }
+      if (consName.equals("tree")) {
+        String num = Term.asJavaString(constraint.getSubterm(0));
+        int i = Integer.parseInt(num);
+        return new KidsSelectorNode(i);
+      }
+      if (consName.equals("eq") || consName.equals("gt")
+          || consName.equals("ge") || consName.equals("lt")
+          || consName.equals("le")) {
+        IntegerNode operand1 = buildConstraintTree(constraint.getSubterm(0),
+             IntegerNode.class);
+        IntegerNode operand2 = buildConstraintTree(constraint.getSubterm(1),
+             IntegerNode.class);
+        return new ArithComparatorNode(operand1, operand2, consName);
+      }
+      if (consName.equals("add") || consName.equals("sub")
+          || consName.equals("mul") || consName.equals("div")) {
+        IntegerNode operand1 = buildConstraintTree(constraint.getSubterm(0),
+             IntegerNode.class);
+        IntegerNode operand2 = buildConstraintTree(constraint.getSubterm(1),
+             IntegerNode.class);
+        return new ArithOperatorNode(operand1, operand2, consName);
+      }
+      if (consName.equals("first") || consName.equals("left")
+          || consName.equals("right") || consName.equals("last")) {
+        AbstractParseNodeNode n = buildConstraintTree(constraint.getSubterm(0),
+             AbstractParseNodeNode.class);
+        return new NodeSelectorNode(n, consName);
+      }
+      if (consName.equals("or") || consName.equals("and")) {
+        BooleanNode b1 = buildConstraintTree(constraint.getSubterm(0),
+            BooleanNode.class);
+        BooleanNode b2 = buildConstraintTree(constraint.getSubterm(1),
+            BooleanNode.class);
+        return new LogOperationNode(b1, b2, consName);
+      }
+      if (consName.equals("not")) {
+        BooleanNode b1 = buildConstraintTree(constraint.getSubterm(0),
+            BooleanNode.class);
+        return new NegationNode(b1);
+      }
+      if (consName.equals("all")) {
+        // TODO implement that
+        throw new UnsupportedOperationException(
+            "All is not implemented in compiled layouts");
+      }
+      if (consName.equals("col")) {
+        AbstractParseNodeNode child = buildConstraintTree(
+            constraint.getSubterm(0), AbstractParseNodeNode.class);
+        return new MethodNode(child, MethodNode.Method.GET_COLUMN);
+      }
+      if (consName.equals("line")) {
+        AbstractParseNodeNode child = buildConstraintTree(
+            constraint.getSubterm(0), AbstractParseNodeNode.class);
+        return new MethodNode(child, MethodNode.Method.GET_LINE);
+      }
+      throw new IllegalStateException("unhandeled constructor " + consName);
+    default:
+      throw new IllegalStateException("unhandeled constraint " + constraint);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends LayoutNode<?>> T buildConstraintTree(IStrategoTerm constraint, Class<T> cl) {
+    return (T) LayoutNodeCompiler.buildConstraintTree(constraint);
   }
 
 }

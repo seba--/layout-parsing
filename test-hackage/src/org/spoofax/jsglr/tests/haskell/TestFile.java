@@ -234,9 +234,7 @@ public class TestFile extends TestCase {
       newResultOrig = (IStrategoTerm) newParserOrig.parse(input, f.getAbsolutePath());
       result.parseOk.t2 = newResultOrig != null;
       result.stackOverflow.t2 = false;
-    } catch(Exception e) {
-      e.printStackTrace();
-    /*}
+    }
     catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (OutOfMemoryError e) {
@@ -255,7 +253,7 @@ public class TestFile extends TestCase {
 
       if (!(e.getCause() instanceof SGLRException) && !(e.getCause() instanceof StackOverflowError))
         result.otherExceptions.t2 = e.getCause().getMessage();
-    */} finally {
+    } finally {
       result.ambiguities.t2 = newParserOrig.ambiguities;
       result.layoutFilterCallsParseTime.t2 = newParserOrig.layoutFilterCountParseTime;
       result.layoutFilteringParseTime.t2 = newParserOrig.layoutFilteringCountParseTime;

@@ -89,7 +89,6 @@ public class TestAllPackages extends TestCase {
         in.close();
     }
     
-    System.out.println("LayoutFilter: Created: "+LayoutFilter.getNumCreations() + " Cached: " +LayoutFilter.getNumCached());
     System.out.println(csvFile.getAbsolutePath());
   }
 
