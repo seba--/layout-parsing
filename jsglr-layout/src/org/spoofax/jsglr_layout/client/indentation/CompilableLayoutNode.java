@@ -6,12 +6,12 @@ import org.spoofax.jsglr_layout.client.AbstractParseNode;
 
 /**
  * A {@link CompilableLayoutNode} is a {@link LayoutNode} which can be compiled.
- * That means that the node is able to produce a single (!) statement of Java
+ * That means that the node is able to produce a single (!) expression of Java
  * code which takes an array of {@link AbstractParseNode}s and a {@link Map} for
  * environment variables which evaluates whether the kids are valid.<br>
  * It is very important that the
  * {@link #getCompiledCode(LocalVariableManager, boolean)} Method does only a
- * single statement returning its result. This makes concatenating of statements
+ * single expression returning its result. This makes concatenating of expressions
  * of child nodes very easy. The methods may use local variables to cache
  * calculation results. The declaration of these local variables must not be
  * included in the generated code. The names of these variables have to be
@@ -114,15 +114,15 @@ public interface CompilableLayoutNode<V> extends LayoutNode<V> {
    * depending on the atParseTime argument. The given
    * {@link LocalVariableManager} may be used to get local variables for the
    * code. All local variables required must be released before returning.<br>
-   * This method returns a SINGLE statement which evaluates the node. So the
+   * This method returns a SINGLE expression which evaluates the node. So the
    * results from different child nodes can be combined easily! No "return"
-   * statement.
+   * expression.
    * 
    * @param manager
    *          the {@link LocalVariableManager} to manager local variables
    * @param atParseTime
    *          whether to generate code for parse or disambiguation time
-   * @return the generated statement to evaluate the node
+   * @return the generated expression to evaluate the node
    */
   public String getCompiledCode(LocalVariableManager manager,
       boolean atParseTime);
