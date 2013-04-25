@@ -17,10 +17,10 @@ funnySum i j 	| halfEqualsFourth = halfi + fourthj
 	This function can only be compiled using -XPatternGuards
 -}
 funnySum2 :: Double -> Double -> Double
-funnySum2 i j	| halfi <- i / 2 = halfi + fourthj
-				--, fourthj <- j / 4
-				--, halfi == fourthj
-				-- = halfi + fourthj
+funnySum2 i j	| halfi <- i / 2
+				, fourthj <- j / 4
+				, halfi == fourthj
+				= halfi + fourthj
 funnySum2 i j	= i + j
 
 -- Do Some examples
