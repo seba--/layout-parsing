@@ -20,3 +20,15 @@ bin/
 /test-hackage/hackage-data/*.csv
 /test-hackage/all*.csv
 /test-hackage/all*/
+test-hackage/sample-data/*.pp
+test-hackage/sample-data/*.csv
+test-hackage/sample-data/*.expl
+test-hackage/sample-data/*.impl
+test-hackage/sample-data/*.old
+test-hackage/sample-data/*.norm
+test-hackage/sample-data/*.orig
+test-hackage/sample-data/*.hi
+
+
+
+test-hackage/.dist-buildwrapper/sample-data/parallelComp.hs.norm.pp.impl.hs
