@@ -30,6 +30,8 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("FlexibleInstances");
     HASKELL_EXTENSIONS.add("FlexibleContexts");
     HASKELL_EXTENSIONS.add("GeneralizedNewtypeDeriving");
+    HASKELL_EXTENSIONS.add("ParallelListComp");
+    HASKELL_EXTENSIONS.add("PatternGuards");
   }
 
  

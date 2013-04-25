@@ -5,7 +5,12 @@ exports
     FunLHS "=" Exp MaybeWhere -> Valdef 	{cons("Valdef"), longest-match}
 
     FunLHS Gdrh+ MaybeWhere  -> Valdef 	{cons("GdValdef"), longest-match}
-    "|" Exp "=" Exp 	   -> Gdrh   	{cons("Guarded")}   
+    Guards "=" Exp 	   -> Gdrh   	{cons("Guarded")}
+    "|" {Guard ","}+ -> Guards {const("Guards")}
+    Exp -> Guard {cons("BooleanGuard")}
+    "let" Declbinds -> Guard {cons("LocalDeclaration")}
+     Pat "<-" Exp -> Guard {cons("PatternGuard")}
+    
 
     
     Pat -> FunLHS

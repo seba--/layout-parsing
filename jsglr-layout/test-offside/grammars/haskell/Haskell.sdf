@@ -3,6 +3,7 @@ imports Haskell-Syntax
 imports GHC-Flexible-Stuff
         GHC-Magic-Hash
         GHC-GeneralizedNewtypeDeriving
+        GHC-ParallelListComprehensions
 exports
   sorts Module
 
