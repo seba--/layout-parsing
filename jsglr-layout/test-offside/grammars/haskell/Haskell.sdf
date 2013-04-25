@@ -4,6 +4,7 @@ imports GHC-Flexible-Stuff
         GHC-Magic-Hash
         GHC-GeneralizedNewtypeDeriving
         GHC-ParallelListComprehensions
+        GHC-ViewPatterns
 exports
   sorts Module
 

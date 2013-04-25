@@ -28,7 +28,9 @@ test-hackage/sample-data/*.old
 test-hackage/sample-data/*.norm
 test-hackage/sample-data/*.orig
 test-hackage/sample-data/*.hi
-
+test-hackage/sample-data/*.o
 
 
 test-hackage/.dist-buildwrapper/sample-data/parallelComp.hs.norm.pp.impl.hs
+
+test-hackage/sample-data/ViewPatternsExample

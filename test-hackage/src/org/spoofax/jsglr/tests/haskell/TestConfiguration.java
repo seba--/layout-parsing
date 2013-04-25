@@ -32,6 +32,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("GeneralizedNewtypeDeriving");
     HASKELL_EXTENSIONS.add("ParallelListComp");
     HASKELL_EXTENSIONS.add("PatternGuards");
+    HASKELL_EXTENSIONS.add("ViewPatterns");
   }
 
  
