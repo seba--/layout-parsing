@@ -1,6 +1,15 @@
 Layout-sensitive Generalized Parsing
 ====================================
 
+External dependency
+-------------------
+JSGLR layout requires the Spoofax term plugin (or any later version):
+
+* org.spoofax.terms_1.0.0.201212201448.jar
+
+The plugin file is available in the root directory of the development
+branch.
+
 Scope and motivation
 --------------------
 

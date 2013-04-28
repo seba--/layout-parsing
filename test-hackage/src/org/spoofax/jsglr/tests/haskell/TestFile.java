@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.jsglr.io.FileTools;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.CompareLibrary;
@@ -17,7 +18,6 @@ import org.spoofax.jsglr.tests.haskell.compare.compare_0_0;
 import org.spoofax.jsglr.tests.result.FileResult;
 import org.spoofax.jsglr_layout.shared.SGLRException;
 import org.spoofax.jsglr_layout.tests.haskell.HaskellParser;
-import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
 import org.strategoxt.lang.Context;
 import org.sugarj.haskell.normalize.normalize;
@@ -39,7 +39,7 @@ public class TestFile extends TestCase {
 
   public HaskellParser newParserOrig = new HaskellParser();
   public HaskellParser newParserImpl = new HaskellParser();
-  public org.spoofax.jsglr_orig.tests.haskell.HaskellParser oldParser = new org.spoofax.jsglr_orig.tests.haskell.HaskellParser();
+  public org.spoofax.jsglr.tests.haskell.HaskellParser oldParser = new org.spoofax.jsglr.tests.haskell.HaskellParser();
   
   private IStrategoTerm newResultOrig;
   private IStrategoTerm newResultImpl;
@@ -166,7 +166,7 @@ public class TestFile extends TestCase {
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t1 = true;;
     } catch (ExecutionException e) {
-      if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
+      if (e.getCause() instanceof org.spoofax.jsglr.shared.SGLRException) {
         result.parseExceptions.t1 = e.getCause().getMessage();
         if (LOGGING)
           System.out.println(e.getCause().getMessage());
@@ -176,7 +176,7 @@ public class TestFile extends TestCase {
       if (e.getCause() instanceof StackOverflowError)
         e.getCause().printStackTrace();
 
-      if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
+      if (!(e.getCause() instanceof org.spoofax.jsglr.shared.SGLRException) && !(e.getCause() instanceof StackOverflowError)) {
         result.otherExceptions.t1 = e.getCause().getMessage();
 //        e.getCause().printStackTrace();
       }
@@ -391,6 +391,8 @@ public class TestFile extends TestCase {
       messages[0] = (String[]) result[1];
       messages[1] = (String[]) result[2];
     } catch (ExecutionError e) {
+      if (e.getMessages() == null || e.getMessages().length == 0)
+        throw e;
       messages = e.getMessages();
       return null;
     } finally {

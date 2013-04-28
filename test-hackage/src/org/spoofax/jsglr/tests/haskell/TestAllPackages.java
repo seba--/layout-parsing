@@ -54,8 +54,17 @@ public class TestAllPackages extends TestCase {
     System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }
   
+  public static void main(String[] args) throws IOException {
+    TestAllPackages tester = new TestAllPackages();
+    
+    tester.warmup();
+    
+    for (int i = 0; i < 3; i++)
+      tester.testAllPackages();
+  }
+  
   public void testAllPackages() throws IOException {
-    String path = "all" + System.currentTimeMillis();
+    String path = "evaluation-data/all" + System.currentTimeMillis();
     csvDir = new File(path);
     csvDir.mkdirs();
     csvFile = new File(path + ".csv");

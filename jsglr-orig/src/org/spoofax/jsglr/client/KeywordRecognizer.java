@@ -1,4 +1,4 @@
-package org.spoofax.jsglr_layout.client;
+package org.spoofax.jsglr.client;
 
 import static org.spoofax.terms.Term.isTermAppl;
 import static org.spoofax.terms.Term.termAt;
@@ -10,7 +10,6 @@ import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoConstructor;
 import org.spoofax.interpreter.terms.IStrategoNamed;
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.interpreter.terms.ITermFactory;
 
 /**
  * Recognizes keywords in a language without considering their context.
@@ -21,11 +20,9 @@ import org.spoofax.interpreter.terms.ITermFactory;
  */
 public class KeywordRecognizer {
 	
-  private final ITermFactory factory;
 	private final Set<String> keywords = new HashSet<String>();
 	
 	protected KeywordRecognizer(ParseTable table) {
-	  factory = table == null ? null : table.getFactory();
 		if (table != null) {
 			IStrategoConstructor litFun = table.getFactory().makeConstructor("lit", 1);
 			for (Label l : table.getLabels()) {
@@ -67,27 +64,5 @@ public class KeywordRecognizer {
 	 */
 	public static boolean isPotentialKeywordChar(char c) {
 		return Character.isLetterOrDigit(c) || c == '_';
-	}
-	
-	public org.spoofax.jsglr.client.KeywordRecognizer makeStdKeywordRecognizer() {
-	  org.spoofax.jsglr.client.ParseTable pt;
-	  try {
-	    ITermFactory f = factory;
-	    IStrategoTerm tbl =
-  	    f.makeAppl(f.makeConstructor("parse-table", 5), 
-  	        f.makeInt(6),
-  	        f.makeInt(0),
-  	        f.makeList(),
-  	        f.makeAppl(f.makeConstructor("states", 1), f.makeList()),
-  	        f.makeAppl(f.makeConstructor("priorities", 1), 
-  	                   f.makeList(f.makeAppl(f.makeConstructor("arg-gtr-prio", 3), 
-  	                                         f.makeInt(257), f.makeInt(1), f.makeInt(257))))); // XXX
-
-      pt = new org.spoofax.jsglr.client.ParseTable(tbl, f);
-    } catch (org.spoofax.jsglr.client.InvalidParseTableException e) {
-      throw new RuntimeException(e);
-    }
-	  
-	  return pt.getKeywordRecognizer();
 	}
 }

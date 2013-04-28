@@ -1,13 +1,13 @@
 package org.spoofax.client;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.jsglr_orig.client.InvalidParseTableException;
-import org.spoofax.jsglr_orig.client.ParseException;
-import org.spoofax.jsglr_orig.client.ParseTable;
-import org.spoofax.jsglr_orig.client.SGLR;
-import org.spoofax.jsglr_orig.shared.BadTokenException;
-import org.spoofax.jsglr_orig.shared.SGLRException;
-import org.spoofax.jsglr_orig.shared.TokenExpectedException;
+import org.spoofax.jsglr.client.InvalidParseTableException;
+import org.spoofax.jsglr.client.ParseException;
+import org.spoofax.jsglr.client.ParseTable;
+import org.spoofax.jsglr.client.SGLR;
+import org.spoofax.jsglr.shared.BadTokenException;
+import org.spoofax.jsglr.shared.SGLRException;
+import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.terms.TermFactory;
 
 import com.google.gwt.core.client.EntryPoint;
