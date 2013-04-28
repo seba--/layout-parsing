@@ -1,0 +1,383 @@
+module org/sugarj/haskell/normalize/NormalizeAST
+imports libstratego-lib
+
+rules
+  main = io-wrap(normalize)
+  
+  normalize = bottomup(try(norm))
+
+rules
+  norm = flatten-seqs
+  
+  flatten-seqs : 
+    s#([a, b]) ->
+    <append-seqs(|s)> (a, b)
+  where <is-seq> s
+  
+  append-seqs(|s) :
+    (s#([a, b]), c) -> s#([a, <append-seqs(|s)> (b, c)])
+  append-seqs(|s) :
+    (a, b) -> s#([a, b])  
+    
+  is-seq = ?"ImportdeclSeq"
+  is-seq = ?"TopdeclSeq"
+  is-seq = ?"StmtSeq"
+  is-seq = ?"DeclSeq"
+  is-seq = ?"AltSeq"
+
+
+
+rules
+  norm-char-char : Escape(CharEsc("\"")) -> "\""
+  norm-char-char : Escape(ASCIIEsc("SP")) -> " "
+  norm-char-char : Escape(esc) -> Escape(<norm-char-char> esc)
+
+  norm-char-char : HexadecimalEsc(hex) -> DecimalEsc(<hex-string-to-int; int-to-string> hex)
+  norm-char-char : OctalEsc(hex) -> DecimalEsc(<oct-string-to-int; int-to-string> hex)
+  norm-char-char : DecimalEsc(int) -> c
+   where <string-to-int; is-ascii; not(?127)> int => int';
+         <implode-string> [int'] => c
+  norm-char-char : DecimalEsc(int) -> DecimalEsc(int')
+   where <string-to-int; int-to-string> int => int';
+         <not(equal)> (int,int')
+  
+  norm-char-char : DecimalEsc("0")  -> ASCIIEsc("NUL")
+  norm-char-char : DecimalEsc("1")  -> ASCIIEsc("SOH")
+  norm-char-char : DecimalEsc("2")  -> ASCIIEsc("STX")
+  norm-char-char : DecimalEsc("3")  -> ASCIIEsc("ETX")
+  norm-char-char : DecimalEsc("4")  -> ASCIIEsc("EOT")
+  norm-char-char : DecimalEsc("5")  -> ASCIIEsc("ENQ")
+  norm-char-char : DecimalEsc("6")  -> ASCIIEsc("ACK")
+  norm-char-char : DecimalEsc("7")  -> CharEsc("a")
+  norm-char-char : DecimalEsc("8")  -> CharEsc("b")
+  norm-char-char : DecimalEsc("9")  -> CharEsc("t")
+  norm-char-char : DecimalEsc("10") -> CharEsc("n")
+  norm-char-char : DecimalEsc("11") -> CharEsc("v")
+  norm-char-char : DecimalEsc("12") -> CharEsc("f")
+  norm-char-char : DecimalEsc("13") -> CharEsc("r")
+  norm-char-char : DecimalEsc("14") -> ASCIIEsc("SO")
+  norm-char-char : DecimalEsc("15") -> ASCIIEsc("SI")
+  norm-char-char : DecimalEsc("16") -> ASCIIEsc("DLE")
+  norm-char-char : DecimalEsc("17") -> ASCIIEsc("DC1")
+  norm-char-char : DecimalEsc("18") -> ASCIIEsc("DC2")
+  norm-char-char : DecimalEsc("19") -> ASCIIEsc("DC3")
+  norm-char-char : DecimalEsc("20") -> ASCIIEsc("DC4")
+  norm-char-char : DecimalEsc("21") -> ASCIIEsc("NAK")
+  norm-char-char : DecimalEsc("22") -> ASCIIEsc("SYM")
+  norm-char-char : DecimalEsc("23") -> ASCIIEsc("ETB")
+  norm-char-char : DecimalEsc("24") -> ASCIIEsc("CAN")
+  norm-char-char : DecimalEsc("25") -> ASCIIEsc("EM")
+  norm-char-char : DecimalEsc("26") -> ASCIIEsc("SUB")
+  norm-char-char : DecimalEsc("27") -> ASCIIEsc("ESC")
+  norm-char-char : DecimalEsc("28") -> ASCIIEsc("FS")
+  norm-char-char : DecimalEsc("29") -> ASCIIEsc("GS")
+  norm-char-char : DecimalEsc("30") -> ASCIIEsc("RS")
+  norm-char-char : DecimalEsc("31") -> ASCIIEsc("US")
+  norm-char-char : DecimalEsc("127") -> ASCIIEsc("DEL")
+  norm-char-char : ASCIIEsc("^@")  -> ASCIIEsc("NUL")
+  norm-char-char : ASCIIEsc("^A")  -> ASCIIEsc("SOH")
+  norm-char-char : ASCIIEsc("^B")  -> ASCIIEsc("STX")
+  norm-char-char : ASCIIEsc("^C")  -> ASCIIEsc("ETX")
+  norm-char-char : ASCIIEsc("^D")  -> ASCIIEsc("EOT")
+  norm-char-char : ASCIIEsc("^E")  -> ASCIIEsc("ENQ")
+  norm-char-char : ASCIIEsc("^F") -> ASCIIEsc("ACK")
+  norm-char-char : ASCIIEsc("^G") -> CharEsc("a")
+  norm-char-char : ASCIIEsc("^H") -> CharEsc("b")
+  norm-char-char : ASCIIEsc("^I") -> CharEsc("t")
+  norm-char-char : ASCIIEsc("^J") -> CharEsc("n")
+  norm-char-char : ASCIIEsc("^K") -> CharEsc("v")
+  norm-char-char : ASCIIEsc("^L") -> CharEsc("f")
+  norm-char-char : ASCIIEsc("^M") -> CharEsc("r")
+  norm-char-char : ASCIIEsc("^N") -> ASCIIEsc("SO")
+  norm-char-char : ASCIIEsc("^O") -> ASCIIEsc("SI")
+  norm-char-char : ASCIIEsc("^P") -> ASCIIEsc("DLE")
+  norm-char-char : ASCIIEsc("^Q") -> ASCIIEsc("DC1")
+  norm-char-char : ASCIIEsc("^R") -> ASCIIEsc("DC2")
+  norm-char-char : ASCIIEsc("^S") -> ASCIIEsc("DC3")
+  norm-char-char : ASCIIEsc("^T") -> ASCIIEsc("DC4")
+  norm-char-char : ASCIIEsc("^U") -> ASCIIEsc("NAK")
+  norm-char-char : ASCIIEsc("^V") -> ASCIIEsc("SYM")
+  norm-char-char : ASCIIEsc("^W") -> ASCIIEsc("ETB")
+  norm-char-char : ASCIIEsc("^X") -> ASCIIEsc("CAN")
+  norm-char-char : ASCIIEsc("^Y") -> ASCIIEsc("EM")
+  norm-char-char : ASCIIEsc("^Z") -> ASCIIEsc("SUB")
+  norm-char-char : ASCIIEsc("^[") -> ASCIIEsc("ESC")
+  norm-char-char : ASCIIEsc("^\\") -> ASCIIEsc("FS")
+  norm-char-char : ASCIIEsc("^]") -> ASCIIEsc("GS")
+  norm-char-char : ASCIIEsc("^^") -> ASCIIEsc("RS")
+  norm-char-char : ASCIIEsc("^_") -> ASCIIEsc("US")
+  norm-char-char : ASCIIEsc("^?") -> ASCIIEsc("DEL")
+  norm-char-char : ASCIIEsc("BEL") -> CharEsc("a")
+  norm-char-char : ASCIIEsc("BS") -> CharEsc("b")
+  norm-char-char : ASCIIEsc("HT") -> CharEsc("t")
+  norm-char-char : ASCIIEsc("LF") -> CharEsc("n")
+  norm-char-char : ASCIIEsc("VT") -> CharEsc("v")
+  norm-char-char : ASCIIEsc("FF") -> CharEsc("f")
+  norm-char-char : ASCIIEsc("CR") -> CharEsc("r")
+
+
+  norm-string-char : Escape(CharEsc("'")) -> "'"
+  norm-string-char = norm-char-char
+
+  norm = Char(repeat(norm-char-char))
+  norm = CharHash(repeat(norm-char-char))
+  
+//  norm-string : chars -> <norm-string> chars'
+//   where <filter(not(?Escape(CharEsc("&"))))> chars => chars';
+//         <not(equal)> (chars, chars')
+  norm = String(map(repeat(norm-string-char)))
+  norm = StringHash(map(repeat(norm-string-char)))
+  
+  
+  
+  signature
+  constructors
+                     : Type -> Type0
+    None             : OptExports0
+    Conc             : ListStarOfCharClass0 * ListPlusOfCharClass0 -> ListPlusOfCharClass0
+    Conc             : ListPlusOfCharClass0 * ListStarOfCharClass0 -> ListPlusOfCharClass0
+    Conc             : ListPlusOfCharClass0 * ListPlusOfCharClass0 -> ListPlusOfCharClass0
+    Cons             : Int * ListStarOfCharClass0 -> ListPlusOfCharClass0
+                     : Exp -> Aexp
+    FlexibleContext  : List(FlexibleClass) -> FlexibleContext
+    FlexibleContext  : FlexibleClass -> FlexibleContext
+    SimpleClass      : Qtycls * Tyvar -> FlexibleClass
+    Class            : Qtycls * Gtycon -> FlexibleClass
+    Class            : Qtycls * Type -> FlexibleClass
+    QModId           : String * QModid -> QModid
+    QModId           : String * String -> QModid
+                     : StmtSeq -> OffsideStmtList
+                     : Stmt -> StmtSeq
+                     : InternalStmtList -> NoOffsideStmtList
+                     : List(Stmt) -> InternalStmtList
+    StmtList         : OffsideStmtList -> StmtList
+    StmtList         : NoOffsideStmtList -> StmtList
+    FBind            : Qvar * Exp -> Fbind
+    LetStmt          : Declbinds -> Stmt
+    ExpStmt          : Exp -> Stmt
+    BindStmt         : Pat * Exp -> Stmt
+                     : Exp -> List
+    QualLet          : Declbinds -> Qual
+                     : Exp -> Qual
+    QualBind         : Pat * Exp -> Qual
+                     : List(Qual) -> Quals
+    PatBind          : Qvar * Pat -> FPat
+    Irrefutable      : APat -> APat
+    List             : List(Pat) -> APat
+    Tuple            : Pat * List(Pat) -> APat
+                     : Pat -> APat
+    Wildcard         : APat
+                     : Literal -> APat
+    Labeled          : Qcon * List(FPat) -> APat
+    Constr           : Gcon -> APat
+    Named            : Var * APat -> APat
+                     : Var -> APat
+    ConstrApp        : Gcon * List(APat) -> LPat
+    Negation         : Literal -> LPat
+                     : APat -> LPat
+    BinOpApp         : LPat * Qconop * Pat -> Pat
+                     : LPat -> Pat
+                     : Decl -> IDecl
+                     : InternalDeclList -> NoOffsideDeclList
+                     : List(IDecl) -> InternalDeclList
+    DeclList         : NoOffsideDeclList -> DeclList
+                     : DeclList -> Declbinds
+                     : Where -> MaybeWhere
+    Where            : DeclList -> Where
+    NestedFunLHS     : FunLHS * List(APat) -> FunLHS
+    OpFunLHS         : Pat * Varop * Pat -> FunLHS
+    VarFunLHS        : Var * List(APat) -> FunLHS
+                     : Pat -> FunLHS
+    Guarded          : Quals * Exp -> Gdrh
+    GdValdef         : FunLHS * List(Gdrh) * Option(Where) -> Valdef
+    ValdefW          : FunLHS * Exp * Where -> Valdef
+    Valdef           : FunLHS * Exp -> Valdef
+                     : AltSeq -> OffsideAltList
+                     : AltSem -> AltSeq
+                     : Alt -> AltSem
+                     : InternalAltList -> NoOffsideAltList
+                     : List(AltSem) -> InternalAltList
+    AltList          : OffsideAltList -> AltList
+    AltList          : NoOffsideAltList -> AltList
+    GdPat            : Quals * Exp -> Gdpat
+    GdAlt            : Pat * List(Gdpat) * MaybeWhere -> Alt
+    Alt              : Pat * Exp * MaybeWhere -> Alt
+                     : Qop -> QopNoNeg
+    FixDecl          : Infix * Prec * Ops -> Fixdecl
+                     : List(Op) -> Ops
+                     : Option(INTEGER) -> Prec
+    InfixR           : Infix
+    InfixL           : Infix
+    Infix            : Infix
+                     : List(Aexp) -> Fargs
+    Cons             : Exp * List(Exp) -> Exps2
+    Case             : AnyExp * AltList -> Exp
+    If               : AnyExp * AnyExp * Exp -> Exp
+    Let              : Declbinds * Exp -> Exp
+    Abs              : Fargs * OptSig * Exp -> Exp
+    Negation         : Exp -> Exp
+    Typed            : Exp * Type -> Exp
+    AppBin           : Exp * Exp -> Exp
+    Labeled          : Exp * List(Fbind) -> Exp
+    Named            : Qvar * Exp -> Exp
+    OpApp            : Exp * Qop * Exp -> Exp
+    Do               : StmtList -> Exp
+    List             : List -> Exp
+    RSection         : QopNoNeg * Exp -> Exp
+    LSection         : Exp * Qop -> Exp
+    Product          : Exps2 -> Exp
+    Lit              : Literal -> Exp
+    Constr           : Gcon -> Exp
+    Var              : Qvar -> Exp
+                     : Exp -> AnyExp
+    SignDecl         : Vars * Option(Context) * Type -> Signdecl
+                     : Valdef -> Decl
+                     : Fixdecl -> Decl
+                     : Signdecl -> Decl
+    Class            : Qtycls * Tyvar * List(AType) -> Class
+                     : SimpleClass -> Class
+    SimpleClass      : Qtycls * Tyvar -> SimpleClass
+                     : FlexibleContext -> SContext
+    SContext         : List(SimpleClass) -> SContext
+    SContext         : SimpleClass -> SContext
+                     : FlexibleContext -> Context
+    Context          : List(Class) -> Context
+    Context          : Class -> Context
+    InstArrow        : Tyvar * Tyvar -> Inst
+    InstList         : Tyvar -> Inst
+    InstTuple        : Tyvar * List(Tyvar) -> Inst
+    InstApp          : Gtycon * List(Tyvar) -> Inst
+    InstCons         : Gtycon -> Inst
+                     : Type -> Sbtype
+                     : Type -> Satype
+    InfixConstr      : Sbtype * Conop * Sbtype -> Constr
+    ConstrDecl       : Conid * List(Satype) -> Constr
+                     : List(Constr) -> Constrs
+    Derive           : List(Qtycls) -> Deriving
+    NoDeriving       : Deriving
+    Derive           : Qtycls -> Deriving
+    TFunBin          : Type * Type -> Type
+    TAppBin          : Type * Type -> Type
+                     : AType -> Type
+    TProd            : Types2 -> AType
+    TList            : Type -> AType
+                     : Type -> AType
+    TVar             : Tyvar -> AType
+    TCon             : Gtycon -> AType
+    Cons             : Type * List(Type) -> Types2
+    TList            : Gtycon
+    TUnit            : Gtycon
+    TArrow           : Gtycon
+                     : Qtycon -> Gtycon
+                     : Option(Type0) -> OptSig
+    Hiding           : Exportlist -> Impspec
+    As               : Modid -> As
+    Qualified        : Qualified
+    SOURCE           : Src
+    Import           : Option(Src) * Option(Qualified) * Modid * Option(As) * Option(Impspec) -> Importdecl
+                     : Gtycon -> Export
+                     : Qvar -> Export
+    Exportlist       : List(Export) -> Exportlist
+    Body             : NoOffsideImportdeclList * NoOffsideTopdeclList -> NoOffsideBody
+                     : List(Topdecl) -> NoOffsideTopdeclList
+                     : List(Importdecl) -> NoOffsideImportdeclList
+                     : NoOffsideBody -> Body
+    FlexibleInstance : Option(SContext) * Qtycls * List(AType) * MaybeWhere -> Topdecl
+    Default          : List(Type) -> Topdecl
+    Instance         : Option(SContext) * Qtycls * List(Inst) * MaybeWhere -> Topdecl
+    Class            : Option(SContext) * Tycls * Tyvar * MaybeWhere -> Topdecl
+    Data             : Option(Context) * Type * Constrs * Deriving -> Topdecl
+    TypeDecl         : Tycon * List(Tyvar) * Type -> Topdecl
+                     : Decl -> Topdecl
+    Program          : Body -> Module
+    Module           : Modid * OptExports0 * Body -> Module
+    CLitLit          : CLITLIT -> Literal
+    PrimDouble       : PRIMDOUBLE -> Literal
+    PrimFloat        : PRIMFLOAT -> Literal
+    PrimString       : PRIMSTRING -> Literal
+    PrimChar         : PRIMCHAR -> Literal
+    PrimInt          : PRIMINTEGER -> Literal
+                     : String -> Literal
+    Float            : RATIONAL -> Literal
+    Float            : FLOAT -> Literal
+                     : Char -> Literal
+    Int              : INTEGER -> Literal
+    HexadecimalEsc   : String -> Escape
+    OctalEsc         : String -> Escape
+    DecimalEsc       : String -> Escape
+    ASCIIEsc         : String -> Escape
+    CharEsc          : String -> Escape
+    Gap              : ListPlusOfCharClass0 -> StringChar
+    Escape           : Escape -> StringChar
+                     : String -> StringChar
+    Escape           : Escape -> CharChar
+                     : String -> CharChar
+    String           : List(StringChar) -> String
+    Char             : CharChar -> Char
+                     : String -> CLITLIT
+                     : String -> PRIMDOUBLE
+                     : String -> PRIMFLOAT
+                     : String -> PRIMINTEGER
+                     : String -> PRIMSTRING
+                     : String -> PRIMCHAR
+                     : String -> RATIONAL
+                     : String -> FLOAT
+                     : Qtycon -> Qtycls
+                     : Tycon -> Tycls
+                     : QCONID -> Qtycon
+                     : Tycon -> Qtycon
+                     : CONID -> Tycon
+                     : QVARSYM -> Qvarsym1
+                     : VARSYM -> Varsym
+                     : Qconop -> Qop
+                     : Qvarop -> Qop
+    PrefCon          : Qconid -> Qconop
+                     : Gconsym -> Qconop
+    ConsOp           : Gconsym
+                     : Qconsym -> Gconsym
+    PrefCon          : Conid -> Conop
+                     : Consym -> Conop
+                     : CONSYM -> Consym
+                     : QCONSYM -> Qconsym
+                     : Consym -> Qconsym
+                     : Qvarsym1 -> Qvarsym
+                     : Varsym -> Qvarsym
+    PrefOp           : Qvarid -> Qvarop
+                     : Qvarsym -> Qvarop
+    PrefOp           : Varid -> Varop
+                     : Varsym -> Varop
+    ConOp            : Conop -> Op
+    Op               : Varop -> Op
+                     : String -> INTEGER
+                     : CONID -> Conid
+                     : QCONID -> Qconid
+                     : Conid -> Qconid
+    BinCon           : Qconsym -> Qcon
+                     : Qconid -> Qcon
+                     : QVARID -> Qvarid
+                     : Varid -> Qvarid
+    BinOp            : Qvarsym -> Qvar
+                     : Qvarid -> Qvar
+    BinOp            : Varsym -> Var
+    Var              : Varid -> Var
+                     : Qcon -> Gcon
+    EmptyList        : Gcon
+    Unit             : Gcon
+    Ins              : Qvar -> Vars
+    Snoc             : Vars * Var -> Vars
+                     : String -> Tyvar
+                     : String -> Varid
+    QConSym          : Modid * String -> QCONSYM
+    QVarSym          : Modid * String -> QVARSYM
+    QConId           : Modid * String -> QCONID
+    QVarId           : Modid * String -> QVARID
+                     : QModid -> Modid
+                     : String -> Modid
+                     : String -> CONSYM
+                     : String -> VARSYM
+                     : String -> CONID
+    FloatHash            : RATIONAL -> Literal
+    FloatHash            : FLOAT -> Literal
+    StringHash           : List(StringChar) -> String
+    CharHash             : CharChar -> Char
+    IntHash              : INTEGER -> Literal
