@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <servlet>
+    <servlet-name>parsetable</servlet-name>
+    <servlet-class>org.spoofax.jsglr.server.RemoteParseTableServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>parsetable</servlet-name>
+    <url-pattern>/jsglrgwt/parsetable</url-pattern>
+  </servlet-mapping>
+  
+  <welcome-file-list>
+    <welcome-file>Jsglr_gwt.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>

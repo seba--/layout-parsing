@@ -1,0 +1,12 @@
+<project name="spoofax-aterm" default="jar" xmlns:ivy="antlib:org.apache.ivy.ant">
+	
+    <import file="build/common.ivy.xml" />
+
+    <target name="compile" depends="resolve" description="--> compile the project">
+        <mkdir dir="${build.dir}/classes" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="lib.path.id">
+            <exclude name="org/spoofax/interpreter/test/**" />
+        </javac>
+    </target>
+
+</project>

@@ -1,0 +1,48 @@
+<project name="spoofax-jsglr" default="jar">
+	
+    <import file="build/common.ant.xml" />
+
+    <target name="compile" depends="resolve" description="--> compile the project">
+        <mkdir dir="${build.dir}/classes" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="lib.path.id">
+            <exclude name="org/spoofax/interpreter/test/**" />
+        </javac>
+    </target>
+
+   <target name="install" depends="jar" description="--> install the project into prefix">
+        <mkdir dir="${prefix}/bin" />
+        <mkdir dir="${prefix}/share/java" />
+
+        <copy todir="${prefix}/share/java">
+            <fileset dir="${lib.dir}/" />
+        </copy>
+
+        <copy file="build/${jarname}-${version}.jar" todir="${prefix}/share/java" />
+
+        <copy file="jsglr" todir="${prefix}/bin" />
+        <chmod perm="a+x" file="${prefix}/bin/jsglr" />
+   </target>
+
+   <target name="dist" description="--> create the dist tarball">
+       <tar destfile="${jarname}-${version}.tar">
+           <tarfileset prefix="${jarname}-${version}/" dir="." includes="src/"/>
+           <!-- THIS IS 3VIL! Should be removed once the deps are properly packaged -->
+           <tarfileset prefix="${jarname}-${version}/" dir="." includes="lib/"/>
+           <tarfileset prefix="${jarname}-${version}/" dir=".">
+             <include name="*.xml" />
+             <include name="*.properties" />
+             <include name="build/*.xml" />
+             <include name="build/*.properties" />
+             <include name="jsglr" />
+             <include name="jsglr-prof" />
+           </tarfileset>
+           <tarfileset prefix="${jarname}-${version}/" dir="." includes="INSTALL Makefile"/>
+           <tarfileset prefix="${jarname}-${version}/" dir="." includes="META-INF/" />
+       </tar>
+       <gzip zipfile="${jarname}-${version}.tar.gz" src="${jarname}-${version}.tar"/>
+   </target>
+
+   <target name="check" depends="jar">
+   </target>
+
+</project>

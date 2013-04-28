@@ -1,0 +1,29 @@
+
+   
+Scannerless Generalized LR parsing for Java
+===========================================
+
+ JSGLR is an implementation of the Scannerless Generalized LR (SGLR)
+ algorithm for Java. The JSGLR project only provides a parse table 
+ evaluator; you will need to use the parse table generator (sdf2tbl)
+ from the CWI SDF package in order to convert your SDF syntax 
+ definitions into something JSGLR can understand.
+
+
+Project page
+============
+
+ http://www.spoofax.org/jsglr.html
+
+
+Bugs
+====
+
+ https://bugs.strategoxt.org/browse/SPX
+
+
+
+
+ 
+
+

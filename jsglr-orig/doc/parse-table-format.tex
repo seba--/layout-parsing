@@ -1,0 +1,71 @@
+\documentclass{article}
+
+	\usepackage{hevea}
+
+	\title{The SDF Parse Table Format}
+	\author{Karl Trygve Kalleberg}
+	
+	\newcommand{\cc}[1]{\texttt{#1}}
+	\newcommand{\tp}[1]{\texttt{#1}}
+	\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+
+\section{The SGLR Parse Table Format}
+
+	The version 4 (now outdated) parse table format is explained here. The newer
+	formats are very similar, but some details are different. For now, please
+	refer to the source code for details.
+
+	\code{parse-table(<term>,<term>,<term>,states([<list>]),priorities(<term>))}
+
+	\begin{itemize}
+      \item The first \code{<term>} is a version number, currently 4.
+      \item The second \code{<term>} is the number of the initial state,
+      normally 0. 
+      \item The third \code{<term>} is a list of labels of the form
+      \code{label(<term>,<int>)}, where \code{<term>} represents a production
+      rule and \code{<int>} the label number. The production rule is represented
+      as an ATerm and has, e.g., the form:
+      \code{prod([sort("<START>"),char-class([256])],sort("<Start>"),no-attrs)}
+      \item The states have the form: \code{state-rec(<int>,[<list>],[<list>])}
+      where \code{<int>} represents the state number, the first list the list of
+      gotos, and the second list the list of actions.
+	\begin{itemize} 
+      \item A goto item looks like \code{goto([<list>],<int>)}, this list is a
+      list of single characters, character ranges, and/or label numbers. The
+      \code{<int>} is the state number to which the parser has to jump. 
+      \item An action item looks like \code{action([<list>],[<list>])}, where
+      the first list is a list of single characters and/or character ranges.
+      The second list are the actions that have to be performed:
+	\begin{itemize} 
+      \item \code{reduce(<int>,<int>,<int>)}: the first \code{<int>} represents
+      the number of members in of the production rule with label given as the
+      second \code{<int>}, and the last \code{<int>} represent that "status" of
+      a production rule, \code{prefer}, \code{avoid}, \code{reject}, or
+      \code{normal}. 
+      \item \code{reduce(<int>,<int>,<int>,<term>)}: the \code{<term>}
+      represents a lookahead set greater tha n one. Lookaheads of more than one
+      character are performed dynamically. 
+      \item \code{shift(<int>)}: the \code{<int>} represent the new state after
+      shifting the current character.
+      \item \code{accept}
+    \end{itemize} 
+    \end{itemize} 
+	\item The priorities is a list of relations between 2 production rules: 
+    \begin{itemize}
+      \item \code{left-prio(<int>,<int>)}
+      \item \code{right-prio(<int>,<int>)}
+      \item \code{non-assoc-prio(<int>,<int>)}
+      \item \code{gtr-prio(<int>,<int>)}
+    \end{itemize}
+	 where the
+      \code{<int>}s are the labels of the production rules involved.
+      \code{left}, \code{right}, and \code{non-assoc} are associativity
+      attributes used within the SDF definition. \code{gtr} is the priority
+      relation.
+    \end{itemize} 
+
+\end{document}
+
+    
