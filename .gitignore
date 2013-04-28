@@ -4,6 +4,7 @@
 *.labs
 *.prios
 *~
+.DS_Store
 
 bin/
 .cache/
