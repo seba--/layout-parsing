@@ -36,7 +36,7 @@ public class HaskellParser {
   private static final ParseTable table;
   static {
     try {
-      tableLocation  = new File(HaskellParser.class.getResource("/org/spoofax/jsglr_orig/tests/haskell/Haskell.tbl").toURI()).getPath();
+      tableLocation  = new File(HaskellParser.class.getResource("/org/spoofax/jsglr/tests/haskell/Haskell.tbl").toURI()).getPath();
       table = new ParseTableManager().loadFromFile(tableLocation);
     } catch (Exception e) {
       throw new RuntimeException(e);
