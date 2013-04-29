@@ -56,10 +56,11 @@ public class TestAllPackages extends TestCase {
   
   public static void main(String[] args) throws IOException {
     TestAllPackages tester = new TestAllPackages();
+    int repetition = args.length > 0 ? Integer.parseInt(args[0]) : 1;
     
     tester.warmup();
     
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < repetition; i++)
       tester.testAllPackages();
   }
   
