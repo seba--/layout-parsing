@@ -1,6 +1,0 @@
-module GHC-ParallelListComprehensions
-exports
-  context-free syntax
-  	{Quals "|"}+ -> ParallelQuals {cons("ParallelQuals")}
-  	Exp "|" ParallelQuals -> List
-    

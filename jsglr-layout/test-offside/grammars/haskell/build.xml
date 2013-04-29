@@ -1,6 +1,6 @@
 <project>
 
-	<condition property="binary.sdf2table" value="${project.loc}/test-offside/tools/win/sdf2table.exe" else="${project.loc}/test-offside/tools/mac/sdf2table">
+	<condition property="binary.sdf2table" value="D:\\layout-parsing\\jsglr-layout\\test-offside\\tools\\sdf2table.exe" else="/Users/seba/.nix-profile/bin/sdf2table">
 		<os family="windows" />
 	</condition>
 

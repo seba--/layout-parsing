@@ -15,6 +15,7 @@ public class TestConfiguration {
   private final static Collection<String> SKIP_FILES = new ArrayList<String>();
   
   static {
+//    SKIP_FILES.add("Agda-2.3.0.1/src/full/Agda/Packaging/Database.hs"); // stack overflow
   }
 
   
@@ -25,10 +26,6 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("FlexibleInstances");
     HASKELL_EXTENSIONS.add("FlexibleContexts");
     HASKELL_EXTENSIONS.add("GeneralizedNewtypeDeriving");
-    HASKELL_EXTENSIONS.add("ParallelListComp");
-    HASKELL_EXTENSIONS.add("PatternGuards");
-    HASKELL_EXTENSIONS.add("ViewPatterns");
-    HASKELL_EXTENSIONS.add("ExplicitForAll");
   }
 
  

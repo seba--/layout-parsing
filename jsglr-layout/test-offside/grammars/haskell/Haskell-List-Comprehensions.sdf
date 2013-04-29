@@ -8,7 +8,7 @@ exports
     Exp "," Exp ".." 	 -> List
     Exp ".." Exp 	 -> List
     Exp "," Exp ".." Exp -> List
-    Exp "|" Quals -> List
+    Exp "|" Quals        -> List
    
     Lexps "," Exp 	 -> Lexps
     Exp "," Exp   	 -> Lexps
