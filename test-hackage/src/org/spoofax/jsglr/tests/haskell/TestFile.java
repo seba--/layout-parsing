@@ -51,6 +51,7 @@ public class TestFile extends TestCase {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
     String dir = "hackage-data";
     String file = dir + "/" + "CCA/CCA-0.1.3/dist/build/ccap/ccap-tmp/Parser.hs";
+
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
@@ -92,7 +93,7 @@ public class TestFile extends TestCase {
       result.cppPreprocess = true;
     
     File implicitLayoutInput = makeImplicitLayout(preparedInput, pkg);
-    File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
+   File explicitLayoutInput = makeExplicitLayout(preparedInput, pkg);
 
     oldParse(explicitLayoutInput, pkg);
     newParseOrig(preparedInput, pkg);
@@ -234,7 +235,8 @@ public class TestFile extends TestCase {
       newResultOrig = (IStrategoTerm) newParserOrig.parse(input, f.getAbsolutePath());
       result.parseOk.t2 = newResultOrig != null;
       result.stackOverflow.t2 = false;
-    } catch (InterruptedException e) {
+    }
+    catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t2 = true;;
@@ -518,7 +520,7 @@ public class TestFile extends TestCase {
 
   
   private void clean(File f) {
-    Utilities.deleteFile(f.getAbsoluteFile() + ".csv");
+  /*  Utilities.deleteFile(f.getAbsoluteFile() + ".csv");
     Utilities.deleteFile(f.getAbsoluteFile() + ".norm");
     Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp");
     Utilities.deleteFile(f.getAbsoluteFile() + ".norm.pp.expl");
@@ -529,6 +531,6 @@ public class TestFile extends TestCase {
     Utilities.deleteFile(f.getAbsoluteFile() + ".new.speed");
     Utilities.deleteFile(f.getAbsoluteFile() + ".new.impl");
     Utilities.deleteFile(f.getAbsoluteFile() + ".old.pt");
-    Utilities.deleteFile(f.getAbsoluteFile() + ".new.pt");
+    Utilities.deleteFile(f.getAbsoluteFile() + ".new.pt"); */
   }
 }

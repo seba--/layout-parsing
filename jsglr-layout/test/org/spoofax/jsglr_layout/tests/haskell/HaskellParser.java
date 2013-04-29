@@ -30,13 +30,15 @@ public class HaskellParser {
 
   private static final boolean DEBUG = false;
 
-  private static final String tableLocation = HaskellParser.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/org/spoofax/jsglr_layout/tests/haskell/Haskell.tbl";
+  private static final String tableLocation = HaskellParser.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ") + "/org/spoofax/jsglr_layout/tests/haskell/Haskell.tbl";
   
   private static final ParseTable table;
   static {
     try {
       table = new ParseTableManager().loadFromFile(tableLocation);
     } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(e);
       throw new RuntimeException(e);
     }
   }

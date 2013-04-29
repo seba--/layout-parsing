@@ -9,7 +9,6 @@ import java.util.Collection;
  */
 public class TestConfiguration {
   public final static String CABAL_COMMAND = "cabal";
-  
   public final static String PP_HASKELL_COMMAND = "pp-haskell";
   
   public final static Collection<String> SKIP_PACKAGES = new ArrayList<String>();
@@ -26,6 +25,10 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("FlexibleInstances");
     HASKELL_EXTENSIONS.add("FlexibleContexts");
     HASKELL_EXTENSIONS.add("GeneralizedNewtypeDeriving");
+    HASKELL_EXTENSIONS.add("ParallelListComp");
+    HASKELL_EXTENSIONS.add("PatternGuards");
+    HASKELL_EXTENSIONS.add("ViewPatterns");
+    HASKELL_EXTENSIONS.add("ExplicitForAll");
   }
 
  

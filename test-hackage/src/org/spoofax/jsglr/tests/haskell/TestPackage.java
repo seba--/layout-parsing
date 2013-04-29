@@ -37,9 +37,8 @@ public class TestPackage extends TestCase {
     try {
       new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     } catch (IOException e) {
-      ;
+      e.printStackTrace();
     }
-    
     testFiles(dir, "", pkg);
     
     if (LOGGING)
@@ -52,17 +51,18 @@ public class TestPackage extends TestCase {
     try {
       result.appendAsCSV(csvFile.getAbsolutePath());
     } catch (IOException e) {
-      ;
+      e.printStackTrace();
     }
   }
   
   public void testFiles(File dir, String path, String pkg) throws IOException {
     if (dir != null && dir.listFiles() != null)
       for (File f : dir.listFiles())
-        if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches())
+        if (f.isFile() && SOURCE_FILE_PATTERN.matcher(f.getName()).matches()) {
           logResult(new TestFile().testFile(f, Utilities.extendPath(path, f.getName()), pkg));
-        else if (f.isDirectory())
+        } else if (f.isDirectory()) {
           testFiles(f, Utilities.extendPath(path, f.getName()), pkg);
+        }
   }
   
   private File cabalUnpack(String pkg) throws IOException {

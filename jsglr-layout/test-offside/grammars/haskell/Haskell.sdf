@@ -3,6 +3,9 @@ imports Haskell-Syntax
 imports GHC-Flexible-Stuff
         GHC-Magic-Hash
         GHC-GeneralizedNewtypeDeriving
+        GHC-ParallelListComprehensions
+        GHC-ViewPatterns
+        GHC-ExplicitForAll
 exports
   sorts Module
 

@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="gwt-soyc-vis.jar"/>
 	<classpathentry kind="lib" path="gwt-user.jar"/>
+	<classpathentry kind="lib" path="javassist.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
