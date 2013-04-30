@@ -1,11 +1,9 @@
-May 31, 2012
-------------
-The file "all1338447943348.csv" contains the raw data of evaluating our
-layout-sensitive parser with a Haskell grammar on all Haskell source files in
-HackageDB (http://hackage.haskell.org). The measurement has been performed on
-May 31, 2012 with parser and grammar of git commit
-"e7302297e4086e01cb1905d5d2de0845365e1427" of the repository
-https://github.com/seba--/layout-parsing.
+April 30, 2013
+--------------
+
+all1367191170785.csv  --  reference run on seba's MacBook Pro with interpreted constraints
+all1367252772974.csv  --  run on seba's MacBook Pro with *compiled constraints*
+
 
 June 11, 2012
 -------------
@@ -17,6 +15,15 @@ from June 10, 2012 to June 11, 2012 using the grammar and parser as of git
 commit "77d12eea2553064156c34a38fff4428766fe9999" of the repository
 https://github.com/seba--/layout-parsing.
  
+May 31, 2012
+------------
+The file "all1338447943348.csv" contains the raw data of evaluating our
+layout-sensitive parser with a Haskell grammar on all Haskell source files in
+HackageDB (http://hackage.haskell.org). The measurement has been performed on
+May 31, 2012 with parser and grammar of git commit
+"e7302297e4086e01cb1905d5d2de0845365e1427" of the repository
+https://github.com/seba--/layout-parsing.
+
 Format
 ------
 The format of the raw data is as follows:
