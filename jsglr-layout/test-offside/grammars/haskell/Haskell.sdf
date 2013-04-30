@@ -6,6 +6,7 @@ imports GHC-Flexible-Stuff
         GHC-ParallelListComprehensions
         GHC-ViewPatterns
         GHC-ExplicitForAll
+        GHC-ArbitraryRankPolymorphism
 exports
   sorts Module
 

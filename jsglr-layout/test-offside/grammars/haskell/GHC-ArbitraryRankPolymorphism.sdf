@@ -1,0 +1,5 @@
+module GHC-ArbitraryRankPolymorphism
+exports
+	context-free syntax
+		"(" CType ")" -> AType
+		"forall" Var+ "." Context? Type -> CType

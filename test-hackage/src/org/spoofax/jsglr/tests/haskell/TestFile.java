@@ -50,7 +50,7 @@ public class TestFile extends TestCase {
   
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
-    String file = "sample-data/ExplicitForAll.hs";//"d:/tmp/test.hs";
+    String file = "sample-data/ArbitraryRankPolymorphism.hs";//"d:/tmp/test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
