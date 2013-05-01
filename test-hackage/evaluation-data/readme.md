@@ -1,8 +1,8 @@
 April 30, 2013
 --------------
 
-all1367191170785.csv  --  reference run on seba's MacBook Pro with interpreted constraints
-all1367252772974.csv  --  run on seba's MacBook Pro with *compiled constraints*
+ * all1367191170785.csv  --  reference run on seba's MacBook Pro with interpreted constraints
+ * all1367252772974.csv  --  run on seba's MacBook Pro with *compiled constraints*
 
 
 June 11, 2012
