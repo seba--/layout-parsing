@@ -34,3 +34,7 @@ test-hackage/sample-data/*.o
 test-hackage/.dist-buildwrapper/sample-data/parallelComp.hs.norm.pp.impl.hs
 
 test-hackage/sample-data/ViewPatternsExample
+
+test-hackage/sample-data/ParallelListComprehensionExample
+
+test-hackage/sample-data/RelaxedPolyRecExample

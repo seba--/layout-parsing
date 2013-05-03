@@ -22,7 +22,7 @@ public class TestPackage extends TestCase {
   private FileResultObserver observer;
   
   public void testPackage() throws IOException {
-    testPackage("Cabal", new FileResultObserver() { public void observe(FileResult result) { } });
+    testPackage("activehs", new FileResultObserver() { public void observe(FileResult result) { } });
     System.out.println(csvFile.getAbsolutePath());
   }
   

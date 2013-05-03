@@ -2,4 +2,8 @@ module GHC-ViewPatterns
 exports
 	context-free syntax
 		FunLHS ViewPattern "=" Exp MaybeWhere 	-> Valdef {cons("ViewPatternValdef"), longest-match}
-		"(" Exp "->" Pat ")"					-> ViewPattern {cons("ViewPattern")}
+		"(" VPat ")"							-> ViewPattern {cons("ViewPattern")}
+				
+		Exp "->" Pat 	-> VPat
+
+		

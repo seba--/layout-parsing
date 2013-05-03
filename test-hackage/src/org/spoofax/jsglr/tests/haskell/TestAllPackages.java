@@ -49,9 +49,12 @@ public class TestAllPackages extends TestCase {
     
     FileResultObserver observer = new FileResultObserver() { public void observe(FileResult result) { warmupCount++; } };
     
+    try {
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
-    
+    } catch (Throwable e) {
+      
+    }
     System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }
   
@@ -82,7 +85,7 @@ public class TestAllPackages extends TestCase {
         new TestPackage().testPackage(pkg, new MyFileResultObserver(pkg));
       }
       
-    } catch(Exception e) {
+    } catch(Throwable e) {
      ;
     }  finally { 
       if (in != null)
