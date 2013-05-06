@@ -53,7 +53,7 @@ public class TestAllPackages extends TestCase {
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
     } catch (Throwable e) {
-      
+      e.printStackTrace();
     }
     System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }

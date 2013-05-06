@@ -1,0 +1,58 @@
+module GHC-TemplateHaskell
+
+exports
+	context-free syntax
+	
+%%	Splices
+
+		Splice -> Exp
+		Splice -> Type
+		Splice -> Decl
+		
+		"$(" Exp ")" -> Splice {cons("ExpSlice")}
+		VarSpliceID	 -> Splice {cons("VarSplice")}
+		
+	lexical syntax
+		"$" VARID -> VarSpliceID
+		
+	context-free syntax
+		
+	%% Impliying slices in Top Level Declarations
+%%		Exp -> Topdecl	
+		
+%%	Expression Quotations
+		
+		"[|" Exp "|]"		-> Exp		{cons("ExpQuotation")}
+		"[d|" Topdecl+ "|]"	-> TopDecl	{cons("TopdeclQuotation")}
+		"[t|" Type "|]" 	-> Type		{cons("TypeQuotation")}
+		"[p|" Pat "|]"		-> Pat		{cons("PatQuotation")}
+		
+%% Name Quotation
+
+	context-free syntax
+		NameQuotation		-> Exp
+		
+	lexical syntax
+		"'" Qvar | Qcon		-> NameQuotation
+		"''" Tyvar | Gtycon	-> NameQuotation
+		
+		
+%%	Quasi Quotation
+	
+		"[" VARID "|" QuasiQuoteString "|]" -> QuasiQuote {cons("QuasiQuote"), ignore-layout}
+		QuasiQuote 		-> Exp
+		
+
+	lexical syntax
+ 		QuasiQuoteChar* -> QuasiQuoteString
+ 		%% any char except the pipe "|"
+ 		~[\|] -> QuasiQuoteChar
+
+ 		"|" -> QuasiQuotePipe
+ 		%% pipe is also ok if ...
+ 		QuasiQuotePipe -> QuasiQuoteChar
+
+	lexical restrictions
+		 %% pipe is also ok if not followed by a closing bracket (since this would mark the end of the quasiquote block) 
+ 		QuasiQuotePipe -/- [\]]
+		

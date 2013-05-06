@@ -29,6 +29,15 @@ test-hackage/sample-data/*.norm
 test-hackage/sample-data/*.orig
 test-hackage/sample-data/*.hi
 test-hackage/sample-data/*.o
+test-hackage/sample-data/template-haskell/*.pp
+test-hackage/sample-data/template-haskell/*.csv
+test-hackage/sample-data/template-haskell/*.expl
+test-hackage/sample-data/template-haskell/*.impl
+test-hackage/sample-data/template-haskell/*.old
+test-hackage/sample-data/template-haskell/*.norm
+test-hackage/sample-data/template-haskell/*.orig
+test-hackage/sample-data/template-haskell/*.hi
+test-hackage/sample-data/template-haskell/*.o
 
 
 test-hackage/.dist-buildwrapper/sample-data/parallelComp.hs.norm.pp.impl.hs
@@ -38,3 +47,5 @@ test-hackage/sample-data/ViewPatternsExample
 test-hackage/sample-data/ParallelListComprehensionExample
 
 test-hackage/sample-data/RelaxedPolyRecExample
+
+test-hackage/sample-data/template-haskell/main

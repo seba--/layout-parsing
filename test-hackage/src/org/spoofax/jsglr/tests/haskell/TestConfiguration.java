@@ -33,11 +33,14 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("ParallelListComp");
     HASKELL_EXTENSIONS.add("PatternGuards");
     HASKELL_EXTENSIONS.add("ViewPatterns");
+    HASKELL_EXTENSIONS.add("TemplateHaskell");
+    HASKELL_EXTENSIONS.add("QuasiQuotes");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");
    // HASKELL_EXTENSIONS.add("Rank2Types");
     HASKELL_EXTENSIONS.add("RankNTypes");
+  
   }
 
  
