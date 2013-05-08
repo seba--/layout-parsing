@@ -52,8 +52,9 @@ public class TestFile extends TestCase {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
     //String file = "sample-data/template-haskell/Printf.hs";//"d:/tmp/test.hs";
     //String file = "hackage-data/activehs/0.3/activehs-0.3/Parse.hs";
-    String file = "hackage-data/accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/crystal/Config.hs";
+    //String file = "hackage-data/accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/crystal/Config.hs";
    // String file = "hackage-data/zoom/0.1.0.1/zoom-0.1.0.1/Zoom/Template/TH.hs";
+    String file = "hackage-data/AC-MiniTest/1.1.1/AC-MiniTest-1.1.1/Test/AC/Test.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");

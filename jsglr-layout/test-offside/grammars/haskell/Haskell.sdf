@@ -1,13 +1,13 @@
 module Haskell
 imports Haskell-Syntax
-imports GHC-Flexible-Stuff
-        GHC-Magic-Hash
+imports GHC-Magic-Hash
         GHC-GeneralizedNewtypeDeriving
         GHC-ParallelListComprehensions
         GHC-ViewPatterns
         GHC-ExplicitForAll
         GHC-ArbitraryRankPolymorphism
         GHC-TemplateHaskell
+        GHC-FlexibleContexts
 exports
   sorts Module
 
