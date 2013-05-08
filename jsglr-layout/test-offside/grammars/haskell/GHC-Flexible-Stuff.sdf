@@ -1,0 +1,16 @@
+module GHC-Flexible-Stuff
+exports
+  context-free syntax
+    Qtycls "(" Type ")" -> FlexibleClass {cons("Class")}
+    Qtycls Gtycon -> FlexibleClass {cons("Class")}
+    Qtycls Tyvar -> FlexibleClass {cons("SimpleClass")}
+    
+    FlexibleClass "=>" -> FlexibleContext {cons("FlexibleContext")}
+    "(" {FlexibleClass ","}* ")" "=>" -> FlexibleContext {cons("FlexibleContext")}
+    
+    FlexibleContext -> SContext {avoid}
+    FlexibleContext -> Context {avoid}
+
+  context-free syntax
+  	"instance" SContext? Qtycls AType* MaybeWhere 		-> Topdecl {cons("FlexibleInstance"), avoid}
+  	
