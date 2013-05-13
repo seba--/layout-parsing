@@ -36,6 +36,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("TemplateHaskell");
     HASKELL_EXTENSIONS.add("QuasiQuotes");
     HASKELL_EXTENSIONS.add("FlexibleContexts");
+    HASKELL_EXTENSIONS.add("UnboxedTuples");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");

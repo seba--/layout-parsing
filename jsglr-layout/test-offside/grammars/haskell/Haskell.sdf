@@ -8,6 +8,7 @@ imports GHC-Magic-Hash
         GHC-ArbitraryRankPolymorphism
         GHC-TemplateHaskell
         GHC-FlexibleContexts
+        GHC-UnboxedTuples
 exports
   sorts Module
 

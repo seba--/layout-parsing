@@ -1,0 +1,8 @@
+module GHC-UnboxedTuples
+
+	exports
+	
+		context-free syntax
+			"(#" "#)" 			-> Gtycon	{cons("TUnboxedSingleton")}
+			"(#" ","+ "#)"		-> Gtycon	{cons("TUnboxedList")}
+			"(#" Exps "#)"		-> Exp 		{cons("Unboxed")}

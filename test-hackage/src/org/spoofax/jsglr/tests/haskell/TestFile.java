@@ -54,9 +54,11 @@ public class TestFile extends TestCase {
     //String file = "hackage-data/activehs/0.3/activehs-0.3/Parse.hs";
     //String file = "hackage-data/accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/crystal/Config.hs";
    // String file = "hackage-data/zoom/0.1.0.1/zoom-0.1.0.1/Zoom/Template/TH.hs";
-    String file = "hackage-data/AC-MiniTest/1.1.1/AC-MiniTest-1.1.1/Test/AC/Test.hs";
+  //  String file = "hackage-data/AC-MiniTest/1.1.1/AC-MiniTest-1.1.1/Test/AC/Test.hs";
     //String file = "hackage-data/accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Pretty/Traverse.hs";
   //  String file = "hackage-data/AbortT-transformers/1.0/AbortT-transformers-1.0/Control/Monad/Trans/Abort.hs";
+  //  String file = "hackage-data/AC-VanillaArray/1.1.2/AC-VanillaArray-1.1.2/Data/Array/Vanilla/Unsafe.hs";
+    String file = "hackage-data/accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/simple/DotP.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
