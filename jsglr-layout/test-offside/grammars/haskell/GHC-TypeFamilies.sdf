@@ -1,0 +1,17 @@
+module GHC-TypeFamilies
+
+	exports
+	
+		context-free syntax
+		
+			"type" "family" Type OptSig	-> TopDecl {cons("TypeFamily")}
+			"data" "family" Type OptSig	-> TopDecl {cons("DataFamily")}
+			"type" Type OptSig			-> Decl {cons("TypeFamily")}
+			"data" Type OptSig			-> Decl {cons("DataFamily")}
+			"type" Type "=" Type	  -> Decl {cons("TypeDecl")}
+		
+		lexical syntax
+			"family" -> ReservedId0
+		
+		lexical restrictions
+			"family" -/- [a-zA-Z0-9\'\_]

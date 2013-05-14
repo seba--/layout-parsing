@@ -1,0 +1,8 @@
+module GHC-MultiParamTypeClasses
+
+	exports
+	
+		context-free syntax
+			"class" SContext? Tycls Tyvar Tyvar+ MaybeWhere 		-> Topdecl {cons("Class")}
+			 (("(" Qtycls AType+ ")") |  Tyvar) -> ClassParam
+			 Qtycls ClassParam ClassParam+ -> Class {cons("MultiParamClass")}

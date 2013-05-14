@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -109,6 +110,11 @@ public class CommandExecution {
     
     public String[][] getMessages() {
       return messages;
+    }
+    @Override
+    public String toString() {
+      // TODO Auto-generated method stub
+      return super.toString() +"\n"+ Arrays.toString(messages[0]) + " " + Arrays.toString(messages[1]);
     }
   }
 

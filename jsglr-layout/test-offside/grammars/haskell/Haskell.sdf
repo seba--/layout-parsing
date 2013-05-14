@@ -9,6 +9,8 @@ imports GHC-Magic-Hash
         GHC-TemplateHaskell
         GHC-FlexibleContexts
         GHC-UnboxedTuples
+        GHC-TypeFamilies
+        GHC-MultiParamTypeClasses
 exports
   sorts Module
 
