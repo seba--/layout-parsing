@@ -1,6 +1,7 @@
 module GHC-TypeFamilies
 
 	imports GHC-EqualityConstraints
+	imports Haskell-Syntax
 
 	exports
 	
@@ -10,7 +11,8 @@ module GHC-TypeFamilies
 			"data" "family" Type OptSig	-> TopDecl {cons("DataFamily")}
 			"type" Type OptSig			-> Decl {cons("TypeFamily")}
 			"data" Type OptSig			-> Decl {cons("DataFamily")}
-			"type" Type "=" Type	  -> Decl {cons("TypeDecl")}
+			"type" Type "=" Type	  	-> Decl {cons("TypeDecl")}
+			"*" 						-> Type {cons("LiftedType")}
 		
 		lexical syntax
 			"family" -> ReservedId0
