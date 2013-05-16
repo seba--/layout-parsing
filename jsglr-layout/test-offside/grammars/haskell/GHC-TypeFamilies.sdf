@@ -1,5 +1,7 @@
 module GHC-TypeFamilies
 
+	imports GHC-EqualityConstraints
+
 	exports
 	
 		context-free syntax

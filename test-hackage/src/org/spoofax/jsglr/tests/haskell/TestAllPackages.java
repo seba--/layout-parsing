@@ -65,7 +65,7 @@ public class TestAllPackages extends TestCase {
     csvFile = new File(path + ".csv");
     new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     
-    warmup();
+    //warmup();
     
     BufferedReader in = null;
     

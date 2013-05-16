@@ -1,0 +1,7 @@
+module GHC-EqualityConstraints
+
+exports
+	context-free syntax
+
+    	Class "~" Class -> Class 
+		

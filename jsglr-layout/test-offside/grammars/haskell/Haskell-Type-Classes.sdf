@@ -20,6 +20,5 @@ exports
     
     Qtycls Tyvar -> SimpleClass {cons("SimpleClass")}
     SimpleClass -> Class
-    SimpleClass "~" SimpleClass -> Class 
     Qtycls "(" Tyvar AType+ ")" -> Class {cons("Class")}
     
