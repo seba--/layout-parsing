@@ -3,9 +3,6 @@ exports
   context-free syntax
   	Quals "|" Quals -> PQuals
   	PQuals "|" Quals -> PQuals
-%% These have to be enabled to handle thw wrong result of the pretty printer
-%%  	Quals "," "|" Quals -> PQuals
-%%  	PQuals "," "|" Quals -> PQuals
   	PQuals -> ParallelQuals {cons("ParallelQuals")}
   	Exp "|" ParallelQuals -> List
     
