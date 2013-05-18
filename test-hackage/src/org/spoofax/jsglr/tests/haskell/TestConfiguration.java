@@ -44,7 +44,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("RankNTypes");
     HASKELL_EXTENSIONS.add("TypeFamilies");
     HASKELL_EXTENSIONS.add("MultiParamTypeClasses");
-  
+    HASKELL_EXTENSIONS.add("ExistentialQuantification");
   }
 
  

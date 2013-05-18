@@ -1,13 +1,16 @@
 module GHC-ExplicitForAll
 
+imports Haskell-Syntax
+
 exports
 
 	context-free syntax
-		Vars "::" "forall" Var+ "." Context? Type  -> Signdecl {cons("ExplicitForAllSignDecl")}
+		"forall" Var+ "." 		-> Forall {cons("Forall")}
+		Vars "::" Forall Context? Type  -> Signdecl {cons("ExplicitForAllSignDecl")}
 		
 	context-free priorities
 		Qvar "@" Exp -> Exp {cons("Named")}
-  	  > Exp "::" "forall" Var+ "." Context? Type  -> Exp {cons("ExplicitForAllTyped")}
+  	  > Exp "::" Forall Context? Type  -> Exp {cons("ExplicitForAllTyped")}
 
 	lexical syntax
 		"forall" -> ReservedId0

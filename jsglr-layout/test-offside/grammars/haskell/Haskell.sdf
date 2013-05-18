@@ -11,6 +11,7 @@ imports GHC-Magic-Hash
         GHC-UnboxedTuples
         GHC-TypeFamilies
         GHC-MultiParamTypeClasses
+        GHC-ExistentialQuantification
 exports
   sorts Module
 

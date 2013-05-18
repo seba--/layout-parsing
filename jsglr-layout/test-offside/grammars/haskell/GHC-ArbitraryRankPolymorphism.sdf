@@ -1,5 +1,10 @@
 module GHC-ArbitraryRankPolymorphism
+
+imports Haskell-Syntax
+imports GHC-ExplicitForAll
+
 exports
+	
 	context-free syntax
 		"(" CType ")" -> AType
-		"forall" Var+ "." Context? Type -> CType
+		Forall Context? Type -> CType
