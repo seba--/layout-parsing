@@ -1,0 +1,15 @@
+module GHC-TypeOperators
+	
+imports Haskell-Syntax
+	
+exports
+	
+	context-free syntax
+		AType Conop AType -> Type {cons("TypeInfOp")}
+	%%	"(" (Varop | Conop) ")" AType+ -> Type {cons("TypePrOp")}
+
+	
+	context-free priorities
+		Type Type 	   	   -> Type
+	>   "(" (Varop | Conop) ")" AType* -> Type {cons("TypePrOp")}
+		 

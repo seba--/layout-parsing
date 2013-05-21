@@ -12,6 +12,7 @@ imports GHC-Magic-Hash
         GHC-TypeFamilies
         GHC-MultiParamTypeClasses
         GHC-ExistentialQuantification
+        GHC-TypeOperators
 exports
   sorts Module
 
