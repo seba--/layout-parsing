@@ -5,7 +5,8 @@ imports Haskell-Syntax
 exports
 
 	context-free syntax
-		"forall" Var+ "." 		-> Forall {cons("Forall")}
+		"forall"				-> FORALL {cons("FORALL")}
+		(FORALL Var+ ".")+ 		-> Forall {cons("Forall")}
 		Vars "::" Forall Context? Type  -> Signdecl {cons("ExplicitForAllSignDecl")}
 		
 	context-free priorities
