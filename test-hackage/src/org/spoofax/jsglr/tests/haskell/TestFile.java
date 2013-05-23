@@ -61,11 +61,11 @@ public class TestFile extends TestCase {
    // String file = "hackage-data/accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/simple/DotP.hs";
     //String file = "hackage-data/AC-Vector-Fancy/2.4.0/AC-Vector-Fancy-2.4.0/Data/Vector/Fancy.hs";
    // String file ="hackage-data/accelerate-io/0.12.0.0/accelerate-io-0.12.0.0/Data/Array/Accelerate/IO/Repa.hs";
-    // String file = "hackage-data/ZipFold/0.1.4/ZipFold-0.1.4/src/Data/WithCont.hs";
+     String file = "hackage-data/ZipFold/0.1.4/ZipFold-0.1.4/src/Data/WithCont.hs";
    // String file = "hackage-data/Zwaluw/0.1/Zwaluw-0.1/Web/Zwaluw.hs";
     //String file = "hackage-data/";
    // file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/quickcheck/Test/Base.hs";
-    String file = "hackage-data/ZipFold/0.1.4/ZipFold-0.1.4/src/Data/Zip/FoldL.hs";
+ //   String file = "hackage-data/ZipFold/0.1.4/ZipFold-0.1.4/src/Data/Zip/FoldL.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
