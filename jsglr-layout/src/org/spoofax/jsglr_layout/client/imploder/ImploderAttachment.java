@@ -207,6 +207,7 @@ public class ImploderAttachment extends AbstractTermAttachment {
 		term.putAttachment(isAnonymousSequence ?
 				  new ListImploderAttachment(sort, leftToken, rightToken)
 				: new ImploderAttachment(sort, leftToken, rightToken));
+		org.spoofax.jsglr.client.imploder.ImploderAttachment.putImploderAttachment(term, isAnonymousSequence, sort, null, null);
 	}
 	
 	@Override
