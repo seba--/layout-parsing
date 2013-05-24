@@ -22,11 +22,9 @@ import org.spoofax.jsglr.client.InvalidParseTableException;
  */
 public class KeywordRecognizer {
 	
-  private final ITermFactory factory;
 	private final Set<String> keywords = new HashSet<String>();
 	
 	protected KeywordRecognizer(ParseTable table) {
-	  factory = table == null ? null : table.getFactory();
 		if (table != null) {
 			IStrategoConstructor litFun = table.getFactory().makeConstructor("lit", 1);
 			for (Label l : table.getLabels()) {
@@ -70,7 +68,7 @@ public class KeywordRecognizer {
 		return Character.isLetterOrDigit(c) || c == '_';
 	}
 	
-	public org.spoofax.jsglr.client.KeywordRecognizer makeStdKeywordRecognizer() {
+	public org.spoofax.jsglr.client.KeywordRecognizer makeStdKeywordRecognizer(ITermFactory factory) {
 	  org.spoofax.jsglr.client.ParseTable pt;
 	  try {
 	    ITermFactory f = factory;

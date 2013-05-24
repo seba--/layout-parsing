@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.spoofax.interpreter.terms.ISimpleTerm;
+import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr_layout.client.KeywordRecognizer;
 import org.spoofax.terms.SimpleTermVisitor;
 
@@ -308,9 +309,9 @@ public class Tokenizer extends AbstractTokenizer {
 		}
 	}
 
-	public org.spoofax.jsglr.client.imploder.Tokenizer makeStdTokenizer() {
+	public org.spoofax.jsglr.client.imploder.Tokenizer makeStdTokenizer(ITermFactory factory) {
 	  org.spoofax.jsglr.client.imploder.Tokenizer tokenizer = 
-	      new org.spoofax.jsglr.client.imploder.Tokenizer(getInput(), getFilename(), keywords.makeStdKeywordRecognizer());
+	      new org.spoofax.jsglr.client.imploder.Tokenizer(getInput(), getFilename(), keywords.makeStdKeywordRecognizer(factory));
 	  
 	  return tokenizer;
 	}
