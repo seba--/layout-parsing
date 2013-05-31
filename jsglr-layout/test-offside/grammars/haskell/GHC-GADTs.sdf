@@ -1,0 +1,51 @@
+module GHC-GADTs
+
+imports Haskell-Syntax
+imports GHC-ExistentialQuantification
+
+exports
+	
+	context-free syntax
+	
+		"data" GADTBody    				-> Topdecl {cons("GADTData")}
+	%%	"newtype" GADTBody 				-> Topdecl {cons("GADTNewType")}
+	%%	"data" "instance" GADTBody		-> Topdecl {cons("GADTDataInstance")}
+	%%	"newtype" "instance" GADTBody 	-> Topdecl {cons("GADTNewTypeInstance")}
+		
+	%%	"data" GADTBody					-> Decl {cons("GADTDataDecl")}
+	%%	"newtype" GADTBody				-> Decl {cons("GADTDataDecl")}
+		
+	
+		Context? Type "::" Kind GADTConstrList?  -> GADTBody
+	
+		Con+ "::" Type		-> GADTConstr {cons("GADTConstraint")}
+		
+		GADTConstr	 		-> GADTConstrs
+		GADTConstr ";" GADTConstrs -> GADTConstrs {cons("GADTConstrSeq")}
+		
+	context-free priorities
+		
+		GADTConstr						-> GADTOffsideConstr { layout("1.first.col < 1.left.col")}
+	>
+		GADTOffsideConstr ";"			-> GADTOffsideConstr {layout("1.first.col < 2.first.col")}
+	>
+		GADTOffsideConstr ";" GADTConstr -> GADTOffsideConstr  {cons("GADTConstrSeq"),
+           layout("1.first.col < 2.first.col && 1.first.col < 3.first.col && 1.first.col < 3.left.col")}
+	
+	context-free syntax
+	
+		GADTOffsideConstr 			->	GADTOffsideConstrs
+		GADTOffsideConstrNEWLINE GADTOffsideConstr -> GADTOffsideConstrs {cons("GADTConstrSeq"), layout("1.first.col == 2.first.col")}
+		GADTOffsideConstr LAYOUT? -> GADTOffsideConstrNEWLINE  {enforce-newline}
+		
+		GADTOffsideConstrNEWLINE (GADTOffsideConstrNEWLINE)* 	-> GADTOffsideConstrs {layout("1.first.col == 2.first.col")}
+	
+		"where" "{" GADTConstrs "}" 	-> GADTConstrList {cons("GADTConstrList")}
+		"where" GADTOffsideConstrs		-> GADTConstrList {cons("GADTConstrList")}
+		"where"	("{" "}")*				-> GADTConstrList {cons("EmptyGADTConstrList")}
+		
+		"*"		 		-> AKind {cons("Kind*")}
+		"!"				-> AKind {cons("Kind!")}
+		"(" Kind ")"	-> AKind {cons("AKind")}
+		AKind			-> Kind
+		AKind "->" Kind	-> Kind {cons("Kind->")}
