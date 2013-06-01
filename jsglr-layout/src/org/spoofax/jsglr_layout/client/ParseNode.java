@@ -367,8 +367,9 @@ public class ParseNode extends AbstractParseNode {
       return cachedHashCode;
     final int prime = 31;
     int result = prime * label;
-    for (AbstractParseNode n : kids)
+    for (AbstractParseNode n : kids) {
       result += (prime * n.hashCode());
+    }
     cachedHashCode = result; // Assumption is that hashcode is not set during
                              // parsing
     return result;

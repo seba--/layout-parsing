@@ -1,4 +1,7 @@
 module Haskell-Signature-Declarations
+
+imports Haskell-Syntax
+
 exports
   context-free syntax
     Signdecl 	   -> Decl 

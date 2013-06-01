@@ -2,6 +2,7 @@ module GHC-GADTs
 
 imports Haskell-Syntax
 imports GHC-ExistentialQuantification
+imports GHC-KindSignature
 
 exports
 	
@@ -16,12 +17,28 @@ exports
 	%%	"newtype" GADTBody				-> Decl {cons("GADTDataDecl")}
 		
 	
-		Context? Type "::" Kind GADTConstrList?  -> GADTBody
+		"{" "}" -> WTFBrackets
+				-> WTFBrackets
+		Context? Type "::" Kind GADTConstrList Deriving WTFBrackets-> GADTBody
 	
 		Con+ "::" Type		-> GADTConstr {cons("GADTConstraint")}
 		
-		GADTConstr	 		-> GADTConstrs
-		GADTConstr ";" GADTConstrs -> GADTConstrs {cons("GADTConstrSeq")}
+	%% Implementation of layout sensitive and layout insensitive 
+	%% GADT Contraints where definitions is analogeos to statment list
+	%% definition ind Haskell-Statements
+	%% This definition cannot be reused because only GADTConstraints are
+	%% allowed in the where after a GADT Data definition
+	
+	context-free priorities
+		GADTConstr		-> NoOffsideGADTConstr
+	>
+		NoOffsideGADTConstr ";" -> NoOffsideGADTConstr
+		
+	context-free syntax
+	
+		NoOffsideGADTConstr	 		-> GADTNoOffsideConstrs
+		NoOffsideGADTConstr ";" GADTNoOffsideConstrs -> GADTNoOffsideConstrs {cons("GADTConstrSeq")}
+		"{" GADTNoOffsideConstrs "}" -> GADTNoOffsideConstrsBlock {bracket, ignore-layout}
 		
 	context-free priorities
 		
@@ -30,22 +47,18 @@ exports
 		GADTOffsideConstr ";"			-> GADTOffsideConstr {layout("1.first.col < 2.first.col")}
 	>
 		GADTOffsideConstr ";" GADTConstr -> GADTOffsideConstr  {cons("GADTConstrSeq"),
-           layout("1.first.col < 2.first.col && 1.first.col < 3.first.col && 1.first.col < 3.left.col")}
+          layout("1.first.col < 2.first.col && 1.first.col < 3.first.col && 1.first.col < 3.left.col")}
 	
 	context-free syntax
 	
 		GADTOffsideConstr 			->	GADTOffsideConstrs
-		GADTOffsideConstrNEWLINE GADTOffsideConstr -> GADTOffsideConstrs {cons("GADTConstrSeq"), layout("1.first.col == 2.first.col")}
+		GADTOffsideConstrNEWLINE GADTOffsideConstrs -> GADTOffsideConstrs {cons("GADTConstrSeq"), layout("1.first.col == 2.first.col")}
 		GADTOffsideConstr LAYOUT? -> GADTOffsideConstrNEWLINE  {enforce-newline}
 		
-		GADTOffsideConstrNEWLINE (GADTOffsideConstrNEWLINE)* 	-> GADTOffsideConstrs {layout("1.first.col == 2.first.col")}
+	%% Definition of the where
 	
-		"where" "{" GADTConstrs "}" 	-> GADTConstrList {cons("GADTConstrList")}
-		"where" GADTOffsideConstrs		-> GADTConstrList {cons("GADTConstrList")}
-		"where"	("{" "}")*				-> GADTConstrList {cons("EmptyGADTConstrList")}
+		"where" GADTNoOffsideConstrsBlock		-> GADTConstrList {cons("GADTConstrList")}
+		"where" GADTOffsideConstrs				-> GADTConstrList {cons("GADTConstrList")}
+		"where"	("{" "}")?						-> GADTConstrList {cons("EmptyGADTConstrList")}
+												-> GADTConstrList {cons("EmptyGADTConstrList")}
 		
-		"*"		 		-> AKind {cons("Kind*")}
-		"!"				-> AKind {cons("Kind!")}
-		"(" Kind ")"	-> AKind {cons("AKind")}
-		AKind			-> Kind
-		AKind "->" Kind	-> Kind {cons("Kind->")}

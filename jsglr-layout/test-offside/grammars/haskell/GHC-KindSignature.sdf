@@ -1,0 +1,11 @@
+module GHC-KindSignature
+
+exports
+	
+	context-free syntax
+		
+		"*"		 		-> AKind {cons("Kind*")}
+		"!"				-> AKind {cons("Kind!")}
+		"(" Kind ")"	-> AKind {cons("AKind")}
+		AKind			-> Kind
+		AKind "->" Kind	-> Kind {cons("Kind->")}

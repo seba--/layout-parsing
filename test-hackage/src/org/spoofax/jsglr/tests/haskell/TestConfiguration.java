@@ -39,6 +39,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("UnboxedTuples");
     HASKELL_EXTENSIONS.add("TypeOperators");
     HASKELL_EXTENSIONS.add("ScopedTypeVariables");
+    HASKELL_EXTENSIONS.add("GADTs");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");
