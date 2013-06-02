@@ -9,3 +9,5 @@ exports
 		"(" Kind ")"	-> AKind {cons("AKind")}
 		AKind			-> Kind
 		AKind "->" Kind	-> Kind {cons("Kind->")}
+		
+		("::" Kind) ?	-> OptKindSig

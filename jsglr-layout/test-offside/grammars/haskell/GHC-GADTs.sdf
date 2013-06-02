@@ -19,7 +19,7 @@ exports
 	
 		"{" "}" -> WTFBrackets
 				-> WTFBrackets
-		Context? Type "::" Kind GADTConstrList Deriving WTFBrackets-> GADTBody
+		Context? Type OptKindSig GADTConstrList Deriving WTFBrackets-> GADTBody
 	
 		Con+ "::" Type		-> GADTConstr {cons("GADTConstraint")}
 		
