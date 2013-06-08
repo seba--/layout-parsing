@@ -66,7 +66,8 @@ public class TestFile extends TestCase {
     String file = "hackage-data/";
     //file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/quickcheck/Test/Base.hs";
  //   String file = "hackage-data/ZipFold/0.1.4/ZipFold-0.1.4/src/Data/Zip/FoldL.hs";
-    file += "zipper/0.4.1/zipper-0.4.1/src/Generics/MultiRec/Zipper.hs";
+    //file += "zipper/0.4.1/zipper-0.4.1/src/Generics/MultiRec/Zipper.hs";
+    file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Prelude.hs";
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");

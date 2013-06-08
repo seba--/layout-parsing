@@ -11,10 +11,14 @@ exports
     {Type ","}+ 	   -> Types
     Type "," {Type ","}+   -> Types2 	{cons("Cons")}
     
+    %% CType is a forall type, the explicit forall is defined in the forall extension 
+    Type -> CType
+    Context Type -> CType {cons("ImplicitForall")}
+    
   context-free syntax
     Gtycon 		   -> AType 	{cons("TCon")}
     Tyvar 		   -> AType 	{cons("TVar")}
-    "(" Type ")" 	   -> AType 	{bracket}
+    "(" CType ")" 	   -> AType 	{bracket}
     "[" Type "]" 	   -> AType 	{cons("TList")}
     "(" Types2 ")" 	   -> AType 	{cons("TProd")}
 

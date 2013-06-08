@@ -5,5 +5,5 @@ imports Haskell-Syntax
 exports
   context-free syntax
     Signdecl 	   -> Decl 
-    Vars "::" Context? Type -> Signdecl {cons("SignDecl")}
+    Vars "::" CType -> Signdecl {cons("SignDecl")}
    

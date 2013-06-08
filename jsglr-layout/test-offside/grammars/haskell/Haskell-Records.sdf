@@ -5,6 +5,6 @@ exports
     "{" Fielddecls "}" -> RecordFields {ignore-indent}
     {Fielddecl ","}+ 			    -> Fielddecls
     Vars "::" Stype  			    -> Fielddecl
-    Type 				    -> Stype
-    "!" Type 				    -> Stype
+    CType 				    -> Stype
+    "!" CType 				    -> Stype
 

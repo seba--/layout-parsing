@@ -6,5 +6,4 @@ imports GHC-ExplicitForAll
 exports
 	
 	context-free syntax
-		"(" CType ")" -> AType
-		Forall Context? Type -> CType
+		

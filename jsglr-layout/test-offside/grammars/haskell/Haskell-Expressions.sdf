@@ -39,7 +39,7 @@ exports
   > Exp Exp -> Exp {cons("AppBin"),left}
   > "-" Exp -> Exp {cons("Negation")}
   > Exp Qop Exp -> Exp {cons("OpApp"), right}
-  > Exp "::" Context? Type -> Exp {cons("Typed")}
+  > Exp "::" CType -> Exp {cons("Typed")}
 
 
   context-free syntax
@@ -69,7 +69,7 @@ exports
     }
  
    context-free priorities
-    Exp "::" Context? Type -> Exp
+    Exp "::" CType -> Exp
   .> {
    "\\" Fargs "->" Exp -> Exp
      "let" Declbinds "in" Exp -> Exp

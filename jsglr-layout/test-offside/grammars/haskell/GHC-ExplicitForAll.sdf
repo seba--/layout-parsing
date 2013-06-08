@@ -6,12 +6,12 @@ exports
 
 	context-free syntax
 		"forall"				-> FORALL {cons("FORALL")}
-		(FORALL Var+ ".")+ 		-> Forall {cons("Forall")}
-		Vars "::" Forall Context? Type  -> Signdecl {cons("ExplicitForAllSignDecl")}
+		FORALL Var+ "."		-> Forall {cons("Forall")}
+		Forall CType -> CType {cons("ExplicitForAll")}
 		
 	context-free priorities
-		Qvar "@" Exp -> Exp {cons("Named")}
-  	  > Exp "::" Forall Context? Type  -> Exp {cons("ExplicitForAllTyped")}
+%%		Qvar "@" Exp -> Exp {cons("Named")}
+ %% 	  > Exp "::" Forall Context? Type  -> Exp {cons("ExplicitForAllTyped")}
 
 	lexical syntax
 		"forall" -> ReservedId0

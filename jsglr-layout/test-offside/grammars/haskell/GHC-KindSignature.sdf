@@ -1,5 +1,7 @@
 module GHC-KindSignature
 
+imports Haskell-Syntax
+
 exports
 	
 	context-free syntax
@@ -11,3 +13,4 @@ exports
 		AKind "->" Kind	-> Kind {cons("Kind->")}
 		
 		("::" Kind) ?	-> OptKindSig
+		"(" CType "::" Kind ")" -> AType
