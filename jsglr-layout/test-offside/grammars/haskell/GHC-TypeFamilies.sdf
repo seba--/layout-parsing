@@ -12,6 +12,7 @@ module GHC-TypeFamilies
 			"data" "family" Type OptKindSig	-> TopDecl {cons("DataFamily")}
 			"type" Type OptKindSig			-> Decl {cons("TypeFamily")}
 			"data" Type OptKindSig			-> Decl {cons("DataFamily")}
+			"type" Type "=" CType	  		-> Decl {cons("TypeDecl"), avoid}
 			"type" "instance" Type "=" CType -> Decl {cons("TypeInstDecl")}
 			"data" "instance" Context? Type "=" Constrs Deriving  -> Decl {cons("DataInstDecl")}
 			"newtype" "instance" Context? Type "=" Constrs Deriving  -> Decl {cons("NewTypeInstDecl")}
