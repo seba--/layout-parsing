@@ -12,5 +12,6 @@ exports
 		AKind			-> Kind
 		AKind "->" Kind	-> Kind {cons("Kind->")}
 		
-		("::" Kind) ?	-> OptKindSig
+		"::" Kind	-> OptKindSig {cons("KindSignature")}
+					-> OptKindSig {cons("EmptyKindSignature")}
 		"(" CType "::" Kind ")" -> AType

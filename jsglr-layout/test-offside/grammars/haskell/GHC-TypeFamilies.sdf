@@ -8,8 +8,8 @@ module GHC-TypeFamilies
 	
 		context-free syntax
 		
-			"type" "family" Type OptKindSig	-> TopDecl {cons("TypeFamily")}
-			"data" "family" Type OptKindSig	-> TopDecl {cons("DataFamily")}
+			"type" "family" Type OptKindSig	-> Decl {cons("TypeFamily")}
+			"data" "family" Type OptKindSig	-> Decl {cons("DataFamily")}
 			"type" Type OptKindSig			-> Decl {cons("TypeFamily")}
 			"data" Type OptKindSig			-> Decl {cons("DataFamily")}
 			"type" Type "=" CType	  		-> Decl {cons("TypeDecl"), avoid}
@@ -17,7 +17,7 @@ module GHC-TypeFamilies
 			"data" "instance" Context? Type "=" Constrs Deriving  -> Decl {cons("DataInstDecl")}
 			"newtype" "instance" Context? Type "=" Constrs Deriving  -> Decl {cons("NewTypeInstDecl")}
 		lexical syntax
-			"family" -> ReservedId0
+			"family" -> ReservedId
 		
 		lexical restrictions
 			"family" -/- [a-zA-Z0-9\'\_]

@@ -14,7 +14,7 @@ exports
  %% 	  > Exp "::" Forall Context? Type  -> Exp {cons("ExplicitForAllTyped")}
 
 	lexical syntax
-		"forall" -> ReservedId0
+		"forall" -> ReservedId
 		
 	lexical restrictions
 		"forall" -/- [a-zA-Z0-9\'\_]

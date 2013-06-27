@@ -1,4 +1,7 @@
 module Haskell-Identifier-Sorts
+
+imports Haskell-Syntax
+
 exports
   lexical syntax
     VARID       	-> Varid
@@ -75,6 +78,7 @@ exports
     "(" Varsym ")" 	-> Var 		{cons("BinOp")}
     "(" Qvarsym ")" 	-> Qvar 	{cons("BinOp")}
     "(" Consym ")" 	-> Con 		{cons("BinCon")}
+    "(" ConsOp ")"	-> Qcon		{cons("BinCon")}
     "(" Qconsym ")" 	-> Qcon 	{cons("BinCon")}
     
 
@@ -89,6 +93,9 @@ exports
     QCONID 		-> Qtycon
     Tycon		-> Tycls
     Qtycon 		-> Qtycls
+   
+   	Qtycon 			-> OQtycon
+   	"(" Consym ")"	-> OQtycon
    
     %% constructor identifiers
 

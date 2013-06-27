@@ -1,15 +1,18 @@
 module Haskell-Import-Export
+
+imports Haskell-Identifier-Sorts
+
 exports
   context-free syntax
   	{ Export "," }* -> Exportlist {cons("Exportlist")}
   	Exportlist "," -> Exportlist
     "(" Exportlist ")" 		-> Exports
 
-    Qvar 			-> Export
-    Gtycon 			-> Export
-    Gtycon "(" ".." ")" 	-> Export
-    Gtycon "(" ")" 		-> Export
-    Gtycon "("{Qcname ","}+ ")" -> Export
+    Qvar 					-> Export
+    OQtycon 				-> Export
+    OQtycon "(" ".." ")" 	-> Export
+    OQtycon "(" ")" 		-> Export
+    OQtycon "("{Qcname ","}+ ")" -> Export
     "module" Modid 		-> Export
 
     Qvar 			-> Qcname
