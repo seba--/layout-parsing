@@ -1,0 +1,13 @@
+module GHC-FunctionalDependencies
+
+imports Haskell-Identifier-Sorts
+imports Haskell-Type-Classes
+
+exports
+	
+	context-free syntax
+	
+		Tyvar+ "->" Tyvar+ 					-> FunctionalDependency {cons("FunctionalDependency")}
+		"|" {FunctionalDependency ","}+ 	-> FunctionalDependencies {cons("FunctionalDependencies")}
+	
+	

@@ -23,7 +23,7 @@ public class LayoutFilter {
   public static final boolean DEBUG_COMPARE_COMPILED_TO_INTERPRETER = false;
   // True: Parse Table needs to pass the IStrategoTerm source to the ProductionAttributes
   @SuppressWarnings("unused")
-  public static final boolean NEEDS_CONSTRAINTS_SOURCE = !DEBUG_DO_NOT_COMPILE_LAYOUT_CONSTRAINTS || DEBUG_COMPARE_COMPILED_TO_INTERPRETER
+  public static final boolean NEEDS_CONSTRAINTS_SOURCE = DEBUG_DO_NOT_COMPILE_LAYOUT_CONSTRAINTS || DEBUG_COMPARE_COMPILED_TO_INTERPRETER
       || DEBUG_COMPARE_COMPILED_TO_LAYOUT_TREE;
 
   private final boolean atParseTime;

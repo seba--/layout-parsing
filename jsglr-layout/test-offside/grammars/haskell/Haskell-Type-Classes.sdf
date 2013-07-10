@@ -1,7 +1,14 @@
 module Haskell-Type-Classes
+
+imports Haskell-Identifier-Sorts
+
 exports
+	sorts
+		FunctionalDependencies
+		ClassParameter
+	
   context-free syntax
-    "class" SContext? Tycls Tyvar MaybeWhere 		-> Topdecl {cons("Class")}
+    "class" SContext? Tycls ClassParameter FunctionalDependencies MaybeWhere 		-> Topdecl {cons("Class")}
     "instance" SContext? Qtycls Inst* MaybeWhere 		-> Topdecl {cons("Instance")}
     "instance" SContext? "(" Qtycls Inst* ")" MaybeWhere    -> Topdecl {cons("Instance")}
     "default"  "(" {Type ","}* ")" 	-> Topdecl {cons("Default")}
@@ -21,4 +28,7 @@ exports
     Qtycls Tyvar -> SimpleClass {cons("SimpleClass")}
     SimpleClass -> Class
     Qtycls "(" Tyvar AType+ ")" -> Class {cons("Class")}
+    
+    -> FunctionalDependencies {cons("NoDependencies")}
+    Tyvar -> ClassParameter
     
