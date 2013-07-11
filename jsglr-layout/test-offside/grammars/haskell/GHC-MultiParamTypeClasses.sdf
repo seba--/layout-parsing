@@ -8,5 +8,6 @@ exports
 		 Tyvar Tyvar+ -> ClassParameter {cons("MultiParam")}
 		 
 		
-		 (("(" Qtycls AType+ ")") |  Tyvar) 					-> ClassParam
-		 Qtycls ClassParam ClassParam+ 							-> Class {cons("MultiParamClass")}
+		 (("(" Qtycls AType+ ")")) 					-> ClassParam
+		 Qtycls ClassParam ClassParam+ 				-> Class {cons("MultiParamClass")}
+		 Qtycls Tyvar Tyvar+ 						-> SimpleClass {cons("MultiParamSimpleClass")}
