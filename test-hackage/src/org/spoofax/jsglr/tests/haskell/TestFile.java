@@ -70,7 +70,8 @@ public class TestFile extends TestCase {
    // file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Prelude.hs";
     //file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Class.hs";
     //file += "active/0.1.0.1/active-0.1.0.1/src/Data/Active.hs";
-    file += "abstract-par/0.3.1/abstract-par-0.3.1/Control/Monad/Par/Class.hs";
+   // file += "abstract-par/0.3.1/abstract-par-0.3.1/Control/Monad/Par/Class.hs";
+    file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Tests.hs";
  
     testFile(new File(file), file, "main");
     testFile(new File(file), file, "main");

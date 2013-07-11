@@ -42,6 +42,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("GADTs");
     HASKELL_EXTENSIONS.add("KindSignatures");
     HASKELL_EXTENSIONS.add("FunctionalDependencies");
+    HASKELL_EXTENSIONS.add("BangPatterns");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");

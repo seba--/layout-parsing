@@ -1,0 +1,10 @@
+module GHC-BangPatterns
+
+imports Haskell-Patterns
+
+exports
+	
+	context-free syntax
+		"!" Pat 	-> Pat {cons("BangPattern")}
+		%% "!" APat 	-> APat {cons("BangPattern")}
+		

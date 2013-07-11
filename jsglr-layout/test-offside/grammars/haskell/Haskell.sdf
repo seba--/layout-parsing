@@ -16,6 +16,7 @@ imports GHC-Magic-Hash
         GHC-GADTs
         GHC-KindSignature
         GHC-FunctionalDependencies
+        GHC-BangPatterns
 exports
   sorts Module
 
