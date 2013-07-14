@@ -1,4 +1,7 @@
 module Haskell-Types
+
+imports Haskell-Identifier-Sorts
+
 exports
   context-free syntax
     ("::" Type)?   	   -> OptSig
@@ -25,7 +28,6 @@ exports
     AType -> Type
     Type Type 	   	   -> Type 	{cons("TAppBin"),left}
     Type "->" Type 	   -> Type 	{cons("TFunBin"),right}
-
 
   context-free priorities
     Type Type 	   	   -> Type 

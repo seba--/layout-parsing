@@ -71,11 +71,14 @@ public class TestFile extends TestCase {
     //file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Class.hs";
     //file += "active/0.1.0.1/active-0.1.0.1/src/Data/Active.hs";
    // file += "abstract-par/0.3.1/abstract-par-0.3.1/Control/Monad/Par/Class.hs";
-    file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Tests.hs";
+   // file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Tests.hs";
+  //  file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Array/Data.hs";
+  //  file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Array/Delayed.hs";
+    file += "4Blocks/0.2/4Blocks-0.2/Core/Game.hs";
  
     testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
-    testFile(new File(file), file, "main");
+   // testFile(new File(file), file, "main");
+   // testFile(new File(file), file, "main");
     
     String csv = file + ".csv";
     result.writeCSVHeader(csv);
@@ -193,7 +196,7 @@ public class TestFile extends TestCase {
     } catch (ExecutionException e) {
       if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
         result.parseExceptions.t1 = e.getCause().getMessage();
-        if (LOGGING)
+    //    if (LOGGING)
           System.out.println(e.getCause().getMessage());
       }
 

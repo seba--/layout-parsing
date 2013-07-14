@@ -22,7 +22,7 @@ exports
 		Context? Type OptKindSig GADTConstrList Deriving WTFBrackets-> GADTBody
 		Context? Type OptKindSig -> GADTBody {reject}
 	
-		Con+ "::" Type		-> GADTConstr {cons("GADTConstraint")}
+		Con+ "::" Context? Type		-> GADTConstr {cons("GADTConstraint")}
 		
 	%% Implementation of layout sensitive and layout insensitive 
 	%% GADT Contraints where definitions is analogeos to statment list
