@@ -1,0 +1,130 @@
+module GHC-Arrows
+
+imports Haskell-Expressions
+imports Haskell-Patterns
+imports Haskell-Statements
+
+exports
+	
+
+
+context-free syntax
+  "proc" APat "->" ArrCommand -> Exp {cons("ArrProcedure")}
+
+  Exp "-<" Exp -> ArrCommand {cons("ArrFirst")}
+  Exp "-<<" Exp -> ArrCommand {cons("ArrHigher")}
+  
+  "\\" Fargs "->" ArrCommand -> ArrCommand {cons("ArrAbs")}
+  "let" Declbinds "in" ArrCommand -> ArrCommand {cons("ArrLet")} 
+  "if" Exp "then" ArrCommand "else" ArrCommand -> ArrCommand {cons("ArrIf")}
+  "case" Exp "of" ArrAltList -> ArrCommand	{cons("ArrCase"), longest-match}
+  "do" ArrStmtList -> ArrCommand {cons("ArrDo"), longest-match}
+
+  ArrCommand Exp -> ArrCommand {cons("ArrAppBin"),left}
+  
+  "(" ArrCommand ")" -> ArrCommand {bracket}
+  "(|" Exp ArrCommand+ "|)" -> ArrCommand {cons("ArrForm")}
+  ArrCommand Qop ArrCommand -> ArrCommand {cons("ArrOpApp"), right}
+
+context-free priorities
+    ArrCommand Exp -> ArrCommand
+  > ArrCommand Qop ArrCommand -> ArrCommand
+
+context-free priorities
+    ArrCommand Exp -> ArrCommand
+  	> {
+        "\\" Fargs "->" ArrCommand -> ArrCommand
+        "let" Declbinds "in" ArrCommand -> ArrCommand 
+        "if" Exp "then" ArrCommand "else" ArrCommand -> ArrCommand
+        "case" Exp "of" AltList -> ArrCommand
+        "do" ArrStmtList -> ArrCommand
+
+        Exp "-<" Exp -> ArrCommand
+        Exp "-<<" Exp -> ArrCommand
+      }
+
+context-free priorities
+    ArrCommand Qop ArrCommand -> ArrCommand
+  <0>
+  	> {
+        "\\" Fargs "->" ArrCommand -> ArrCommand
+        "let" Declbinds "in" ArrCommand -> ArrCommand 
+        "if" Exp "then" ArrCommand "else" ArrCommand -> ArrCommand
+    }
+
+context-free priorities
+  	Exp Exp -> Exp
+  	> 
+      {
+        "proc" APat "->" ArrCommand -> Exp {cons("ArrProcedure")}
+        Exp "-<" Exp -> ArrCommand
+        Exp "-<<" Exp -> ArrCommand
+      }
+
+context-free priorities
+    Exp Qop Exp -> Exp
+  	<0> >
+    "proc" APat "->" ArrCommand -> Exp {cons("ArrProcedure")}
+
+context-free priorities
+      {
+        Exp "-<" Exp -> ArrCommand
+        Exp "-<<" Exp -> ArrCommand
+      }
+    <0>
+  	> {
+        "\\" Fargs "->" Exp -> Exp
+       "let" Declbinds "in" Exp -> Exp 
+       "if" AnyExp "then" AnyExp "else" Exp -> Exp
+       "do" StmtList -> Exp {cons("Do"), longest-match}
+       "case" AnyExp "of" AltList          -> Exp  	{cons("Case"), longest-match}
+      }
+      
+	context-free syntax
+ 		"let" Declbinds -> ArrStmt {cons("ArrLetStmt")}
+		Pat "<-" ArrCommand -> ArrStmt {cons("ArrBindStmt")}
+		ArrCommand -> ArrStmt {cons("ArrCmdStmt")}
+
+	context-free syntax
+		"{" ArrExplStmtList "}" -> ArrStmtList {cons("ArrStmtList"), ignore-layout}
+		ArrImplStmtList   -> ArrStmtList {cons("ArrStmtList")}
+
+	context-free syntax
+		ArrStmt -> ArrExplStmtList
+		ArrStmt ";" ArrExplStmtList -> ArrExplStmtList {cons("ArrStmtSeq")}
+
+		ArrStmt -> ArrImplStmt {layout("1.first.col < 1.left.col")}
+
+		ArrImplStmt -> ArrImplStmtList
+		ArrImplStmt ArrImplStmtList -> ArrImplStmtList {cons("ArrStmtSeq"), layout("1.first.col == 2.first.col")}
+	
+	context-free syntax
+		Pat "->" ArrCommand MaybeWhere -> ArrAlt {cons("ArrAlt")}
+
+	context-free syntax
+		ArrNoOffsideAltBlock -> ArrAltList {cons("AltList")}
+		ArrOffsideAltList   -> ArrAltList {cons("AltList")}
+
+		"{" ArrNoOffsideAltList "}"  -> ArrNoOffsideAltBlock {bracket, ignore-indent}
+
+	context-free syntax
+		ArrAlt -> ArrNoOffsideAltList
+		ArrAlt ";" ArrNoOffsideAltList -> ArrNoOffsideAltList {cons("ArrAltSeq")}
+
+		ArrAlt -> ArrOffsideAlt {layout(gt(col(left(1)), col(first(1))))}
+
+		ArrOffsideAlt -> ArrOffsideAltList
+		ArrOffsideAlt ArrOffsideAltList -> ArrOffsideAltList {cons("ArrAltSeq"), layout(eq(col(first(1)), col(first(2))))}
+	
+	
+	lexical syntax
+		"proc" 	-> ReservedId0
+		"rec"	-> ReservedId0
+		
+		">-" -> ReservedOp
+		"-<" -> ReservedOp
+		"-<<" -> ReservedOp
+		">>-" -> ReservedOp
+		
+	lexical restrictions
+		"proc" "rec" -/- [a-zA-Z0-9\'\_]
