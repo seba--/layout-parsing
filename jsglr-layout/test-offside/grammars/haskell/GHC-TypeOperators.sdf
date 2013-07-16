@@ -5,11 +5,14 @@ imports Haskell-Syntax
 exports
 	
 	context-free syntax
-		AType Op Type -> Type {cons("TypeInfOp")}
+	%%	AType Op Type -> Type {cons("TypeInfOp"), right}
 	%%	"(" (Varop | Conop) ")" AType+ -> Type {cons("TypePrOp")}
 
 	
 	context-free priorities
 		Type Type 	   	   -> Type
 	>   "(" Op ")" AType* -> Type {cons("TypePrOp")}
-		 
+	
+	context-free priorities
+		AType Op Type -> Type {cons("TypeInfOp"), right}	
+	>	Type Type 	-> Type 

@@ -45,7 +45,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("BangPatterns");
     HASKELL_EXTENSIONS.add("FlexibleInstances");
     HASKELL_EXTENSIONS.add("NamedFieldPuns");
-    HASKELL_EXTENSIONS.add("Arrows");
+    HASKELL_EXTENSIONS.add("EmptyDataDecls");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");
@@ -55,6 +55,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("TypeSynonymInstances");
     HASKELL_EXTENSIONS.add("MultiParamTypeClasses");
     HASKELL_EXTENSIONS.add("ExistentialQuantification");
+    HASKELL_EXTENSIONS.add("Arrows");
   }
 
  

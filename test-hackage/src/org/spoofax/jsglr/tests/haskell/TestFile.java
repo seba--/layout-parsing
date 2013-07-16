@@ -78,7 +78,8 @@ public class TestFile extends TestCase {
    // file += "zeno/0.2.0.1/zeno-0.2.0.1/src/Main.hs";
     //file += "activehs/0.3/activehs-0.3/Main.hs";
    // file += "dbmigrations/0.5/dbmigrations-0.5/src/Database/Schema/Migrations/Filesystem.hs";
-    file += "hakyll/3.2.7.2/hakyll-3.2.7.2/src/Hakyll/Web/Pandoc/Biblio.hs";
+   // file += "hakyll/3.2.7.2/hakyll-3.2.7.2/src/Hakyll/Web/Pandoc/Biblio.hs";
+    file += "zipper/0.4.1/zipper-0.4.1/examples/ASTUse.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");

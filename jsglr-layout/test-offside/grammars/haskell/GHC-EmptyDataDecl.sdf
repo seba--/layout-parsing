@@ -1,0 +1,10 @@
+module GHC-EmptyDataDecl
+
+imports Haskell-Type-Declarations
+
+exports
+	
+	context-free syntax
+	
+	%%	"data" Context? Type    -> Topdecl {cons("EmptyDataDecl")}
+	

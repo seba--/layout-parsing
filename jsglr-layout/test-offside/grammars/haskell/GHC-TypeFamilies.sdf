@@ -12,7 +12,11 @@ module GHC-TypeFamilies
 			"data" "family" Type OptKindSig	-> Decl {cons("DataFamily")}
 %%			"data" Type "=" CType	  		-> Decl {cons("DataDecl"), avoid}
 %%			"data" Type "=" CType	  		-> Topdecl {reject}
+			"type" Type KindSig			-> Topdecl {reject}
+			"type" Type KindSig			-> NoOffsideTopdecl {reject}
 			"type" Type OptKindSig			-> Decl {cons("TypeFamily")}
+			"data" Type KindSig			-> Topdecl {reject}
+			"data" Type KindSig			-> NoOffsideTopdecl {reject}
 			"data" Type OptKindSig			-> Decl {cons("DataFamily")}
 			"type" Type "=" CType	  		-> Decl {cons("TypeDecl"), avoid}
 			"type" "instance" Type "=" CType -> Decl {cons("TypeInstDecl")}

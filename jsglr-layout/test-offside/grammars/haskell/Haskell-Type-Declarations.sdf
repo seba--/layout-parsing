@@ -1,4 +1,7 @@
 module Haskell-Type-Declarations
+
+imports Haskell-Types
+
 exports
   context-free syntax
     "type" Type "=" CType	  -> Topdecl {cons("TypeDecl")}

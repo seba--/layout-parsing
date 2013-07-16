@@ -19,6 +19,7 @@ imports GHC-Magic-Hash
         GHC-BangPatterns
         GHC-NamedFieldPuns
         GHC-Arrows
+        GHC-EmptyDataDecl
 exports
   sorts Module
 
