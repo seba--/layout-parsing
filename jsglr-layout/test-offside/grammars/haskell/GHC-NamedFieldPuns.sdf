@@ -1,0 +1,11 @@
+module GHC-NamedFieldPuns
+
+imports Haskell-Patterns
+imports Haskell-Statements
+imports Haskell-Identifier-Sorts
+
+exports
+	
+	context-free syntax
+   		Qvar 		 	-> FPat {cons("NamedPatBind")}
+    	Qvar 			-> Fbind	{cons("NamedFBind")}
