@@ -74,7 +74,11 @@ public class TestFile extends TestCase {
    // file += "abstract-deque/0.1.5/abstract-deque-0.1.5/Data/Concurrent/Deque/Tests.hs";
   //  file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Array/Data.hs";
   //  file += "accelerate/0.12.0.0/accelerate-0.12.0.0/Data/Array/Accelerate/Array/Delayed.hs";
-    file += "4Blocks/0.2/4Blocks-0.2/Core/Game.hs";
+    //file += "4Blocks/0.2/4Blocks-0.2/Core/Game.hs";
+   // file += "zeno/0.2.0.1/zeno-0.2.0.1/src/Main.hs";
+    //file += "activehs/0.3/activehs-0.3/Main.hs";
+   // file += "dbmigrations/0.5/dbmigrations-0.5/src/Database/Schema/Migrations/Filesystem.hs";
+    file += "hakyll/3.2.7.2/hakyll-3.2.7.2/src/Hakyll/Web/Pandoc/Biblio.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");
@@ -167,6 +171,7 @@ public class TestFile extends TestCase {
     String input;
     try {
       input = FileTools.tryLoadFileAsString(f.getAbsolutePath());
+    //  System.out.println(input);
     } catch (OutOfMemoryError e) {
       result.outOfMemory.t1 = true;
       return null;
@@ -196,7 +201,7 @@ public class TestFile extends TestCase {
     } catch (ExecutionException e) {
       if (e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException) {
         result.parseExceptions.t1 = e.getCause().getMessage();
-    //    if (LOGGING)
+        if (LOGGING)
           System.out.println(e.getCause().getMessage());
       }
 
@@ -430,7 +435,8 @@ public class TestFile extends TestCase {
       messages[0] = (String[]) result[1];
       messages[1] = (String[]) result[2];
     } catch (ExecutionError e) {
-      e.printStackTrace();
+     // e.printStackTrace();
+      System.out.println(Arrays.toString(e.getMessages()[1]));
       messages = e.getMessages();
       return null;
     } finally {

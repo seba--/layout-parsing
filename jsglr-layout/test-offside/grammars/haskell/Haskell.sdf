@@ -17,6 +17,8 @@ imports GHC-Magic-Hash
         GHC-KindSignature
         GHC-FunctionalDependencies
         GHC-BangPatterns
+        GHC-NamedFieldPuns
+        GHC-Arrows
 exports
   sorts Module
 

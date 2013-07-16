@@ -1,4 +1,8 @@
 module Haskell-Statements
+
+imports
+	Haskell-Identifier-Sorts
+
 exports
   context-free syntax
     Pat "<-" Exp 	-> Stmt 	{cons("BindStmt")}

@@ -2,8 +2,8 @@ module Haskell-Type-Declarations
 exports
   context-free syntax
     "type" Type "=" CType	  -> Topdecl {cons("TypeDecl")}
-    "data" Context? Type "=" Constrs Deriving 	  -> Topdecl {cons("Data")}
-    "newtype" Context? Type "=" Newconstr Deriving -> Topdecl {cons("NewTypeDecl")}
+    "data" Context? Type "=" Constrs Deriving 	  -> Decl {cons("Data")}
+    "newtype" Context? Type "=" Newconstr Deriving -> Decl {cons("NewTypeDecl")}
 
   context-free syntax
     "deriving" Qtycls 		     	-> Deriving {cons("Derive")}
