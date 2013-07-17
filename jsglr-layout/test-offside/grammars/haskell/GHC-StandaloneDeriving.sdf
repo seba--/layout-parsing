@@ -1,0 +1,9 @@
+module GHC-StandaloneDeriving
+
+imports Haskell-Types
+
+exports
+	
+	context-free syntax
+		
+		"deriving" "instance"	CType		-> Topdecl {cons("StandaloneDeriving")}

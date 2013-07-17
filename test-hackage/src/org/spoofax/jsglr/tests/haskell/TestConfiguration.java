@@ -46,6 +46,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("FlexibleInstances");
     HASKELL_EXTENSIONS.add("NamedFieldPuns");
     HASKELL_EXTENSIONS.add("EmptyDataDecls");
+    HASKELL_EXTENSIONS.add("StandaloneDeriving");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");

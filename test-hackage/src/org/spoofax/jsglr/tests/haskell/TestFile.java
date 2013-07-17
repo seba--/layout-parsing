@@ -79,7 +79,8 @@ public class TestFile extends TestCase {
     //file += "activehs/0.3/activehs-0.3/Main.hs";
    // file += "dbmigrations/0.5/dbmigrations-0.5/src/Database/Schema/Migrations/Filesystem.hs";
    // file += "hakyll/3.2.7.2/hakyll-3.2.7.2/src/Hakyll/Web/Pandoc/Biblio.hs";
-    file += "zipper/0.4.1/zipper-0.4.1/examples/ASTUse.hs";
+   // file += "zipper/0.4.1/zipper-0.4.1/examples/ASTUse.hs";
+    file += "acid-state/0.6.3/acid-state-0.6.3/examples/StressTestNoTH.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");
