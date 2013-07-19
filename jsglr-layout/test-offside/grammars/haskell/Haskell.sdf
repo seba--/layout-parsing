@@ -21,6 +21,7 @@ imports GHC-Magic-Hash
         GHC-Arrows
         GHC-EmptyDataDecl
         GHC-StandaloneDeriving
+        GHC-TupleSections
 exports
   sorts Module
 

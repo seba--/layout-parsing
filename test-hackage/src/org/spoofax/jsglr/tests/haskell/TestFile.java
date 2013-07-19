@@ -80,7 +80,9 @@ public class TestFile extends TestCase {
    // file += "dbmigrations/0.5/dbmigrations-0.5/src/Database/Schema/Migrations/Filesystem.hs";
    // file += "hakyll/3.2.7.2/hakyll-3.2.7.2/src/Hakyll/Web/Pandoc/Biblio.hs";
    // file += "zipper/0.4.1/zipper-0.4.1/examples/ASTUse.hs";
-    file += "acid-state/0.6.3/acid-state-0.6.3/examples/StressTestNoTH.hs";
+   // file += "acid-state/0.6.3/acid-state-0.6.3/examples/StressTestNoTH.hs";
+   // file +="accelerate-cuda/0.12.0.0/accelerate-cuda-0.12.0.0/Data/Array/Accelerate/CUDA/Execute.hs";
+    file +="hamtmap/0.3/hamtmap-0.3/Data/HamtMap.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");

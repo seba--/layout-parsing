@@ -1,0 +1,19 @@
+module GHC-TupleSections
+
+imports Haskell-Expressions
+
+exports
+	
+	context-free syntax
+		
+    	
+    	SXExps   -> Exps2 {cons("SectionCons")}
+    	
+    	{Exp ","} + ","  -> SXExps  {cons("SXExps")}
+    	","* "," Exp -> SXExps  {cons("XSExps")}
+    	
+    	SXExps "," Exp 	-> SXExps {cons("SXEExps")}
+    	SXExps ","		-> SXExps {cons("SXCExps")}
+    	
+ 
+    

@@ -15,7 +15,7 @@ exports
     
     Pat -> FunLHS
     Var APat+ -> FunLHS {cons("VarFunLHS")}
-    Pat Varop Pat -> FunLHS {cons("OpFunLHS")}
+    Pat Varop Pat -> FunLHS {cons("OpFunLHS"), prefer}
     "(" FunLHS ")" APat+ -> FunLHS {cons("NestedFunLHS")}
 
   context-free syntax
