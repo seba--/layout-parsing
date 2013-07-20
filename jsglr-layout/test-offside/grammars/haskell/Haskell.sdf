@@ -22,6 +22,7 @@ imports GHC-Magic-Hash
         GHC-EmptyDataDecl
         GHC-StandaloneDeriving
         GHC-TupleSections
+        GHC-RecordWildcards
 exports
   sorts Module
 

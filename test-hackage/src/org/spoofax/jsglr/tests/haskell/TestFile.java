@@ -82,7 +82,9 @@ public class TestFile extends TestCase {
    // file += "zipper/0.4.1/zipper-0.4.1/examples/ASTUse.hs";
    // file += "acid-state/0.6.3/acid-state-0.6.3/examples/StressTestNoTH.hs";
    // file +="accelerate-cuda/0.12.0.0/accelerate-cuda-0.12.0.0/Data/Array/Accelerate/CUDA/Execute.hs";
-    file +="hamtmap/0.3/hamtmap-0.3/Data/HamtMap.hs";
+    //file +="hamtmap/0.3/hamtmap-0.3/Data/HamtMap.hs";
+    //file += "acme-http/0.2.1/acme-http-0.2.1/Acme/Response.hs";
+    file += "matsuri/0.0.4/matsuri-0.0.4/Widgets/ListBox.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");

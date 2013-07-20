@@ -1,0 +1,11 @@
+module GHC-RecordWildcards
+
+imports Haskell-Patterns
+imports Haskell-Statements
+imports Haskell-Identifier-Sorts
+
+exports
+	
+	context-free syntax
+   		".." 		 	-> FPat {cons("PatWildcard")}
+    	".." 			-> Fbind	{cons("BindWildcard")}

@@ -19,6 +19,7 @@ public class TestConfiguration {
   private final static Collection<String> SKIP_FILES = new ArrayList<String>();
   
   static {
+    //SKIP_PACKAGES.add("matsuri");
 //    SKIP_FILES.add("Agda-2.3.0.1/src/full/Agda/Packaging/Database.hs"); // stack overflow
   }
 
@@ -48,6 +49,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("EmptyDataDecls");
     HASKELL_EXTENSIONS.add("StandaloneDeriving");
     HASKELL_EXTENSIONS.add("TupleSections");
+    HASKELL_EXTENSIONS.add("RecordWildCards");
     
     HASKELL_EXTENSIONS.add("ExplicitForAll");
     HASKELL_EXTENSIONS.add("PolymorphicComponents");

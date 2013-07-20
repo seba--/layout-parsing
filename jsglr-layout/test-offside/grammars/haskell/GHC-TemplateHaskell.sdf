@@ -1,19 +1,21 @@
 module GHC-TemplateHaskell
 
+imports Haskell-Identifier-Sorts
+
 exports
 	context-free syntax
 	
 %%	Splices
 
-		Splice -> Exp
-		Splice -> Type
-		Splice -> Decl
+		Splice -> Exp {cons("SpliceExp"), avoid}
+		Splice -> Type {cons("SpliceType"), avoid}
+		Splice -> Decl {cons("SpliceDecl"), avoid}
 		
 		"$(" Exp ")" -> Splice {cons("ExpSlice")}
 		VarSpliceID	 -> Splice {cons("VarSplice")}
 		
 	lexical syntax
-		"$" VARID -> VarSpliceID
+		"$" Var -> VarSpliceID
 		
 	context-free syntax
 		
