@@ -23,6 +23,8 @@ imports GHC-Magic-Hash
         GHC-StandaloneDeriving
         GHC-TupleSections
         GHC-RecordWildcards
+        GHC-ForeignFunctionInterface
+        GHC-FunctionalDependencies-MultiParamTypeClasses
 exports
   sorts Module
 

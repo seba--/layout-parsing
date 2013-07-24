@@ -17,6 +17,7 @@ exports
 	%%	"newtype" GADTBody				-> Decl {cons("GADTDataDecl")}
 		
 	
+	%% TODO To be removed when pp-haskell is corrected
 		"{" "}" -> WTFBrackets
 				-> WTFBrackets
 		Context? Type OptKindSig GADTConstrList Deriving WTFBrackets-> GADTBody

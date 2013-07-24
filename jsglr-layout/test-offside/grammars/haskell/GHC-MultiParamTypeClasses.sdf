@@ -5,9 +5,10 @@ imports Haskell-Type-Classes
 exports
 
 	context-free syntax
+		 "class" SContext? Tycls ClassParameter MaybeWhere 		-> Topdecl {cons("MPClass")}
+		 
 		 Tyvar Tyvar+ -> ClassParameter {cons("MultiParam")}
 		 
-		
 		 (("(" Qtycls AType+ ")")) 					-> ClassParam
 		 Qtycls ClassParam ClassParam+ 				-> Class {cons("MultiParamClass")}
 		 Qtycls Tyvar Tyvar+ 						-> SimpleClass {cons("MultiParamSimpleClass")}

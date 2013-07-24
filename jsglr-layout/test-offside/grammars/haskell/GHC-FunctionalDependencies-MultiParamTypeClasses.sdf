@@ -1,0 +1,10 @@
+module GHC-FunctionalDependencies-MultiParamTypeClasses
+
+imports GHC-FunctionalDependencies
+imports GHC-MultiParamTypeClasses
+
+exports
+	
+	context-free syntax
+		%% Combining FunctionalDependencies and MultiParamTypeClasses
+		"class" SContext? Tycls ClassParameter FunctionalDependencies MaybeWhere 		-> Topdecl {cons("Class")}

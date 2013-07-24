@@ -6,6 +6,8 @@ imports Haskell-Type-Classes
 exports
 	
 	context-free syntax
+		
+		"class" SContext? Tycls Tyvar FunctionalDependencies MaybeWhere 		-> Topdecl {cons("FDClass")}
 	
 		Tyvar+ "->" Tyvar+ 					-> FunctionalDependency {cons("FunctionalDependency")}
 		"|" {FunctionalDependency ","}+ 	-> FunctionalDependencies {cons("FunctionalDependencies")}

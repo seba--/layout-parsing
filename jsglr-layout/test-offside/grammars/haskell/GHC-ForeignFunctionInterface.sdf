@@ -1,0 +1,37 @@
+module GHC-ForeignFunctionInterface
+
+imports Haskell-Modules
+imports Haskell-Types
+imports Haskell-Keywords
+imports Haskell-Strings
+
+exports
+	
+	context-free syntax
+		
+		"foreign" FDecl 					-> Topdecl {cons("ForeignFunction")}
+		"import" CallConv Safety FSpec 	-> FDecl {cons("ForeignFunctionImport")}
+		"export" CallConv FSpec 			-> FDecl {cons("ForeignFunctionExport")}
+		
+		FSpecString Var "::" CType	-> FSpec {cons("FSpec")}
+		%% The FSpecString is optional, sp the second production applies exactly on nothing but creates the same AST as the empty string
+		String			-> FSpecString
+		[]*				-> FSpecString {cons("String"), avoid}
+		
+		"stdcall"		-> CallConv {cons("stdcall")}
+		"ccall"			-> CallConv {cons("ccall")}
+		"prim"			-> CallConv {cons("prim")}
+		
+		%% Default is safe so we parse nothing as safe for AST Comparision
+						-> Safety {cons("safe")}
+		"safe"			-> Safety {cons("safe")}
+		"unsafe"		-> Safety {cons("unsafe")}
+		"interruptible"	-> Safety {cons("interruptible")}
+		
+		
+	lexical syntax
+		"foreign" | "stdcall" | "ccall" | "prim" | "unsafe" | "safe" | "interruptible" -> ReservedId0
+	
+	lexical restrictions
+		"foreign" | "stdcall" | "ccall" | "prim" | "unsafe" | "safe" | "interruptible" -/- [a-zA-Z0-9\'\_]
+		

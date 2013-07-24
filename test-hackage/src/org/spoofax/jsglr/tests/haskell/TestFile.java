@@ -84,7 +84,9 @@ public class TestFile extends TestCase {
    // file +="accelerate-cuda/0.12.0.0/accelerate-cuda-0.12.0.0/Data/Array/Accelerate/CUDA/Execute.hs";
     //file +="hamtmap/0.3/hamtmap-0.3/Data/HamtMap.hs";
     //file += "acme-http/0.2.1/acme-http-0.2.1/Acme/Response.hs";
-    file += "matsuri/0.0.4/matsuri-0.0.4/Widgets/ListBox.hs";
+    //file += "matsuri/0.0.4/matsuri-0.0.4/Widgets/ListBox.hs";
+   // file += "acid-state/0.6.3/acid-state-0.6.3/src-unix/FileIO.hs";
+    file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/io/BlockCopy.hs";
  
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");
