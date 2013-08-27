@@ -22,3 +22,4 @@ bin/
 /test-hackage/hackage-data/*.csv
 /test-hackage/all*.csv
 /test-hackage/all*/
+.Rproj.user
