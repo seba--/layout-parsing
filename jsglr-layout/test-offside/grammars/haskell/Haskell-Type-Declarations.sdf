@@ -25,6 +25,6 @@ exports
    
     AType 				 -> Satype
     "!" AType 				 -> Satype
-    CType     				 -> Sbtype
-    "!" CType 				 -> Sbtype
+    Type     				 -> Sbtype
+    "!" Type 				 -> Sbtype
  

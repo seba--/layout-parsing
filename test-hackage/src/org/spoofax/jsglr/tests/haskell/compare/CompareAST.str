@@ -53,6 +53,12 @@ rules
   // derivings
   compare-term : (Derive([d1]), Derive(d2)) -> <compare> (d1, d2)
 
+  //functions
+  compare-term: (VarFunLHS(BinOp(n1),[Var(l1),Var(r1)]), OpFunLHS(Var(l2),n2,Var(r2))) -> <map(compare); concat> [(n1, n2), (l1,l2), (r1,r2)]
+  compare-term: (Forall([x1,y1]),Forall([x2,y2])) ->  <map(compare); concat> [(x1,y2),(y1,x2)]
+  compare-term: (Forall([x1,y1]),Forall([x2,y2])) ->  <map(compare); concat> [(x1,x2),(y1,y2)]
+
+	
 
 rules
   peq(s) : (x, y) -> <equal> (<try(s)> x, <try(s)> y)
@@ -328,6 +334,8 @@ signature
     StringHash           : List(StringChar) -> String
     CharHash             : CharChar -> Char
     IntHash              : INTEGER -> Literal
+    
+	Forall :  List(Var) -> Forall
 
 
 signature

@@ -29,7 +29,7 @@ import org.sugarj.haskell.normalize.normalize_0_0;
  */
 public class TestFile extends TestCase {
 
-  private final static boolean LOGGING = false;
+  private final static boolean LOGGING = true;
 
   private static Context normalizeContext = normalize.init();
   private static Context compareContext = CompareAST.init();
@@ -86,8 +86,10 @@ public class TestFile extends TestCase {
     //file += "acme-http/0.2.1/acme-http-0.2.1/Acme/Response.hs";
     //file += "matsuri/0.0.4/matsuri-0.0.4/Widgets/ListBox.hs";
    // file += "acid-state/0.6.3/acid-state-0.6.3/src-unix/FileIO.hs";
-    file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/io/BlockCopy.hs";
- 
+   // file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/io/BlockCopy.hs";
+    file+="cmdargs/cmdargs-0.9.5/System/Console/CmdArgs/Annotate.hs";
+    
+    
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");
@@ -214,8 +216,8 @@ public class TestFile extends TestCase {
       }
 
       result.stackOverflow.t1 = e.getCause() instanceof StackOverflowError;
-      if (e.getCause() instanceof StackOverflowError)
-        e.getCause().printStackTrace();
+      //if (e.getCause() instanceof StackOverflowError)
+       // e.getCause().printStackTrace();
 
       if (!(e.getCause() instanceof org.spoofax.jsglr_orig.shared.SGLRException)
           && !(e.getCause() instanceof StackOverflowError)) {
@@ -291,8 +293,8 @@ public class TestFile extends TestCase {
       }
 
       result.stackOverflow.t2 = e.getCause() instanceof StackOverflowError;
-      if (e.getCause() instanceof StackOverflowError)
-        e.getCause().printStackTrace();
+      //if (e.getCause() instanceof StackOverflowError)
+      //  e.getCause().printStackTrace();
 
       if (!(e.getCause() instanceof SGLRException)
           && !(e.getCause() instanceof StackOverflowError))
@@ -367,8 +369,8 @@ public class TestFile extends TestCase {
       }
 
       result.stackOverflow.t3 = e.getCause() instanceof StackOverflowError;
-      if (e.getCause() instanceof StackOverflowError)
-        e.getCause().printStackTrace();
+     // if (e.getCause() instanceof StackOverflowError)
+        //e.getCause().printStackTrace();
 
       if (!(e.getCause() instanceof SGLRException)
           && !(e.getCause() instanceof StackOverflowError))

@@ -37,7 +37,7 @@ public class TestPackage extends TestCase {
     try {
       new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     } catch (IOException e) {
-      e.printStackTrace();
+     // e.printStackTrace();
     }
     testFiles(dir, "", pkg);
     

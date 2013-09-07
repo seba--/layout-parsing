@@ -1,0 +1,18 @@
+module GHC-PatternGuards
+
+imports 
+	Haskell-Patterns
+	Haskell-Expressions
+
+exports
+	
+	context-free syntax
+		
+		"|" {Guard ","}+ 			-> Guards {cons("Guards")}
+		
+    	Pat "<-" Exp 				-> Guard {cons("PatternGuard")}  
+    	"let" Declbinds 			-> Guard {cons("LocalDeclaration")}
+    	Exp							-> Guard {cons("ExpGuard")}
+    	
+   	 %%   "|" Exp						-> Guards {reject}
+   	 

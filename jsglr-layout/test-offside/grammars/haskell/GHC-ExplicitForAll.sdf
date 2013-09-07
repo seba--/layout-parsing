@@ -5,8 +5,7 @@ imports Haskell-Syntax
 exports
 
 	context-free syntax
-		"forall"				-> FORALL {cons("FORALL")}
-		FORALL Var+ "."		-> Forall {cons("Forall")}
+		"forall" Var+ "."		-> Forall {cons("Forall")}
 		Forall CType -> CType {cons("ExplicitForAll")}
 		
 	context-free priorities

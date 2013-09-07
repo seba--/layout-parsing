@@ -53,7 +53,7 @@ public class TestAllPackages extends TestCase {
     for (String pkg : warmupPackages)
       new TestPackage().testPackage(pkg, observer);
     } catch (Throwable e) {
-      e.printStackTrace();
+      //e.printStackTrace();
     }
     System.out.println("Warmed up with " + warmupCount + " files from " + warmupPackages.length + " packages.");
   }
@@ -65,7 +65,7 @@ public class TestAllPackages extends TestCase {
     csvFile = new File(path + ".csv");
     new FileResult().writeCSVHeader(csvFile.getAbsolutePath());
     
-    //warmup();
+    warmup();
     
     BufferedReader in = null;
     
@@ -105,7 +105,18 @@ public class TestAllPackages extends TestCase {
       packageResult.appendAsCSV(csvFile.getAbsolutePath());
       packageResult.appendAsCSV(pkgCsv.getAbsolutePath());
       
-//      System.out.println(csvFile.getAbsolutePath());
+    //  System.out.println(csvFile.getAbsolutePath());
     }
   }
+  
+  public static void main(String[] args) throws IOException {
+    TestAllPackages tester = new TestAllPackages();
+    int repetition = args.length > 0 ? Integer.parseInt(args[0]) : 1;
+    
+    tester.warmup();
+    
+    for (int i = 0; i < repetition; i++)
+      tester.testAllPackages();
+  }
+
 }

@@ -7,6 +7,9 @@ module GHC-ExistentialQuantification
 		
 		context-free syntax
 			Context Constr -> Constr {cons("ExistentialConstrs")}
-			Forall Constr -> Constr {cons("ExistentialConstrs")}
-			Forall Context Constr -> Constr {cons("ExistentialConstrs")}
+			Forall Context? Constr -> Constr {cons("ExistentialConstrs")}
+			
+		context-free priorities
+			Forall Context? Constr -> Constr
+			> Context Constr -> Constr
 			
