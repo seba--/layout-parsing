@@ -25,6 +25,8 @@ imports GHC-Magic-Hash
         GHC-RecordWildcards
         GHC-ForeignFunctionInterface
         GHC-FunctionalDependencies-MultiParamTypeClasses
+        GHC-PatternGuards
+        GHC-ScopedTypedVariables
 exports
   sorts Module
 
