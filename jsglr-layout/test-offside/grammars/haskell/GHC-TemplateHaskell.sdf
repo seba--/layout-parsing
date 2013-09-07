@@ -32,13 +32,14 @@ exports
 %% Name Quotation
 
 	context-free syntax
-		NameQuotation		-> Exp
+		NameQuotation		-> Exp		{cons("NameQuotation")}
 		
+	 syntax
+		<"'"-LEX> (<Qvar-CF> | <Qcon-CF>)		-> <NameQuotation-CF>
+		<"''"-LEX> (<Tyvar-CF> | <Gtycon-CF>)	-> <NameQuotation-CF>
+		
+	
 	lexical syntax
-		"'" Qvar | Qcon		-> NameQuotation
-		"''" Tyvar | Gtycon	-> NameQuotation
-		
-		
 %%	Quasi Quotation
 	
 		"[" VARID "|" QuasiQuoteString "|]" -> QuasiQuote {cons("QuasiQuote"), ignore-layout}
