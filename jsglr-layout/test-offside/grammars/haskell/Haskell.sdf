@@ -28,6 +28,7 @@ imports GHC-Magic-Hash
         GHC-PatternGuards
         GHC-ScopedTypedVariables
         GHC-Package_SafeImports
+        GHC-RecursiveDo
 exports
   sorts Module
 

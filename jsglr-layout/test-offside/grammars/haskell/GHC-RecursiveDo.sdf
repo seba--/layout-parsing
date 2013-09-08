@@ -1,0 +1,18 @@
+module GHC-RecursiveDo
+
+imports
+	
+	Haskell-Statements
+	Haskell-Keywords
+	
+exports
+	
+	context-free syntax
+	
+		"rec" StmtList -> Stmt {cons("RecursiveDo")}
+		
+	lexical syntax
+		"rec" -> ReservedId0
+		
+	lexical restrictions
+		"rec" -/- [a-zA-Z0-9\'\_]
