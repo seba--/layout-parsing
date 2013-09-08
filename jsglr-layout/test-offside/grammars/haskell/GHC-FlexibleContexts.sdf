@@ -1,5 +1,9 @@
 module GHC-FlexibleContexts
 
+imports
+	Haskell-Identifier-Sorts
+	Haskell-Types
+
 exports
 	context-free syntax
 		
@@ -21,21 +25,22 @@ exports
 	%%	Inst* 		-> InstanceType
 		AType* 		-> InstanceType {avoid}
 		
-		Qtycls InstanceType 	-> InstanceSig
-		"(" InstanceSig ")"		-> InstanceSig
+		Qtycls InstanceType 	-> InstanceSig {cons("InstanceSig")}
+		"(" InstanceSig ")"		-> InstanceSig {bracket}
 		
 		"instance" SContext? InstanceSig MaybeWhere 				-> Topdecl {cons("FlexibleInstance"), avoid}
 	
 	%% Definition of the Flexible Classes
-		Qtycls "(" Type ")" 	-> FlexibleClass {cons("Class")}
-    	Qtycls Gtycon 			-> FlexibleClass {cons("Class")}
-    	Qtycls Tyvar 			-> FlexibleClass {cons("SimpleClass")}
-    	"(" FlexibleClass ")"	-> FlexibleClass
+	%%	Qtycls "(" Type ")" 	-> FlexibleClass {cons("Class")}
+    %%	Qtycls Gtycon 			-> FlexibleClass {cons("Class")}
+    %%	Qtycls Tyvar 			-> FlexibleClass {cons("SimpleClass")}
+    %%	"(" FlexibleClass ")"	-> FlexibleClass {bracket}
+    Type -> FlexibleClass {cons("FlexibleClass")}
     
     %% Definition of the Flexible Content
     
     	FlexibleClass "=>" 										-> FlexibleContext {cons("FlexibleContext")}
-    	"(" FlexibleClass "," {FlexibleClass ","}+ ")" "=>" 	-> FlexibleContext {cons("FlexibleContext")}
+    	%%"(" FlexibleClass "," {FlexibleClass ","}+ ")" "=>" 	-> FlexibleContext {cons("FlexibleContext")}
     
     	FlexibleContext -> SContext {avoid}
     	FlexibleContext -> Context {avoid}	

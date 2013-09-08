@@ -1,0 +1,10 @@
+module GHC-ScopedTypedVariables
+
+imports
+	Haskell-Signature-Declarations
+	Haskell-Patterns
+	
+exports
+	context-free syntax
+			
+		APat "::" CType -> Pat {cons("TypeSignaturePattern")}
