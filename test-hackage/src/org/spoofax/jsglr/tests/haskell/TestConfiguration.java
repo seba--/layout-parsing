@@ -60,6 +60,7 @@ public class TestConfiguration {
     HASKELL_EXTENSIONS.add("MultiParamTypeClasses");
     HASKELL_EXTENSIONS.add("ExistentialQuantification");
     HASKELL_EXTENSIONS.add("Arrows");
+    HASKELL_EXTENSIONS.add("PackageImports");
   }
 
  

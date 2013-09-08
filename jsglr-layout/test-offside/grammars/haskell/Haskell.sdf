@@ -27,6 +27,7 @@ imports GHC-Magic-Hash
         GHC-FunctionalDependencies-MultiParamTypeClasses
         GHC-PatternGuards
         GHC-ScopedTypedVariables
+        GHC-Package_SafeImports
 exports
   sorts Module
 

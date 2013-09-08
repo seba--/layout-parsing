@@ -1,0 +1,16 @@
+module GHC-Package_SafeImports
+
+imports
+	Haskell-Import-Export
+	Haskell-Strings
+	
+exports
+	context-free syntax
+		 "import" Src? Qualified? String
+             Modid As? Impspec? -> Importdecl 	{cons("PackageImport")}
+          
+         "import" Src? "safe" Qualified?
+             Modid As? Impspec? -> Importdecl 	{cons("SafeImport")}
+             
+            "import" Src? "safe" Qualified? String
+             Modid As? Impspec? -> Importdecl 	{cons("SafePackageImport")}

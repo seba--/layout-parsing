@@ -89,7 +89,7 @@ public class TestFile extends TestCase {
    // file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/io/BlockCopy.hs";
    // file+="cmdargs/cmdargs-0.9.5/System/Console/CmdArgs/Quote.hs";
    // file+= "/Crypto/Crypto-4.2.5/WordListTest.hs";
-    file+="Hermes/Hermes-0.0.4/Network/Hermes/Core.hs";
+    file+="Hermes/Hermes-0.0.4/Network/Hermes/Gossip.hs";
     
     
     testFile(new File(file), file, "main");

@@ -1,4 +1,9 @@
 module Haskell-Value-Definitions
+
+imports Haskell-Expressions
+imports Haskell-Patterns
+imports Haskell-Identifier-Sorts
+
 exports
   context-free syntax
     Valdef 		   -> Decl

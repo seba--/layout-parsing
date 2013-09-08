@@ -1,4 +1,8 @@
 module Haskell-Patterns
+
+imports
+	Haskell-Identifier-Sorts
+
 exports
   context-free syntax
     LPat -> Pat
