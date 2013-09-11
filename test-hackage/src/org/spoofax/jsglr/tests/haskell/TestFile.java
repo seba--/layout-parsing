@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.interpreter.terms.PrettyPrinter;
 import org.spoofax.jsglr.tests.haskell.CommandExecution.ExecutionError;
 import org.spoofax.jsglr.tests.haskell.compare.CompareAST;
 import org.spoofax.jsglr.tests.haskell.compare.CompareLibrary;
@@ -21,6 +22,7 @@ import org.spoofax.jsglr_layout.tests.haskell.HaskellParser;
 import org.spoofax.jsglr_orig.io.FileTools;
 import org.spoofax.terms.Term;
 import org.strategoxt.lang.Context;
+import org.strategoxt.stratego_lib.new_0_0;
 import org.sugarj.haskell.normalize.normalize;
 import org.sugarj.haskell.normalize.normalize_0_0;
 
@@ -30,7 +32,7 @@ import org.sugarj.haskell.normalize.normalize_0_0;
 public class TestFile extends TestCase {
 
   private final static boolean LOGGING = true;
-
+  
   private static Context normalizeContext = normalize.init();
   private static Context compareContext = CompareAST.init();
   static {
@@ -47,7 +49,7 @@ public class TestFile extends TestCase {
   private IStrategoTerm oldResult;
 
   private FileResult result;
-
+ 
   public void testFile_main() throws IOException {
     // src/org/spoofax/jsglr/tests/haskell/main.hs
     //String file = "sample-data/template-haskell/Printf.hs";//"d:/tmp/test.hs";
@@ -89,8 +91,9 @@ public class TestFile extends TestCase {
    // file += "accelerate-examples/0.12.0.0/accelerate-examples-0.12.0.0/examples/tests/io/BlockCopy.hs";
    // file+="cmdargs/cmdargs-0.9.5/System/Console/CmdArgs/Quote.hs";
    // file+= "/Crypto/Crypto-4.2.5/WordListTest.hs";
-    file+="Hermes/Hermes-0.0.4/Network/Hermes/Gossip.hs";
-    
+    //file+="Hermes/Hermes-0.0.4/Network/Hermes/Signature.hs";
+  //  file += "actor/actor-0.1.1/Chain.hs";
+    file += "alms/alms-0.6.3/src/BasisUtils.hs";
     
     testFile(new File(file), file, "main");
    // testFile(new File(file), file, "main");

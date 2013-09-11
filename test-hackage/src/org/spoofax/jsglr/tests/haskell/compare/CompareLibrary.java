@@ -30,6 +30,9 @@ public class CompareLibrary extends AbstractStrategoOperatorRegistry {
           return false;
         
         String s = ((StrategoString) t).stringValue();
+        if (s.length() == 0) {
+          s= "0";
+        }
         BigInteger i = new BigInteger(s, ((StrategoInt) from).intValue());
         s = i.toString(((StrategoInt) to).intValue());
         ctx.setCurrent(ctx.getFactory().makeString(s));

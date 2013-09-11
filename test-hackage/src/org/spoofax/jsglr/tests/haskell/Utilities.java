@@ -9,9 +9,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.interpreter.terms.ITermPrinter;
+import org.spoofax.interpreter.terms.PrettyPrinter;
 import org.spoofax.terms.io.InlinePrinter;
 
 public class Utilities {
+  
+  public static final boolean PP_TERMS = false;
   public static void writeToFile(IStrategoTerm t, String f) {
     String content;
     if (t == null)
@@ -23,7 +27,12 @@ public class Utilities {
   
   @SuppressWarnings("deprecation")
   public static String termToString(IStrategoTerm t) {
-    InlinePrinter printer = new InlinePrinter();
+    ITermPrinter printer;
+    if (PP_TERMS) {
+      printer = new PrettyPrinter();
+    } else {
+      printer = new InlinePrinter(); 
+    }
     t.prettyPrint(printer);
     return printer.getString();
   }
