@@ -113,7 +113,6 @@ public class CommandExecution {
     }
     @Override
     public String toString() {
-      // TODO Auto-generated method stub
       return super.toString() +"\n"+ Arrays.toString(messages[0]) + " " + Arrays.toString(messages[1]);
     }
   }
@@ -197,7 +196,7 @@ public class CommandExecution {
       // log.endExecution(exitValue, errStreamLogger.getUnloggedMsg());
     } catch (Throwable t) {
       throw new ExecutionError("problems while executing " + prefix + ": "
-          + t.getMessage(), cmds, -1, new String[][] {}, t);
+          + t.getMessage(), cmds, -1, new String[][] {new String[]{}, new String[] {}}, t);
     }
     
     if (exitValue != 0)
